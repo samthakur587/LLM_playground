@@ -16,8 +16,8 @@ def select_model():
     models = list(set(model_options))
     if 'vote_counts' not in st.session_state:
         st.session_state['vote_counts'] = {model: 0 for model in models}
-    selected_model1 = st.sidebar.text_input("Enter Endpoint for First Model")
-    selected_model2 = st.sidebar.text_input("Enter Endpoint for Seconed Model")
+    selected_model1 = st.sidebar.text_input("Enter Endpoint for First Model","mixtral-8x7b-instruct-v0.1@together-ai")
+    selected_model2 = st.sidebar.text_input("Enter Endpoint for Seconed Model","llama-2-13b-chat@anyscale")
     st.session_state['model1'] = selected_model1
     st.session_state['model2'] = selected_model2
 
