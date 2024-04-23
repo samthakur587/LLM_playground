@@ -4,38 +4,49 @@ from unify import Unify
 import os
 import asyncio
 import pandas as pd
+import matplotlib.pyplot as plt
 # Define function to select model
+import json
+# Load JSON data from file
+with open("models.json", "r") as f:
+    data = json.load(f)
+model_options = data['models']
 def select_model():
-    model_options = ["mixtral-8x7b-instruct-v0.1", "llama-2-13b-chat", "gemma-7b-it","codellama-34b-instruct","gpt-4-turbo","llama-3-8b-chat"]
+    global model_options
     if 'vote_counts' not in st.session_state:
         st.session_state['vote_counts'] = {model: 0 for model in model_options}
-    selected_model1 = st.sidebar.selectbox("Select your first model", model_options)
-    selected_model2 = st.sidebar.selectbox("Select your seconed model 2", model_options)
+    selected_model1 = st.sidebar.text_input("Enter Endpoint for First Model")
+    selected_model2 = st.sidebar.text_input("Enter Endpoint for Seconed Model")
     st.session_state['model1'] = selected_model1
     st.session_state['model2'] = selected_model2
-    
-# Define function to select provider
-def select_provider():
-    provider_options = ["anyscale", "together-ai", "fireworks-ai","openai","perplexity-ai"]
-    selected_provider1 = st.sidebar.selectbox("Select provider for first model", provider_options)
-    selected_provider2 = st.sidebar.selectbox("Select provider for seconed model", provider_options)
-    st.session_state['provider1'] = selected_provider1
-    st.session_state['provider2'] = selected_provider2
-    
+
+def history(model = 'model1',output='how are you'):
+    if model == 'model1':
+        st.session_state['chat_history1'].append({"role": "user", "content": st.session_state["chat_input"]})
+        st.session_state['chat_history1'].append({"role": "assistant", "content": output})
+    elif model == 'model2':
+        st.session_state['chat_history2'].append({"role": "user", "content": st.session_state["chat_input"]})
+        st.session_state['chat_history2'].append({"role": "assistant", "content": output})
+    else:
+        st.write("please enter the model1 or model2 in history function")
+    if len(st.session_state['chat_history1'])>=10:
+        st.session_state['chat_history1'].pop(0)
+    if len(st.session_state['chat_history2'])>=10:
+        st.session_state['chat_history2'].pop(0)
+
 # Define function to input API key
 def input_api_key():
     st.sidebar.subheader("Unify API Key")
-    api_key = st.sidebar.text_input("Enter Unify API Key")
+    api_key = st.sidebar.text_input("UNIFY_KEY",type="password")
     if api_key is not st.session_state:
         st.session_state['api_key'] = api_key
         
-def call_model(model='llama-2-13b-chat',provider='anyscale'):
+def call_model(Endpoint):
     async_unify = AsyncUnify(
     api_key=st.session_state['api_key'],
-    model=model,
-    provider=provider)
+    endpoint=Endpoint)
     return async_unify
-
+st.set_option('deprecation.showPyplotGlobalUse', False)
 async def main():
     st.set_page_config(layout="wide")
     st.markdown(
@@ -50,38 +61,50 @@ async def main():
     model_col, provider_col = st.sidebar.columns(2)
     with model_col:
         select_model()
-    with provider_col:
-        select_provider()
-    col1, col2 = st.columns(2)
+    col11, col21 = st.columns(2)
     # Display chat UI
+    with col11:
+        st.markdown("<span style='font-size:20px; color:blue;'>Model " + st.session_state['model1'] + "</span>", unsafe_allow_html=True)
+    with col21:
+        st.markdown("<span style='font-size:20px; color:blue;'>Model " + st.session_state['model2'] + "</span>", unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
     with col1:
-        st.header("Model " + st.session_state['model1'])
         cont1 = st.container(height=500)
     with col2:
-        st.header("Model " + st.session_state['model2'])
         cont2 = st.container(height=500)
+    if "chat_history1" not in st.session_state:
+        st.session_state["chat_history1"] = []
+    if "chat_history2" not in st.session_state:
+        st.session_state["chat_history2"] = []
     if prompt := st.chat_input("Say something"):
+        st.session_state["chat_input"] = prompt
+        st.session_state['chat_history1'].append({"role": "user", "content": st.session_state["chat_input"]})
+        st.session_state['chat_history2'].append({"role": "user", "content": st.session_state["chat_input"]})
+        message1 = st.session_state['chat_history1']
+        message2 = st.session_state['chat_history2']
         cont1.write("🧑‍💻  " + prompt)
         cont2.write("🧑‍💻  "+ prompt)
-        u1 = call_model(model=st.session_state['model1'], provider=st.session_state['provider1'])
-        u2 = call_model(model=st.session_state['model2'], provider=st.session_state['provider2'])
-
-        async def call(unify_obj, contain):
+        u1 = call_model(st.session_state['model1'])
+        u2 = call_model(st.session_state['model2'])
+        async def call(unify_obj,model,contain,message):
             try:
-                async_stream = await unify_obj.generate(user_prompt=prompt, stream=True)
+                async_stream = await unify_obj.generate(messages=message, stream=True)
                 placeholder = contain.empty()
                 full_response = ''
                 async for chunk in async_stream:
                     full_response += chunk
                     placeholder.markdown(full_response)
                 placeholder.markdown("🤖  "+ full_response)
+                history(model = model,output=full_response)
             except:
                 contain.error(f"please change provider it's may be not provide this that you seleted ", icon="🚨")
 
         await asyncio.gather(
-            call(u1, cont1),
-            call(u2, cont2)
+            call(u1,model='model1', contain=cont1,message=message1),
+            call(u2,model='model2', contain=cont2,message=message2)
         )
+       
+        # Add custom CSS for the buttons
     c1, c2= st.columns(2)
     # Display the vote buttons
     with c1:
@@ -96,6 +119,10 @@ async def main():
                 # Increase the vote count for the selected model by 1 when the button is clicked
                 model2 = st.session_state['model2']
                 st.session_state['vote_counts'][model2] += 1
+    history_button_clicked = st.button("Clear Histroy")
+    if history_button_clicked:
+            st.session_state["chat_history1"] = []
+            st.session_state["chat_history2"] = []
     # Add custom CSS for the buttons
     st.markdown(
     """
@@ -109,7 +136,9 @@ async def main():
     sorted_counts_df = pd.DataFrame(sorted_counts, columns=['Model Name', 'Votes ⭐'])
 
     st.data_editor(sorted_counts_df, num_rows="dynamic",use_container_width=True)
-    # Add custom CSS for the buttons
+
+
+
 
 if __name__ == "__main__":
     asyncio.run(main())
