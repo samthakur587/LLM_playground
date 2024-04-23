@@ -4,16 +4,18 @@ from unify import Unify
 import os
 import asyncio
 import pandas as pd
-# Define function to select model
 import json
 # Load JSON data from file
 with open("models.json", "r") as f:
     data = json.load(f)
-model_options = data['models']
+all_models = data['models']
+model_options = [model.split("@")[0] for model in all_models]
+
 def select_model():
     global model_options
+    models = list(set(model_options))
     if 'vote_counts' not in st.session_state:
-        st.session_state['vote_counts'] = {model: 0 for model in model_options}
+        st.session_state['vote_counts'] = {model: 0 for model in models}
     selected_model1 = st.sidebar.text_input("Enter Endpoint for First Model")
     selected_model2 = st.sidebar.text_input("Enter Endpoint for Seconed Model")
     st.session_state['model1'] = selected_model1
@@ -110,13 +112,13 @@ async def main():
         left_button_clicked = st.button("👍 Vote First Model")
         if left_button_clicked:
                 # Increase the vote count for the selected model by 1 when the button is clicked
-                model = st.session_state['model1']
+                model = st.session_state['model1'].split("@")[0]
                 st.session_state['vote_counts'][model] += 1
     with c2:
         right_button_clicked = st.button("👍 Vote Second Model")
         if right_button_clicked:
                 # Increase the vote count for the selected model by 1 when the button is clicked
-                model2 = st.session_state['model2']
+                model2 = st.session_state['model2'].split("@")[0]
                 st.session_state['vote_counts'][model2] += 1
     history_button_clicked = st.button("Clear Histroy")
     if history_button_clicked:
