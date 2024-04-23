@@ -37,17 +37,18 @@ This Streamlit application provides a user interface for interacting with Unify 
      api_key=os.environ.get("UNIFY_KEY"),
      endpoint="llama-2-13b-chat@anyscale"
   )
-```
 async def main():
    responses = await async_unify.generate(user_prompt="Hello Llama! Who was Isaac Newton?")
 
 asyncio.run(main())
+```
+
 
 ## Usage
 
 1. Input Unify API Key: Enter your Unify API key in the provided text input box on the sidebar.
 
-2. Select Model and Provider: Choose the models and providers from the sidebar dropdown menus.
+2. Select endpoints : Choose the models and providers from the sidebar dropdown menus.
 
 3. Start Chatting: Type your message in the chat input box and press "Enter" or click the "Send" button.
 
@@ -58,7 +59,7 @@ asyncio.run(main())
 ## Features
 
 - **Chat UI**: Interactive chat interface to communicate with AI assistants.
-- **Model and Provider Selection**: Choose from a variety of models and providers.
+- **Endpoint from Unify**: Choose from a variety of models and providers.
 - **Conversation History**: View and track the conversation history with each model.
 - **Clear History**: Option to clear the conversation history for a fresh start.
 
@@ -66,7 +67,7 @@ asyncio.run(main())
 
 - Streamlit
 - Pandas
-- Unify (Custom library for interacting with Unify models)
+- Unify
 
 ## License
 
