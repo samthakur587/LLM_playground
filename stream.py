@@ -23,10 +23,8 @@ def select_model():
 
 def history(model = 'model1',output='how are you'):
     if model == 'model1':
-        st.session_state['chat_history1'].append({"role": "user", "content": st.session_state["chat_input"]})
         st.session_state['chat_history1'].append({"role": "assistant", "content": output})
     elif model == 'model2':
-        st.session_state['chat_history2'].append({"role": "user", "content": st.session_state["chat_input"]})
         st.session_state['chat_history2'].append({"role": "assistant", "content": output})
     else:
         st.write("please enter the model1 or model2 in history function")
@@ -41,7 +39,18 @@ def input_api_key():
     api_key = st.sidebar.text_input("UNIFY_KEY",type="password")
     if api_key is not st.session_state:
         st.session_state['api_key'] = api_key
-        
+def print_history(contai):
+    cont1,cont2 = contai
+    for i in st.session_state["chat_history1"]:
+            if i['role']=="user":
+                cont1.write("🧑‍💻" +"  "+ i["content"])
+            else:
+                cont1.write("🤖" +"  "+ i["content"])
+    for i in st.session_state["chat_history2"]:
+        if i['role']=="user": 
+            cont2.write("🧑‍💻" +"  "+ i["content"])
+        else:
+            cont2.write("🤖" +"  "+ i["content"])       
 def call_model(Endpoint):
     async_unify = AsyncUnify(
     api_key=st.session_state['api_key'],
@@ -49,6 +58,7 @@ def call_model(Endpoint):
     return async_unify
 st.set_option('deprecation.showPyplotGlobalUse', False)
 async def main():
+    code_input = ""
     st.set_page_config(layout="wide")
     st.markdown(
     """
@@ -79,12 +89,12 @@ async def main():
         st.session_state["chat_history2"] = []
     if prompt := st.chat_input("Say something"):
         st.session_state["chat_input"] = prompt
+        code_input = prompt
         st.session_state['chat_history1'].append({"role": "user", "content": st.session_state["chat_input"]})
         st.session_state['chat_history2'].append({"role": "user", "content": st.session_state["chat_input"]})
         message1 = st.session_state['chat_history1']
         message2 = st.session_state['chat_history2']
-        cont1.write("🧑‍💻  " + prompt)
-        cont2.write("🧑‍💻  "+ prompt)
+        print_history(contai=(cont1,cont2))
         u1 = call_model(st.session_state['model1'])
         u2 = call_model(st.session_state['model2'])
         async def call(unify_obj,model,contain,message):
@@ -104,22 +114,26 @@ async def main():
             call(u1,model='model1', contain=cont1,message=message1),
             call(u2,model='model2', contain=cont2,message=message2)
         )
-       
-        # Add custom CSS for the buttons
     c1, c2= st.columns(2)
     # Display the vote buttons
     with c1:
         left_button_clicked = st.button("👍 Vote First Model")
         if left_button_clicked:
+                
                 # Increase the vote count for the selected model by 1 when the button is clicked
                 model = st.session_state['model1'].split("@")[0]
                 st.session_state['vote_counts'][model] += 1
+                print_history(contai=(cont1,cont2))
+                code_input = st.session_state["chat_history2"][-2]['content']
     with c2:
         right_button_clicked = st.button("👍 Vote Second Model")
         if right_button_clicked:
                 # Increase the vote count for the selected model by 1 when the button is clicked
                 model2 = st.session_state['model2'].split("@")[0]
                 st.session_state['vote_counts'][model2] += 1
+                print_history(contai=(cont1,cont2))
+                code_input = st.session_state["chat_history2"][-2]['content']
+            # Add custom CSS for the buttons
     history_button_clicked = st.button("Clear Histroy")
     if history_button_clicked:
             st.session_state["chat_history1"] = []
@@ -137,8 +151,32 @@ async def main():
     sorted_counts_df = pd.DataFrame(sorted_counts, columns=['Model Name', 'Votes ⭐'])
 
     st.data_editor(sorted_counts_df, num_rows="dynamic",use_container_width=True)
+    
 
-
+    api1 = f'''
+            # if you like first Model then you can add this in your code
+            import os
+            from unify import Unify
+            unify = Unify(
+                # This is the default and optional to include.
+                api_key="your api key",
+                endpoint="{st.session_state['model1']}"
+            )
+            response = unify.generate(user_prompt="{code_input}")
+            '''
+    api2 = f'''
+            # if you like seconed Model then you can add this in your code
+            import os
+            from unify import Unify
+            unify = Unify(
+                # This is the default and optional to include.
+                api_key="your api key",
+                endpoint="{st.session_state['model2']}"
+            )
+            response = unify.generate(user_prompt="{code_input}")
+            '''
+    st.code(api1, language='python')
+    st.code(api2, language='python')
 
 
 if __name__ == "__main__":
