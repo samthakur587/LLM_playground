@@ -4,7 +4,6 @@ from unify import Unify
 import os
 import asyncio
 import pandas as pd
-import matplotlib.pyplot as plt
 # Define function to select model
 import json
 # Load JSON data from file
