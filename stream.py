@@ -5,19 +5,50 @@ import os
 import asyncio
 import pandas as pd
 import json
+
+keys = ["chat_input", "winner_selected", "api_key_provided",
+        "vote1", "vote2", "model1", "model2", "api_key", "scores"]
+
+for key in keys:
+    if key not in st.session_state.keys():
+        st.session_state[key] = None
 # Load JSON data from file
 with open("models.json", "r") as f:
     data = json.load(f)
-all_models = data['models']
+all_models = tuple(data['models'])
 model_options = [model.split("@")[0] for model in all_models]
 
-def select_model():
-    global model_options
+
+def select_model(api_key=st.session_state.api_key):
+    global model_options, all_models
+    disabled = not bool(api_key)
+    model1_other_disabled = True
+    model2_other_disabled = True
     models = list(set(model_options))
     if 'vote_counts' not in st.session_state:
         st.session_state['vote_counts'] = {model: 0 for model in models}
-    selected_model1 = st.sidebar.text_input("Enter Endpoint for First Model","mixtral-8x7b-instruct-v0.1@together-ai")
-    selected_model2 = st.sidebar.text_input("Enter Endpoint for Seconed Model","llama-2-13b-chat@anyscale")
+    st.selectbox("Select the first model's endpoint:",
+                         all_models,
+                         placeholder='mixtral-8x7b-instruct-v0.1@fireworks-ai',
+                         disabled=disabled,
+                         key="model1_selectbox")
+    if st.session_state.model1_selectbox == 'other':
+        model1_other_disabled = False
+    st.text_input('If "other", provide your own model:', placeholder='model@provider',
+                          disabled=model1_other_disabled, key='model1_other')
+    st.selectbox("Select the second model's endpoint:",
+                         all_models,
+                         placeholder='mixtral-8x7b-instruct-v0.1@fireworks-ai',
+                         disabled=disabled,
+                         key="model2_selectbox")
+    if st.session_state.model2_selectbox == 'other':
+        model2_other_disabled = False
+    st.text_input('If "other", provide your own model:', placeholder='model@provider',
+                          disabled=model2_other_disabled, key='model2_other')
+    
+    selected_model1 = st.session_state.model1_selectbox if st.session_state.model1_selectbox != "other" else st.session_state.model1_other
+    selected_model2 = st.session_state.model2_selectbox if st.session_state.model2_selectbox != "other" else st.session_state.model2_other
+
     st.session_state['model1'] = selected_model1
     st.session_state['model2'] = selected_model2
 
@@ -36,7 +67,8 @@ def history(model = 'model1',output='how are you'):
 # Define function to input API key
 def input_api_key():
     st.sidebar.subheader("Unify API Key")
-    api_key = st.sidebar.text_input("UNIFY_KEY",type="password")
+    api_key = st.sidebar.text_input("UNIFY KEY", placeholder="API key is required to proceed.",type="password",
+                                    on_change=lambda: st.session_state.__setattr__("api_key_provided", True))
     if api_key is not st.session_state:
         st.session_state['api_key'] = api_key
 def print_history(contai):
@@ -69,9 +101,8 @@ async def main():
     unsafe_allow_html=True)
     input_api_key()
     # Display sidebar widgets
-    model_col, provider_col = st.sidebar.columns(2)
-    with model_col:
-        select_model()
+    with st.sidebar:
+        select_model(st.session_state.api_key)
     col11, col21 = st.columns(2)
     # Display chat UI
     with col11:
@@ -87,7 +118,7 @@ async def main():
         st.session_state["chat_history1"] = []
     if "chat_history2" not in st.session_state:
         st.session_state["chat_history2"] = []
-    if prompt := st.chat_input("Say something"):
+    if prompt := st.chat_input("Say something", disabled=False if st.session_state.api_key_provided is True else True, on_submit=lambda: st.session_state.__setattr__("winner_selected", False)):
         st.session_state["chat_input"] = prompt
         code_input = prompt
         st.session_state['chat_history1'].append({"role": "user", "content": st.session_state["chat_input"]})
@@ -116,8 +147,10 @@ async def main():
         )
     c1, c2= st.columns(2)
     # Display the vote buttons
+    vote_disabled = True if st.session_state.winner_selected in [None, True] else False
     with c1:
-        left_button_clicked = st.button("👍 Vote First Model")
+        left_button_clicked = st.button("👍 Vote First Model", disabled=vote_disabled,
+                                        on_click=lambda: st.session_state.__setattr__("winner_selected", True))
         if left_button_clicked:
                 
                 # Increase the vote count for the selected model by 1 when the button is clicked
@@ -126,7 +159,8 @@ async def main():
                 print_history(contai=(cont1,cont2))
                 code_input = st.session_state["chat_history2"][-2]['content']
     with c2:
-        right_button_clicked = st.button("👍 Vote Second Model")
+        right_button_clicked = st.button("👍 Vote Second Model", disabled=vote_disabled,
+                                         on_click=lambda: st.session_state.__setattr__("winner_selected", True))
         if right_button_clicked:
                 # Increase the vote count for the selected model by 1 when the button is clicked
                 model2 = st.session_state['model2'].split("@")[0]

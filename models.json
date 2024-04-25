@@ -79,7 +79,8 @@
       "gemma-2b-it@together-ai",
       "gpt-4-turbo@openai",
       "mistral-small@mistral-ai",
-      "mistral-large@mistral-ai"
+      "mistral-large@mistral-ai",
+      "other"
     ]
   }
   
