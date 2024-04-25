@@ -6,7 +6,7 @@ import asyncio
 import pandas as pd
 import json
 
-keys = ["chat_history1", "chat_history2", "chat_input",
+keys = ["chat_input", 
         "vote1", "vote2", "model1", "model2", "api_key", "scores"]
 
 for key in keys:
