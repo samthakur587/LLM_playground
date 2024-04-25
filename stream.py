@@ -16,17 +16,18 @@ for key in keys:
 with open("models.json", "r") as f:
     data = json.load(f)
 all_models = tuple(data['models'])
-model_options = [model.split("@")[0] for model in all_models]
-
+#model_options = [model.split("@")[0] for model in all_models]
+data = pd.read_csv("leaderboard.csv")  # This will raise an error if the file does not exist   
+json_data = {model:votes for model,votes in zip(data["Model Name"],data["Votes ⭐"])}
 
 def select_model(api_key=st.session_state.api_key):
-    global model_options, all_models
+    global json_data, all_models
     disabled = not bool(api_key)
     model1_other_disabled = True
     model2_other_disabled = True
-    models = list(set(model_options))
+    models = json_data
     if 'vote_counts' not in st.session_state:
-        st.session_state['vote_counts'] = {model: 0 for model in models}
+        st.session_state['vote_counts'] = models
     st.selectbox("Select the first model's endpoint:",
                          all_models,
                          placeholder='mixtral-8x7b-instruct-v0.1@fireworks-ai',
@@ -186,6 +187,7 @@ async def main():
 
     st.data_editor(sorted_counts_df, num_rows="dynamic",use_container_width=True)
     
+    sorted_counts_df.to_csv('leaderboard.csv', index=False)
 
     api1 = f'''
             # if you like first Model then you can add this in your code
