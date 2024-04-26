@@ -76,6 +76,7 @@ def input_api_key(api_key=" "):
         st.session_state.__setattr__("api_key_provided", True)
         st.session_state.__setattr__("authenticated", True)
         st.sidebar.write(f"Session user credits: {r['credits']}")
+        st.session_state['api_key'] = api_key
     elif "detail" in r.keys():
         st.session_state.__setattr__("api_key_provided", False)
         st.session_state.__setattr__("authenticated", False)
@@ -84,9 +85,6 @@ def input_api_key(api_key=" "):
         st.session_state.__setattr__("api_key_provided", False)
         st.session_state.__setattr__("authenticated", False)
         st.sidebar.write(f"{r['error']}")
-
-    if api_key is not st.session_state and st.session_state.api_key_provided:
-        st.session_state['api_key'] = api_key
         
 def print_history(contai):
     cont1,cont2 = contai
