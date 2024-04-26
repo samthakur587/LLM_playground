@@ -2,9 +2,11 @@ import streamlit as st
 from unify import AsyncUnify
 from unify import Unify
 import os
+from unify.exceptions import UnifyError
 import asyncio
 import pandas as pd
 import json
+import random
 
 keys = ["chat_input", "winner_selected", "api_key_provided",
         "vote1", "vote2", "model1", "model2", "api_key", "scores"]
@@ -49,9 +51,10 @@ def select_model(api_key=st.session_state.api_key):
     
     selected_model1 = st.session_state.model1_selectbox if st.session_state.model1_selectbox != "other" else st.session_state.model1_other
     selected_model2 = st.session_state.model2_selectbox if st.session_state.model2_selectbox != "other" else st.session_state.model2_other
-
-    st.session_state['model1'] = selected_model1
-    st.session_state['model2'] = selected_model2
+    selected_models = [selected_model1, selected_model2]
+    random.shuffle(selected_models)
+    st.session_state['model1'] = selected_models.pop(0)
+    st.session_state['model2'] = selected_models.pop(0)
 
 def history(model = 'model1',output='how are you'):
     if model == 'model1':
@@ -107,9 +110,15 @@ async def main():
     col11, col21 = st.columns(2)
     # Display chat UI
     with col11:
-        st.markdown("<span style='font-size:20px; color:blue;'>Model " + st.session_state['model1'] + "</span>", unsafe_allow_html=True)
+        if st.session_state.winner_selected is True:
+            st.markdown("<span style='font-size:20px; color:blue;'>Model 1: " + st.session_state['model1'] + "</span>", unsafe_allow_html=True)
+        else:
+            st.markdown("<span style='font-size:20px; color:blue;'>Model 1: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>", unsafe_allow_html=True)
     with col21:
-        st.markdown("<span style='font-size:20px; color:blue;'>Model " + st.session_state['model2'] + "</span>", unsafe_allow_html=True)
+        if st.session_state.winner_selected is True:
+            st.markdown("<span style='font-size:20px; color:blue;'>Model 2: " + st.session_state['model2'] + "</span>", unsafe_allow_html=True)
+        else:
+            st.markdown("<span style='font-size:20px; color:blue;'>Model 2: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
         cont1 = st.container(height=500)
@@ -127,8 +136,28 @@ async def main():
         message1 = st.session_state['chat_history1']
         message2 = st.session_state['chat_history2']
         print_history(contai=(cont1,cont2))
-        u1 = call_model(st.session_state['model1'])
-        u2 = call_model(st.session_state['model2'])
+        u1 = None
+        u2 = None
+        try:
+            u1 = call_model(st.session_state['model1'])
+        except UnifyError:
+            st.session_state.__setattr__("winner_selected", True)
+            if "@" not in st.session_state['model1']:
+                cont1.error("Model endpoints have to follow the '<model>@<provider>' format")
+                cont2.error("Model endpoints have to follow the '<model>@<provider>' format")
+            else:
+                cont1.error("One of the models is not currently supported.")
+                cont2.error("One of the models is not currently supported.")
+        try:    
+            u2 = call_model(st.session_state['model2'])
+        except UnifyError:
+            st.session_state.__setattr__("winner_selected", True)
+            if "@" not in st.session_state['model1']:
+                cont1.error("Model endpoints have to follow the '<model>@<provider>' format")
+                cont2.error("Model endpoints have to follow the '<model>@<provider>' format")
+            else:
+                cont1.error("One of the models is not currently supported.")
+                cont2.error("One of the models is not currently supported.")                
         async def call(unify_obj,model,contain,message):
             try:
                 async_stream = await unify_obj.generate(messages=message, stream=True)
@@ -140,7 +169,8 @@ async def main():
                 placeholder.markdown("🤖  "+ full_response)
                 history(model = model,output=full_response)
             except:
-                contain.error(f"please change provider it's may be not provide this that you seleted ", icon="🚨")
+                contain.error(f"The selected model and/or provider might not be available.", icon="🚨")
+                st.session_state.__setattr__("winner_selected", True)
 
         await asyncio.gather(
             call(u1,model='model1', contain=cont1,message=message1),
