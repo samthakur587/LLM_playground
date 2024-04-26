@@ -5,9 +5,11 @@ import os
 import asyncio
 import pandas as pd
 import json
+import requests
 
 keys = ["chat_input", "winner_selected", "api_key_provided",
-        "vote1", "vote2", "model1", "model2", "api_key", "scores"]
+        "vote1", "vote2", "model1", "model2", "api_key", "scores",
+        "authenticated"]
 
 for key in keys:
     if key not in st.session_state.keys():
@@ -20,9 +22,9 @@ all_models = tuple(data['models'])
 data = pd.read_csv("leaderboard.csv")  # This will raise an error if the file does not exist   
 json_data = {model:votes for model,votes in zip(data["Model Name"],data["Votes ⭐"])}
 
-def select_model(api_key=st.session_state.api_key):
+def select_model(api_key=st.session_state.api_key, authenticated=st.session_state.authenticated):
     global json_data, all_models
-    disabled = not bool(api_key)
+    disabled = not (bool(api_key) and bool(authenticated))
     model1_other_disabled = True
     model2_other_disabled = True
     models = json_data
@@ -66,12 +68,26 @@ def history(model = 'model1',output='how are you'):
         st.session_state['chat_history2'].pop(0)
 
 # Define function to input API key
-def input_api_key():
-    st.sidebar.subheader("Unify API Key")
-    api_key = st.sidebar.text_input("UNIFY KEY", placeholder="API key is required to proceed.",type="password",
-                                    on_change=lambda: st.session_state.__setattr__("api_key_provided", True))
-    if api_key is not st.session_state:
+def input_api_key(api_key=" "):
+    authorisation_url = "https://api.unify.ai/v0/get_credits"
+    r = requests.get(authorisation_url, headers={"accept": "application/json", "Authorization": f"Bearer {api_key}"}).json()
+
+    if "id" in r.keys():
+        st.session_state.__setattr__("api_key_provided", True)
+        st.session_state.__setattr__("authenticated", True)
+        st.sidebar.write(f"Session user credits: {r['credits']}")
+    elif "detail" in r.keys():
+        st.session_state.__setattr__("api_key_provided", False)
+        st.session_state.__setattr__("authenticated", False)
+        st.sidebar.write(f"{r['detail']}")
+    elif "error" in r.keys():
+        st.session_state.__setattr__("api_key_provided", False)
+        st.session_state.__setattr__("authenticated", False)
+        st.sidebar.write(f"{r['error']}")
+
+    if api_key is not st.session_state and st.session_state.api_key_provided:
         st.session_state['api_key'] = api_key
+        
 def print_history(contai):
     cont1,cont2 = contai
     for i in st.session_state["chat_history1"]:
@@ -100,10 +116,12 @@ async def main():
     </h1>
     """,
     unsafe_allow_html=True)
-    input_api_key()
+    st.sidebar.subheader("Unify API Key")
+    api_key = st.sidebar.text_input("UNIFY KEY", placeholder="API key is required to proceed.",type="password")
+    input_api_key(api_key)
     # Display sidebar widgets
     with st.sidebar:
-        select_model(st.session_state.api_key)
+        select_model(st.session_state.api_key, st.session_state.authenticated)
     col11, col21 = st.columns(2)
     # Display chat UI
     with col11:

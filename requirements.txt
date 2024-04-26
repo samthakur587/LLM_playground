@@ -52,3 +52,4 @@ tzdata==2024.1
 unifyai==0.8.1
 urllib3==2.2.1
 watchdog==4.0.0
+requests
