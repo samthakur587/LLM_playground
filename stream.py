@@ -164,8 +164,8 @@ async def main():
                     upd_models.append("other")
                     upd_models = {"models": tuple(upd_models)}
                     json.dump(upd_models, models_file_update)
-            if st.session_state["model1"] not in data.keys():
-                st.session_state['vote_counts'][f"{st.session_state['model1']}"] = 0
+            if model_to_add := st.session_state['model1'][:st.session_state['model1'].find("@")] not in data.keys():
+                st.session_state['vote_counts'][f"{model_to_add}"] = 0
                     
         except UnifyError:
             st.session_state.__setattr__("winner_selected", True)
@@ -184,8 +184,8 @@ async def main():
                     upd_models.append("other")
                     upd_models = {"models": tuple(upd_models)}
                     json.dump(upd_models, models_file_update)
-            if st.session_state["model2"] not in data.keys():
-                st.session_state['vote_counts'][f"{st.session_state['model2']}"] = 0
+            if model_to_add := st.session_state['model2'][:st.session_state['model2'].find("@")] not in data.keys():
+                st.session_state['vote_counts'][f"{model_to_add}"] = 0
         except UnifyError:
             st.session_state.__setattr__("winner_selected", True)
             if "@" not in st.session_state['model1']:
