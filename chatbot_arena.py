@@ -8,6 +8,13 @@ import pandas as pd
 import json
 import requests
 import random
+
+st.set_page_config(
+    page_title="Chatbot arena",
+    page_icon="🤖",
+    layout="wide",
+)
+
 keys = ["chat_input", "winner_selected", "api_key_provided",
         "vote1", "vote2", "model1", "model2", "api_key", "scores",
         "authenticated"]
@@ -15,6 +22,9 @@ keys = ["chat_input", "winner_selected", "api_key_provided",
 for key in keys:
     if key not in st.session_state.keys():
         st.session_state[key] = None
+
+st.session_state.code_input = " "
+
 # Load JSON data from file
 with open("models.json", "r") as f:
     data = json.load(f)
@@ -109,8 +119,7 @@ def call_model(Endpoint):
 st.set_option('deprecation.showPyplotGlobalUse', False)
 async def main():
     global all_models, data
-    code_input = ""
-    st.set_page_config(layout="wide")
+    st.session_state.code_input = ""
     st.markdown(
     """
     <h1 style='text-align: center; color: green;'>
@@ -147,7 +156,7 @@ async def main():
         st.session_state["chat_history2"] = []
     if prompt := st.chat_input("Say something", disabled=False if st.session_state.api_key_provided is True else True, on_submit=lambda: st.session_state.__setattr__("winner_selected", False)):
         st.session_state["chat_input"] = prompt
-        code_input = prompt
+        st.session_state.code_input = prompt
         st.session_state['chat_history1'].append({"role": "user", "content": st.session_state["chat_input"]})
         st.session_state['chat_history2'].append({"role": "user", "content": st.session_state["chat_input"]})
         message1 = st.session_state['chat_history1']
@@ -224,7 +233,7 @@ async def main():
                 model = st.session_state['model1'].split("@")[0]
                 st.session_state['vote_counts'][model] += 1
                 print_history(contai=(cont1,cont2))
-                code_input = st.session_state["chat_history2"][-2]['content']
+                st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
     with c2:
         right_button_clicked = st.button("👍 Vote Second Model", disabled=vote_disabled,
                                          on_click=lambda: st.session_state.__setattr__("winner_selected", True))
@@ -233,54 +242,13 @@ async def main():
                 model2 = st.session_state['model2'].split("@")[0]
                 st.session_state['vote_counts'][model2] += 1
                 print_history(contai=(cont1,cont2))
-                code_input = st.session_state["chat_history2"][-2]['content']
+                st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
             # Add custom CSS for the buttons
     history_button_clicked = st.button("Clear Histroy")
     if history_button_clicked:
             st.session_state["chat_history1"] = []
             st.session_state["chat_history2"] = []
-    # Add custom CSS for the buttons
-    st.markdown(
-    """
-    <h1 style='text-align: center; color: green;'>
-        LeaderBoard For LLMs 🚀
-    </h1>
-    """,
-    unsafe_allow_html=True)
-    # Create a DataFrame with the sorted vote counts
-    sorted_counts = sorted(st.session_state['vote_counts'].items(), key=lambda x: x[1], reverse=True)
-    sorted_counts_df = pd.DataFrame(sorted_counts, columns=['Model Name', 'Votes ⭐'])
-
-    st.data_editor(sorted_counts_df, num_rows="dynamic",use_container_width=True)
-    
-    sorted_counts_df.to_csv('leaderboard.csv', index=False)
-
-    api1 = f'''
-            # if you like first Model then you can add this in your code
-            import os
-            from unify import Unify
-            unify = Unify(
-                # This is the default and optional to include.
-                api_key="your api key",
-                endpoint="{st.session_state['model1']}"
-            )
-            response = unify.generate(user_prompt="{code_input}")
-            '''
-    api2 = f'''
-            # if you like seconed Model then you can add this in your code
-            import os
-            from unify import Unify
-            unify = Unify(
-                # This is the default and optional to include.
-                api_key="your api key",
-                endpoint="{st.session_state['model2']}"
-            )
-            response = unify.generate(user_prompt="{code_input}")
-            '''
-    st.code(api1, language='python')
-    st.code(api2, language='python')
-
-
+        
 if __name__ == "__main__":
     asyncio.run(main())
     
