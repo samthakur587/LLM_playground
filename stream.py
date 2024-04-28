@@ -160,7 +160,8 @@ async def main():
             if st.session_state['model1'] not in all_models:
                 with open("models.json", "w") as models_file_update:
                     upd_models = [model for model in all_models]
-                    upd_models.append([st.session_state['model1']])
+                    upd_models[-1] = st.session_state['model1']
+                    upd_models.append("other")
                     upd_models = {"models": tuple(upd_models)}
                     json.dump(upd_models, models_file_update)
             if st.session_state["model1"] not in data.keys():
@@ -179,7 +180,8 @@ async def main():
             if st.session_state['model2'] not in all_models:
                 with open("models.json", "w") as models_file_update:
                     upd_models = [model for model in all_models]
-                    upd_models.append([st.session_state['model2']])
+                    upd_models[-1] = st.session_state['model2']
+                    upd_models.append("other")
                     upd_models = {"models": tuple(upd_models)}
                     json.dump(upd_models, models_file_update)
             if st.session_state["model2"] not in data.keys():
