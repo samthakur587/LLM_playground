@@ -52,6 +52,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     
     selected_model1 = st.session_state.model1_selectbox if st.session_state.model1_selectbox != "other" else st.session_state.model1_other
     selected_model2 = st.session_state.model2_selectbox if st.session_state.model2_selectbox != "other" else st.session_state.model2_other
+
     selected_models = [selected_model1, selected_model2]
     random.shuffle(selected_models)
     st.session_state['model1'] = selected_models.pop(0)
@@ -107,6 +108,7 @@ def call_model(Endpoint):
     return async_unify
 st.set_option('deprecation.showPyplotGlobalUse', False)
 async def main():
+    global all_models, data
     code_input = ""
     st.set_page_config(layout="wide")
     st.markdown(
@@ -155,6 +157,15 @@ async def main():
         u2 = None
         try:
             u1 = call_model(st.session_state['model1'])
+            if st.session_state['model1'] not in all_models:
+                with open("models.json", "w") as models_file_update:
+                    upd_models = [model for model in all_models]
+                    upd_models.append([st.session_state['model1']])
+                    upd_models = {"models": tuple(upd_models)}
+                    json.dump(upd_models, models_file_update)
+            if st.session_state["model1"] not in data.keys():
+                st.session_state['vote_counts'][f'{st.session_state['model1']}'] = 0
+                    
         except UnifyError:
             st.session_state.__setattr__("winner_selected", True)
             if "@" not in st.session_state['model1']:
@@ -163,8 +174,16 @@ async def main():
             else:
                 cont1.error("One of the models is not currently supported.")
                 cont2.error("One of the models is not currently supported.")
-        try:    
+        try:
             u2 = call_model(st.session_state['model2'])
+            if st.session_state['model2'] not in all_models:
+                with open("models.json", "w") as models_file_update:
+                    upd_models = [model for model in all_models]
+                    upd_models.append([st.session_state['model2']])
+                    upd_models = {"models": tuple(upd_models)}
+                    json.dump(upd_models, models_file_update)
+            if st.session_state["model2"] not in data.keys():
+                st.session_state['vote_counts'][f'{st.session_state['model2']}'] = 0
         except UnifyError:
             st.session_state.__setattr__("winner_selected", True)
             if "@" not in st.session_state['model1']:
