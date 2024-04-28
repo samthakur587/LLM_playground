@@ -197,7 +197,7 @@ async def main():
                 st.session_state['vote_counts'][f"{model_to_add}"] = 0
         except UnifyError:
             st.session_state.__setattr__("winner_selected", True)
-            if "@" not in st.session_state['model1']:
+            if "@" not in st.session_state['model2']:
                 cont1.error("Model endpoints have to follow the '<model>@<provider>' format")
                 cont2.error("Model endpoints have to follow the '<model>@<provider>' format")
             else:
