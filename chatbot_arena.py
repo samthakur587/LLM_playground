@@ -57,7 +57,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     st.text_input('If "other", provide your own model:', placeholder='model@provider',
                           disabled=model1_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("session_history1", []),
-                                            st.session_state.__setattr__("session_history2", [])),
+                                             st.session_state.__setattr__("session_history2", [])),
                           key='model1_other')
     st.selectbox("Select the second model's endpoint:",
                          all_models,
@@ -71,7 +71,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     st.text_input('If "other", provide your own model:', placeholder='model@provider',
                           disabled=model2_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("session_history1", []),
-                                            st.session_state.__setattr__("session_history2", [])),
+                                             st.session_state.__setattr__("session_history2", [])),
                           key='model2_other')
     st.session_state.winner_selected = False
     selected_model1 = st.session_state.model1_selectbox if st.session_state.model1_selectbox != "other" else st.session_state.model1_other
