@@ -22,10 +22,12 @@ keys = ["chat_input", "winner_selected", "api_key_provided",
 for key in keys:
     if key not in st.session_state.keys():
         st.session_state[key] = None
-
-st.session_state.code_input = " "
-st.session_state.chat_history1 = []
-st.session_state.chat_history2 = []
+if "code_input" not in st.session_state.keys():
+    st.session_state.code_input = " "
+if "chat_history1" not in st.session_state.keys():
+    st.session_state.chat_history1 = []
+if "chat_history2" not in st.session_state.keys():
+    st.session_state.chat_history2 = []
 
 # Load JSON data from file
 with open("models.json", "r") as f:
