@@ -75,8 +75,9 @@ def history(model='model1', output='how are you'):
         st.session_state['chat_history1'].append({"role": "assistant", "content": output})
     elif model == 'model2':
         st.session_state['chat_history2'].append({"role": "assistant", "content": output})
+
     else:
-        st.write("Please, enter the model1 or model2 in history function.")    
+        st.write("Please, enter the model1 or model2 in history function.")
     if len(st.session_state['chat_history1'])>=10:
         st.session_state['chat_history1'].pop(0)
     if len(st.session_state['chat_history2'])>=10:
@@ -214,6 +215,7 @@ async def main():
                     full_response += chunk
                     placeholder.markdown(full_response)
                 placeholder.markdown("🤖  "+ full_response)
+                st.markdown(f"{full_response}\n")
                 history(model=model, output=full_response)
             except:
                 contain.error(f"The selected model and/or provider might not be available.", icon="🚨")
@@ -235,7 +237,10 @@ async def main():
                 model = st.session_state['model1'].split("@")[0]
                 st.session_state['vote_counts'][model] += 1
                 print_history(contain=(cont1, cont2))
-                st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
+                try:
+                    st.session_state.code_input = st.session_state["chat_history1"][-2]['content']
+                except IndexError:
+                    st.session_state.code_input = " "
     with c2:
         right_button_clicked = st.button("👍 Vote Second Model", disabled=vote_disabled,
                                          on_click=lambda: st.session_state.__setattr__("winner_selected", True))
@@ -244,7 +249,10 @@ async def main():
                 model2 = st.session_state['model2'].split("@")[0]
                 st.session_state['vote_counts'][model2] += 1
                 print_history(contain=(cont1, cont2))
-                st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
+                try:
+                    st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
+                except IndexError:
+                    st.session_state.code_input = " "
             # Add custom CSS for the buttons
     history_button_clicked = st.button("Clear Histroy")
     if history_button_clicked:
