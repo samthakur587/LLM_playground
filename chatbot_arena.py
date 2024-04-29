@@ -215,7 +215,6 @@ async def main():
                     full_response += chunk
                     placeholder.markdown(full_response)
                 placeholder.markdown("🤖  "+ full_response)
-                st.markdown(f"{full_response}\n")
                 history(model=model, output=full_response)
             except:
                 contain.error(f"The selected model and/or provider might not be available.", icon="🚨")
@@ -240,7 +239,7 @@ async def main():
                 try:
                     st.session_state.code_input = st.session_state["chat_history1"][-2]['content']
                 except IndexError:
-                    st.session_state.code_input = " "
+                    st.session_state.code_input = "<No response>"
     with c2:
         right_button_clicked = st.button("👍 Vote Second Model", disabled=vote_disabled,
                                          on_click=lambda: st.session_state.__setattr__("winner_selected", True))
@@ -252,7 +251,7 @@ async def main():
                 try:
                     st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
                 except IndexError:
-                    st.session_state.code_input = " "
+                    st.session_state.code_input = "<No response>"
             # Add custom CSS for the buttons
     history_button_clicked = st.button("Clear Histroy")
     if history_button_clicked:
