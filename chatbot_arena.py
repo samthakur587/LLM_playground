@@ -99,9 +99,9 @@ def history(model='model1', output='how are you'):
 
     else:
         st.write("Please, enter the model1 or model2 in history function.")
-    if len(st.session_state['chat_history1'])>=10:
+    if len(st.session_state['chat_history1']) >= 10:
         st.session_state['chat_history1'].pop(0)
-    if len(st.session_state['chat_history2'])>=10:
+    if len(st.session_state['chat_history2']) >= 10:
         st.session_state['chat_history2'].pop(0)
 
 # Define function to input API key
@@ -269,7 +269,7 @@ async def main():
                 try:
                     st.session_state.code_input = st.session_state["chat_history1"][-2]['content']
                 except IndexError:
-                    st.session_state.code_input = "<No response>"
+                    st.session_state.code_input = " "
     with c2:
         right_button_clicked = st.button("👍 Vote Second Model", disabled=vote_disabled,
                                          on_click=lambda: st.session_state.__setattr__("winner_selected", True))
@@ -281,7 +281,7 @@ async def main():
                 try:
                     st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
                 except IndexError:
-                    st.session_state.code_input = "<No response>"
+                    st.session_state.code_input = " "
             # Add custom CSS for the buttons
     history_button_clicked = st.button("Clear Histroy")
     if history_button_clicked:
