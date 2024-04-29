@@ -24,6 +24,8 @@ for key in keys:
         st.session_state[key] = None
 
 st.session_state.code_input = " "
+st.session_state.chat_history1 = []
+st.session_state.chat_history2 = []
 
 # Load JSON data from file
 with open("models.json", "r") as f:
@@ -59,7 +61,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
         model2_other_disabled = False
     st.text_input('If "other", provide your own model:', placeholder='model@provider',
                           disabled=model2_other_disabled, key='model2_other')
-    
+    st.session_state.winner_selected = False
     selected_model1 = st.session_state.model1_selectbox if st.session_state.model1_selectbox != "other" else st.session_state.model1_other
     selected_model2 = st.session_state.model2_selectbox if st.session_state.model2_selectbox != "other" else st.session_state.model2_other
 
@@ -68,13 +70,13 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     st.session_state['model1'] = selected_models.pop(0)
     st.session_state['model2'] = selected_models.pop(0)
 
-def history(model='model1',output='how are you'):
+def history(model='model1', output='how are you'):
     if model == 'model1':
         st.session_state['chat_history1'].append({"role": "assistant", "content": output})
     elif model == 'model2':
         st.session_state['chat_history2'].append({"role": "assistant", "content": output})
     else:
-        st.write("please enter the model1 or model2 in history function")
+        st.write("Please, enter the model1 or model2 in history function.")    
     if len(st.session_state['chat_history1'])>=10:
         st.session_state['chat_history1'].pop(0)
     if len(st.session_state['chat_history2'])>=10:
@@ -99,8 +101,8 @@ def input_api_key(api_key=" "):
         st.session_state.__setattr__("authenticated", False)
         st.sidebar.write(f"{r['error']}")
         
-def print_history(contai):
-    cont1,cont2 = contai
+def print_history(contain):
+    cont1, cont2 = contain
     for i in st.session_state["chat_history1"]:
             if i['role']=="user":
                 cont1.write("🧑‍💻" +"  "+ i["content"])
@@ -139,12 +141,12 @@ async def main():
         if st.session_state.winner_selected is True:
             st.markdown("<span style='font-size:20px; color:blue;'>Model 1: " + st.session_state['model1'] + "</span>", unsafe_allow_html=True)
         else:
-            st.markdown("<span style='font-size:20px; color:blue;'>Model 1: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>", unsafe_allow_html=True)
+            st.markdown("<span style='font-size:20px; color:blue;'>Model 1: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>", unsafe_allow_html=True)
     with col21:
         if st.session_state.winner_selected is True:
             st.markdown("<span style='font-size:20px; color:blue;'>Model 2: " + st.session_state['model2'] + "</span>", unsafe_allow_html=True)
         else:
-            st.markdown("<span style='font-size:20px; color:blue;'>Model 2: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>", unsafe_allow_html=True)
+            st.markdown("<span style='font-size:20px; color:blue;'>Model 2: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
         cont1 = st.container(height=500)
@@ -161,7 +163,7 @@ async def main():
         st.session_state['chat_history2'].append({"role": "user", "content": st.session_state["chat_input"]})
         message1 = st.session_state['chat_history1']
         message2 = st.session_state['chat_history2']
-        print_history(contai=(cont1,cont2))
+        print_history(contain=(cont1, cont2))
         u1 = None
         u2 = None
         try:
@@ -232,7 +234,7 @@ async def main():
                 # Increase the vote count for the selected model by 1 when the button is clicked
                 model = st.session_state['model1'].split("@")[0]
                 st.session_state['vote_counts'][model] += 1
-                print_history(contai=(cont1,cont2))
+                print_history(contain=(cont1, cont2))
                 st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
     with c2:
         right_button_clicked = st.button("👍 Vote Second Model", disabled=vote_disabled,
@@ -241,7 +243,7 @@ async def main():
                 # Increase the vote count for the selected model by 1 when the button is clicked
                 model2 = st.session_state['model2'].split("@")[0]
                 st.session_state['vote_counts'][model2] += 1
-                print_history(contai=(cont1,cont2))
+                print_history(contain=(cont1, cont2))
                 st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
             # Add custom CSS for the buttons
     history_button_clicked = st.button("Clear Histroy")
