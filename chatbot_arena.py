@@ -246,6 +246,13 @@ async def main():
                 if model == "model2":
                     st.session_state.chat_history2 = []
                 st.session_state.__setattr__("winner_selected", False)
+            except IndexError as error_message:
+                contain.error(f"The selected model and/or provider might not be available.\n {error_message}", icon="🚨")
+                if model == "model1":
+                    st.session_state.chat_history1 = []
+                if model == "model2":
+                    st.session_state.chat_history2 = []
+                st.session_state.__setattr__("winner_selected", False)
 
         await asyncio.gather(
             call(u1,model='model1', contain=cont1,message=message1),
