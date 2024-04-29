@@ -3,7 +3,7 @@
 
 This Streamlit application provides a user interface for interacting with Unify models through chat. It allows users to select models and providers, input text, and view the conversation history with AI assistants.
 
-<a href="https://llm-playground-unify.streamlit.app/" target="_blank">
+<a href="https://unify-llmplayground.streamlit.app/" target="_blank">
   <img src="app_screenshot_from_Kacper.png" alt="Screenshot">
 </a>
 
