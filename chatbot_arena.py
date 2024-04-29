@@ -218,7 +218,7 @@ async def main():
             else:
                 cont1.error("One of the models is not currently supported.")
                 cont2.error("One of the models is not currently supported.")                
-        async def call(unify_obj,model,contain,message):
+        async def call(unify_obj, model, contain, message):
             try:
                 async_stream = await unify_obj.generate(messages=message, stream=True)
                 placeholder = contain.empty()
@@ -226,6 +226,8 @@ async def main():
                 async for chunk in async_stream:
                     full_response += chunk
                     placeholder.markdown(full_response)
+                if full_response == "":
+                    full_response = "<No response>"
                 placeholder.markdown("🤖  "+ full_response)
                 history(model=model, output=full_response)
             except:
