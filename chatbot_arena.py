@@ -131,7 +131,7 @@ async def main():
     """,
     unsafe_allow_html=True)
     st.sidebar.subheader("Unify API Key")
-    api_key = st.sidebar.text_input("UNIFY KEY", placeholder="API key is required to proceed.",type="password")
+    api_key = st.sidebar.text_input(" ", placeholder="API key is required to proceed.",type="password")
     input_api_key(api_key)
     # Display sidebar widgets
     with st.sidebar:
