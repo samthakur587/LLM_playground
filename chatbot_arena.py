@@ -17,7 +17,7 @@ st.set_page_config(
 
 keys = ["chat_input", "winner_selected", "api_key_provided",
         "vote1", "vote2", "model1", "model2", "api_key", "scores",
-        "authenticated"]
+        "authenticated", "new_models_selected"]
 
 for key in keys:
     if key not in st.session_state.keys():
@@ -51,7 +51,8 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                          disabled=disabled,
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
-                                            st.session_state.__setattr__("winner_selected", False)),
+                                            st.session_state.__setattr__("winner_selected", False),
+                                            st.session_state.__setattr__("new_models_selected", True)),
                          key="model1_selectbox")
     if st.session_state.model1_selectbox == 'other':
         model1_other_disabled = False
@@ -59,7 +60,8 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                           disabled=model1_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
-                                             st.session_state.__setattr__("winner_selected", False)),
+                                             st.session_state.__setattr__("winner_selected", False),
+                                             st.session_state.__setattr__("new_models_selected", True)),
                           key='model1_other')
     st.selectbox("Select the second model's endpoint:",
                          all_models,
@@ -67,7 +69,8 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                          disabled=disabled,
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
-                                            st.session_state.__setattr__("winner_selected", False)),
+                                            st.session_state.__setattr__("winner_selected", False),
+                                            st.session_state.__setattr__("new_models_selected", True)),
                          key="model2_selectbox")
     if st.session_state.model2_selectbox == 'other':
         model2_other_disabled = False
@@ -75,15 +78,18 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                           disabled=model2_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
-                                             st.session_state.__setattr__("winner_selected", False)),
+                                             st.session_state.__setattr__("winner_selected", False),
+                                             st.session_state.__setattr__("new_models_selected", True)),
                           key='model2_other')
     selected_model1 = st.session_state.model1_selectbox if st.session_state.model1_selectbox != "other" else st.session_state.model1_other
     selected_model2 = st.session_state.model2_selectbox if st.session_state.model2_selectbox != "other" else st.session_state.model2_other
 
     selected_models = [selected_model1, selected_model2]
     random.shuffle(selected_models)
-    st.session_state['model1'] = selected_models.pop(0)
-    st.session_state['model2'] = selected_models.pop(0)
+    if st.session_state.new_models_selected is True:
+        st.session_state['model1'] = selected_models.pop(0)
+        st.session_state['model2'] = selected_models.pop(0)
+        st.session_state.new_models_selected = False
 
 def history(model='model1', output='how are you'):
     if model == 'model1':
@@ -233,9 +239,13 @@ async def main():
                     full_response = "<No response>"
                 placeholder.markdown("🤖  "+ full_response)
                 history(model=model, output=full_response)
-            except:
-                contain.error(f"The selected model and/or provider might not be available.", icon="🚨")
-                st.session_state.__setattr__("winner_selected", True)
+            except UnifyError as error_message:
+                contain.error(f"The selected model and/or provider might not be available.\n {error_message}", icon="🚨")
+                if model == "model1":
+                    st.session_state.chat_history1 = []
+                if model == "model2":
+                    st.session_state.chat_history2 = []
+                st.session_state.__setattr__("winner_selected", False)
 
         await asyncio.gather(
             call(u1,model='model1', contain=cont1,message=message1),
