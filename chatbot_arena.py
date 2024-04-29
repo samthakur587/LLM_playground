@@ -50,30 +50,33 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                          placeholder='mixtral-8x7b-instruct-v0.1@fireworks-ai',
                          disabled=disabled,
                          on_change=lambda: (st.session_state.__setattr__("session_history1", []),
-                                            st.session_state.__setattr__("session_history2", [])),
+                                            st.session_state.__setattr__("session_history2", []),
+                                            st.session_state.__setattr__("winner_selected", False)),
                          key="model1_selectbox")
     if st.session_state.model1_selectbox == 'other':
         model1_other_disabled = False
     st.text_input('If "other", provide your own model:', placeholder='model@provider',
                           disabled=model1_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("session_history1", []),
-                                             st.session_state.__setattr__("session_history2", [])),
+                                             st.session_state.__setattr__("session_history2", []),
+                                             st.session_state.__setattr__("winner_selected", False)),
                           key='model1_other')
     st.selectbox("Select the second model's endpoint:",
                          all_models,
                          placeholder='mixtral-8x7b-instruct-v0.1@fireworks-ai',
                          disabled=disabled,
                          on_change=lambda: (st.session_state.__setattr__("session_history1", []),
-                                            st.session_state.__setattr__("session_history2", [])),
+                                            st.session_state.__setattr__("session_history2", []),
+                                            st.session_state.__setattr__("winner_selected", False)),
                          key="model2_selectbox")
     if st.session_state.model2_selectbox == 'other':
         model2_other_disabled = False
     st.text_input('If "other", provide your own model:', placeholder='model@provider',
                           disabled=model2_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("session_history1", []),
-                                             st.session_state.__setattr__("session_history2", [])),
+                                             st.session_state.__setattr__("session_history2", []),
+                                             st.session_state.__setattr__("winner_selected", False)),
                           key='model2_other')
-    st.session_state.winner_selected = False
     selected_model1 = st.session_state.model1_selectbox if st.session_state.model1_selectbox != "other" else st.session_state.model1_other
     selected_model2 = st.session_state.model2_selectbox if st.session_state.model2_selectbox != "other" else st.session_state.model2_other
 
