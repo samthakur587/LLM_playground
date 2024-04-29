@@ -240,18 +240,14 @@ async def main():
                 placeholder.markdown("🤖  "+ full_response)
                 history(model=model, output=full_response)
             except UnifyError as error_message:
-                contain.error(f"The selected model and/or provider might not be available.\n {error_message}", icon="🚨")
+                contain.error(f"The selected model and/or provider might not be available. Clearing the chat history.\n {error_message}", icon="🚨")
                 if model == "model1":
                     st.session_state.chat_history1 = []
                 if model == "model2":
                     st.session_state.chat_history2 = []
                 st.session_state.__setattr__("winner_selected", False)
             except IndexError as error_message:
-                contain.error(f"The selected model and/or provider might not be available.\n {error_message}", icon="🚨")
-                if model == "model1":
-                    st.session_state.chat_history1 = []
-                if model == "model2":
-                    st.session_state.chat_history2 = []
+                contain.error(f"There was an issue with the model's response:\n {error_message}", icon="🚨")
                 st.session_state.__setattr__("winner_selected", False)
 
         await asyncio.gather(
