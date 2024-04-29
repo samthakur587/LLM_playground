@@ -68,7 +68,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     st.session_state['model1'] = selected_models.pop(0)
     st.session_state['model2'] = selected_models.pop(0)
 
-def history(model = 'model1',output='how are you'):
+def history(model='model1',output='how are you'):
     if model == 'model1':
         st.session_state['chat_history1'].append({"role": "assistant", "content": output})
     elif model == 'model2':
@@ -173,8 +173,8 @@ async def main():
                     upd_models.append("other")
                     upd_models = {"models": tuple(upd_models)}
                     json.dump(upd_models, models_file_update)
-            if (model_to_add := st.session_state['model1'][:st.session_state['model1'].find("@")]) not in data.keys():
-                st.session_state['vote_counts'][f"{model_to_add}"] = 0
+            if (model1_to_add := st.session_state['model1'][:st.session_state['model1'].find("@")]) not in data.keys():
+                st.session_state['vote_counts'][f"{model1_to_add}"] = 0
                     
         except UnifyError:
             st.session_state.__setattr__("winner_selected", True)
@@ -193,8 +193,8 @@ async def main():
                     upd_models.append("other")
                     upd_models = {"models": tuple(upd_models)}
                     json.dump(upd_models, models_file_update)
-            if (model_to_add := st.session_state['model2'][:st.session_state['model2'].find("@")]) not in data.keys():
-                st.session_state['vote_counts'][f"{model_to_add}"] = 0
+            if (model2_to_add := st.session_state['model2'][:st.session_state['model2'].find("@")]) not in data.keys():
+                st.session_state['vote_counts'][f"{model2_to_add}"] = 0
         except UnifyError:
             st.session_state.__setattr__("winner_selected", True)
             if "@" not in st.session_state['model2']:
@@ -212,7 +212,7 @@ async def main():
                     full_response += chunk
                     placeholder.markdown(full_response)
                 placeholder.markdown("🤖  "+ full_response)
-                history(model = model,output=full_response)
+                history(model=model, output=full_response)
             except:
                 contain.error(f"The selected model and/or provider might not be available.", icon="🚨")
                 st.session_state.__setattr__("winner_selected", True)
