@@ -129,12 +129,12 @@ def print_history(contain):
             if i['role']=="user":
                 cont1.write("🧑‍💻" +"  "+ i["content"])
             else:
-                cont1.write("🤖" +"  "+ i["content"])
+                cont1.write(i["content"])
     for i in st.session_state["chat_history2"]:
         if i['role']=="user": 
             cont2.write("🧑‍💻" +"  "+ i["content"])
         else:
-            cont2.write("🤖" +"  "+ i["content"])       
+            cont2.write(i["content"])       
 def call_model(Endpoint):
     async_unify = AsyncUnify(
     api_key=st.session_state['api_key'],
