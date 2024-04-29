@@ -237,8 +237,7 @@ async def main():
                     placeholder.markdown(full_response)
                 if full_response == "":
                     full_response = "<No response>"
-                placeholder.markdown("🤖  "+ full_response)
-                
+                placeholder.markdown("🤖  "+ full_response)                
             except UnifyError as error_message:
                 contain.error(f"The selected model and/or provider might not be available. Clearing the chat history.\n {error_message}", icon="🚨")
                 if model == "model1":
@@ -246,12 +245,16 @@ async def main():
                 if model == "model2":
                     st.session_state.chat_history2 = []
                 st.session_state.__setattr__("winner_selected", False)
-            try:
-                history(model=model, output=full_response)
             except IndexError as error_message:
                 contain.error(f"There was an issue with the model's response:\n {error_message}", icon="🚨")
                 st.session_state.__setattr__("winner_selected", False)
 
+            try:
+                history(model=model, output=full_response)
+            except IndexError as error_message:
+                contain.error(f"There was an issue with the chat's history:\n {error_message}", icon="🚨")
+                st.session_state.__setattr__("winner_selected", False)
+            
         await asyncio.gather(
             call(u1,model='model1', contain=cont1,message=message1),
             call(u2,model='model2', contain=cont2,message=message2)
