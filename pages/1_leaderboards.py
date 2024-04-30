@@ -25,8 +25,10 @@ st.markdown(
 unsafe_allow_html=True)
 # Create a DataFrame with the sorted vote counts
 sorted_counts = sorted(st.session_state['vote_counts'].items(), key=lambda x: x[1]["wins"] + x[1]["losses"], reverse=True)
+for idx, votes in enumerate(sorted_counts):
+    sorted_counts[idx] = (votes[0], votes[1]["wins"], votes[1]["losses"])
 sorted_counts_df = pd.DataFrame(sorted_counts, columns=['Model Name', 'Wins ⭐', 'Losses ❌'])
 
-st.data_editor(sorted_counts_df, num_rows="dynamic",use_container_width=True)
+st.data_editor(sorted_counts_df, num_rows="dynamic", use_container_width=True)
 
 sorted_counts_df.to_csv('leaderboard.csv', index=False)
