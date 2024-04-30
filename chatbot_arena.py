@@ -36,7 +36,8 @@ with open("models.json", "r") as f:
 all_models = tuple(data['models'])
 #model_options = [model.split("@")[0] for model in all_models]
 data = pd.read_csv("leaderboard.csv")  # This will raise an error if the file does not exist   
-json_data = {model:votes for model,votes in zip(data["Model Name"],data["Votes ⭐"])}
+json_data = {model: [wins, losses] for model, wins, losses in zip(data["Model Name"], data["Wins ⭐"], data["Losses ❌"])}
+
 
 def select_model(api_key=st.session_state.api_key, authenticated=st.session_state.authenticated):
     global json_data, all_models
@@ -199,7 +200,7 @@ async def main():
                     upd_models = {"models": tuple(upd_models)}
                     json.dump(upd_models, models_file_update)
             if (model1_to_add := st.session_state['model1'][:st.session_state['model1'].find("@")]) not in data.keys():
-                st.session_state['vote_counts'][f"{model1_to_add}"] = 0
+                st.session_state['vote_counts'][f"{model1_to_add}"] = pd.DataFrame([0, 0], columns=["Wins", "Losses"])
                     
         except UnifyError:
             st.session_state.__setattr__("winner_selected", True)
@@ -219,7 +220,7 @@ async def main():
                     upd_models = {"models": tuple(upd_models)}
                     json.dump(upd_models, models_file_update)
             if (model2_to_add := st.session_state['model2'][:st.session_state['model2'].find("@")]) not in data.keys():
-                st.session_state['vote_counts'][f"{model2_to_add}"] = 0
+                st.session_state['vote_counts'][f"{model2_to_add}"] = pd.DataFrame([0, 0], columns=["Wins", "Losses"])
         except UnifyError:
             st.session_state.__setattr__("winner_selected", True)
             if "@" not in st.session_state['model2']:
