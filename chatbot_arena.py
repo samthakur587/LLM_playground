@@ -36,7 +36,7 @@ with open("models.json", "r") as f:
 all_models = tuple(data['models'])
 #model_options = [model.split("@")[0] for model in all_models]
 data = pd.read_csv("leaderboard.csv")  # This will raise an error if the file does not exist   
-json_data = {model: [wins, losses] for model, wins, losses in zip(data["Model Name"], data["Wins ⭐"], data["Losses ❌"])}
+json_data = {model: {"wins": wins, "losses": losses} for model, wins, losses in zip(data["Model Name"], data["Wins ⭐"], data["Losses ❌"])}
 
 
 def select_model(api_key=st.session_state.api_key, authenticated=st.session_state.authenticated):
