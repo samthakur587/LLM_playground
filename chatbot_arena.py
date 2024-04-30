@@ -38,7 +38,7 @@ all_models = tuple(data['models'])
 data = pd.read_csv("leaderboard.csv")  # This will raise an error if the file does not exist   
 json_data = {model: {"Wins ⭐": wins, "Losses ❌": losses} for model, wins, losses in zip(data["Model Name"], data["Wins ⭐"], data["Losses ❌"])}
 
-if not os.path.exist("./detail_leaderboards.json"):
+if not os.path.exists("./detail_leaderboards.json"):
     with open("detail_leaderboards.json", "w") as out_file:        
         detail_leaderboards = {"scores": {winning_model: {losing_model: 0 for losing_model in json_data.keys()} for winning_model in json_data.keys()}}
         json.dump(detail_leaderboards, out_file)
