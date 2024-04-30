@@ -10,9 +10,10 @@ import requests
 import random
 
 st.set_page_config(
-    page_title="Chatbot arena",
+    page_title="Chatbot Arena",
     page_icon="🤖",
     layout="wide",
+
 )
 
 keys = ["chat_input", "winner_selected", "api_key_provided",
