@@ -38,6 +38,9 @@ all_models = tuple(data['models'])
 data = pd.read_csv("leaderboard.csv")  # This will raise an error if the file does not exist   
 json_data = {model: {"Wins ⭐": wins, "Losses ❌": losses} for model, wins, losses in zip(data["Model Name"], data["Wins ⭐"], data["Losses ❌"])}
 
+if 'vote_counts' not in st.session_state:
+        st.session_state['vote_counts'] = json_data
+
 if not os.path.exists("./detail_leaderboards.json"):
     with open("detail_leaderboards.json", "w") as out_file:        
         detail_leaderboards = {"scores": {winning_model: {losing_model: 0 for losing_model in json_data.keys()} for winning_model in json_data.keys()}}
@@ -52,8 +55,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     model1_other_disabled = True
     model2_other_disabled = True
     models = json_data
-    if 'vote_counts' not in st.session_state:
-        st.session_state['vote_counts'] = models
+    
     st.selectbox("Select the first model's endpoint:",
                          all_models,
                          placeholder='mixtral-8x7b-instruct-v0.1@fireworks-ai',
