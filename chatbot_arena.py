@@ -200,7 +200,8 @@ async def main():
                     upd_models = {"models": tuple(upd_models)}
                     json.dump(upd_models, models_file_update)
             if (model1_to_add := st.session_state['model1'][:st.session_state['model1'].find("@")]) not in data.keys():
-                st.session_state['vote_counts'][f"{model1_to_add}"] = pd.DataFrame([0, 0], columns=["Wins", "Losses"])
+                st.session_state['vote_counts'][f"{model1_to_add}"]["Wins ⭐"] = 0
+                st.session_state['vote_counts'][f"{model1_to_add}"]["Losses ❌"] = 0
                     
         except UnifyError:
             st.session_state.__setattr__("winner_selected", True)
@@ -220,7 +221,8 @@ async def main():
                     upd_models = {"models": tuple(upd_models)}
                     json.dump(upd_models, models_file_update)
             if (model2_to_add := st.session_state['model2'][:st.session_state['model2'].find("@")]) not in data.keys():
-                st.session_state['vote_counts'][f"{model2_to_add}"] = pd.DataFrame([0, 0], columns=["Wins", "Losses"])
+                st.session_state['vote_counts'][f"{model2_to_add}"]["Wins ⭐"] = 0
+                st.session_state['vote_counts'][f"{model2_to_add}"]["Losses ❌"] = 0
         except UnifyError:
             st.session_state.__setattr__("winner_selected", True)
             if "@" not in st.session_state['model2']:
@@ -266,8 +268,8 @@ async def main():
                 
                 # Increase the vote count for the selected model by 1 when the button is clicked
                 model1 = st.session_state['model1'].split("@")[0]
-                st.session_state['vote_counts'][model1][0] += 1
-                st.session_state['vote_counts'][st.session_state['model2'].split("@")[0]][1] += 1
+                st.session_state['vote_counts'][model1]["Wins ⭐"] += 1
+                st.session_state['vote_counts'][st.session_state['model2'].split("@")[0]]["Losses ❌"] += 1
                 print_history(contain=(cont1, cont2))
                 try:
                     st.session_state.code_input = st.session_state["chat_history1"][-2]['content']
@@ -279,8 +281,8 @@ async def main():
         if right_button_clicked:
                 # Increase the vote count for the selected model by 1 when the button is clicked
                 model2 = st.session_state['model2'].split("@")[0]
-                st.session_state['vote_counts'][model2][0] += 1
-                st.session_state['vote_counts'][st.session_state['model1'].split("@")[0]][1] += 1
+                st.session_state['vote_counts'][model2]["Wins ⭐"] += 1
+                st.session_state['vote_counts'][st.session_state['model1'].split("@")[0]]["Losses ❌"] += 1
                 print_history(contain=(cont1, cont2))
                 try:
                     st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
