@@ -18,7 +18,7 @@ st.set_page_config(
 
 keys = ["chat_input", "winner_selected", "api_key_provided",
         "vote1", "vote2", "model1", "model2", "api_key", "scores",
-        "authenticated", "new_models_selected"]
+        "authenticated", "new_models_selected", "detailed_leaderboards"]
 
 for key in keys:
     if key not in st.session_state.keys():
