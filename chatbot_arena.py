@@ -38,6 +38,13 @@ all_models = tuple(data['models'])
 data = pd.read_csv("leaderboard.csv")  # This will raise an error if the file does not exist   
 json_data = {model: {"Wins ⭐": wins, "Losses ❌": losses} for model, wins, losses in zip(data["Model Name"], data["Wins ⭐"], data["Losses ❌"])}
 
+if not os.exist("./detail_leaderboards.json"):
+    with open("detail_leaderboards.json", "w") as out_file:        
+        detail_leaderboards = {"scores": {winning_model: {losing_model: 0 for losing_model in json_data.keys()} for winning_model in json_data.keys()}}
+        json.dump(detail_leaderboards, out_file)
+
+with open("detail_leaderboards.json", "r") as in_file:
+    st.session_state.detail_leaderboards = json.load(in_file)
 
 def select_model(api_key=st.session_state.api_key, authenticated=st.session_state.authenticated):
     global json_data, all_models
@@ -143,6 +150,18 @@ def call_model(Endpoint):
     endpoint=Endpoint)
     return async_unify
 st.set_option('deprecation.showPyplotGlobalUse', False)
+
+def save_leaderboards():
+    sorted_counts = sorted(st.session_state['vote_counts'].items(), key=lambda x: x[1]["Wins ⭐"] + x[1]["Losses ❌"], reverse=True)
+    for idx, votes in enumerate(sorted_counts):
+        sorted_counts[idx] = (votes[0], votes[1]["Wins ⭐"], votes[1]["Losses ❌"])
+    sorted_counts_df = pd.DataFrame(sorted_counts, columns=['Model Name', 'Wins ⭐', 'Losses ❌'])
+
+    detail_leaderboards = st.session_state.detailed_leaderboards
+    with open("detail_leaderboards.json", "w") as out_file:        
+        json.dump(detail_leaderboards, out_file)
+    sorted_counts_df.to_csv('leaderboard.csv', index=False)
+
 async def main():
     global all_models, data
     st.session_state.code_input = ""
@@ -270,6 +289,10 @@ async def main():
                 model1 = st.session_state['model1'].split("@")[0]
                 st.session_state['vote_counts'][model1]["Wins ⭐"] += 1
                 st.session_state['vote_counts'][st.session_state['model2'].split("@")[0]]["Losses ❌"] += 1
+                if model2 not in st.session_state.detail_leaderboards["scores"].keys() or model1 not in st.session_state.detail_leaderboards["scores"].keys():
+                    st.session_state.detail_leaderboards["scores"][model1][model2] = 0
+                st.session_state.detail_leaderboards["scores"][model1][model2] += 1
+
                 print_history(contain=(cont1, cont2))
                 try:
                     st.session_state.code_input = st.session_state["chat_history1"][-2]['content']
@@ -283,6 +306,10 @@ async def main():
                 model2 = st.session_state['model2'].split("@")[0]
                 st.session_state['vote_counts'][model2]["Wins ⭐"] += 1
                 st.session_state['vote_counts'][st.session_state['model1'].split("@")[0]]["Losses ❌"] += 1
+                if model2 not in st.session_state.detail_leaderboards["scores"].keys() or model1 not in st.session_state.detail_leaderboards["scores"].keys():
+                    st.session_state.detail_leaderboards["scores"][model2][model1] = 0
+                st.session_state.detail_leaderboards["scores"][model2][model1] += 1
+                
                 print_history(contain=(cont1, cont2))
                 try:
                     st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
@@ -293,7 +320,8 @@ async def main():
     if history_button_clicked:
             st.session_state["chat_history1"] = []
             st.session_state["chat_history2"] = []
-        
+    save_leaderboards()
+
 if __name__ == "__main__":
     asyncio.run(main())
     
