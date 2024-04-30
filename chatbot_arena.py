@@ -44,7 +44,7 @@ if not os.path.exists("./detail_leaderboards.json"):
         json.dump(detail_leaderboards, out_file)
 
 with open("detail_leaderboards.json", "r") as in_file:
-    st.session_state.detail_leaderboards = json.load(in_file)
+    st.session_state.detailed_leaderboards = json.load(in_file)
 
 def select_model(api_key=st.session_state.api_key, authenticated=st.session_state.authenticated):
     global json_data, all_models
