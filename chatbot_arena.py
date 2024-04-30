@@ -265,8 +265,9 @@ async def main():
         if left_button_clicked:
                 
                 # Increase the vote count for the selected model by 1 when the button is clicked
-                model = st.session_state['model1'].split("@")[0]
-                st.session_state['vote_counts'][model] += 1
+                model1 = st.session_state['model1'].split("@")[0]
+                st.session_state['vote_counts'][model1][0] += 1
+                st.session_state['vote_counts'][st.session_state['model2'].split("@")[0]][1] += 1
                 print_history(contain=(cont1, cont2))
                 try:
                     st.session_state.code_input = st.session_state["chat_history1"][-2]['content']
@@ -278,7 +279,8 @@ async def main():
         if right_button_clicked:
                 # Increase the vote count for the selected model by 1 when the button is clicked
                 model2 = st.session_state['model2'].split("@")[0]
-                st.session_state['vote_counts'][model2] += 1
+                st.session_state['vote_counts'][model2][0] += 1
+                st.session_state['vote_counts'][st.session_state['model1'].split("@")[0]][1] += 1
                 print_history(contain=(cont1, cont2))
                 try:
                     st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
