@@ -1,4 +1,5 @@
 import streamlit as st
+# from streamlit.streamlit_gsheets import GSheetsConnection
 from unify import AsyncUnify
 from unify import Unify
 import os
@@ -46,8 +47,22 @@ if not os.path.exists("./detail_leaderboards.json"):
         detail_leaderboards = {"scores": {winning_model: {losing_model: 0 for losing_model in json_data.keys()} for winning_model in json_data.keys()}}
         json.dump(detail_leaderboards, out_file)
 
+if not os.path.exists("./detail_leaderboards.csv"):
+    detail_dataframe = pd.DataFrame(data={winning_model: {losing_model: 0 for losing_model in json_data.keys()} for winning_model in json_data.keys()})
+    detail_dataframe.to_csv('detail_leaderboards.csv')
+
 with open("detail_leaderboards.json", "r") as in_file:
     st.session_state.detailed_leaderboards = json.load(in_file)
+
+
+# conn = st.connection("gsheets", type=GSheetsConnection)
+# gsheets_leaderboard = conn.read(url="https://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
+#                                 worksheet="leaderboard")
+# gsheets_detail_leaderboard = conn.read(url="https://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
+#                                        worksheet="detail_leaderboard")
+# gsheet_models = conn.read(url="https://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
+#                           worksheet="models")
+
 
 def select_model(api_key=st.session_state.api_key, authenticated=st.session_state.authenticated):
     global json_data, all_models
