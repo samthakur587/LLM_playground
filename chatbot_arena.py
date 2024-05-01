@@ -56,12 +56,9 @@ with open("detail_leaderboards.json", "r") as in_file:
 
 conn = st.connection("gsheets", type=GSheetsConnection, kwargs={"url": "https://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing"})
 
-gsheets_leaderboard = conn.read(spreadsheet="leaderboard",
-                                worksheet="leaderboard")
-gsheets_detail_leaderboard = conn.read(spreadsheet="leaderboard",
-                                       worksheet="detail_leaderboard")
-gsheet_models = conn.read(spreadsheet="leaderboard",
-                          worksheet="models")
+gsheets_leaderboard = conn.read(worksheet="leaderboard")
+gsheets_detail_leaderboard = conn.read(worksheet="detail_leaderboard")
+gsheet_models = conn.read(worksheet="models")
 
 
 def select_model(api_key=st.session_state.api_key, authenticated=st.session_state.authenticated):
