@@ -54,7 +54,7 @@ if not os.path.exists("./detail_leaderboards.csv"):
 with open("detail_leaderboards.json", "r") as in_file:
     st.session_state.detailed_leaderboards = json.load(in_file)
 
-conn = st.connection("gsheets", type=GSheetsConnection)
+conn = st.connection("gsheets", type=GSheetsConnection, url="gsheets://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing")
 
 gsheets_leaderboard = conn.read(spreadsheet="gsheets://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
                                 worksheet="leaderboard")
