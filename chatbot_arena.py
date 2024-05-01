@@ -57,10 +57,13 @@ with open("detail_leaderboards.json", "r") as in_file:
 
 conn = st.connection("gsheets", type=GSheetsConnection)
 gsheets_leaderboard = conn.read(url="https://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
+                                spreadsheet="leaderboard",
                                 worksheet="leaderboard")
 gsheets_detail_leaderboard = conn.read(url="https://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
+                                       spreadsheet="leaderboard",
                                        worksheet="detail_leaderboard")
 gsheet_models = conn.read(url="https://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
+                          spreadsheet="leaderboard",
                           worksheet="models")
 
 
