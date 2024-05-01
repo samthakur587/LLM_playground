@@ -54,14 +54,11 @@ if not os.path.exists("./detail_leaderboards.csv"):
 with open("detail_leaderboards.json", "r") as in_file:
     st.session_state.detailed_leaderboards = json.load(in_file)
 
-conn = st.connection("gsheets", type=GSheetsConnection, url="gsheets://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing")
+conn = st.connection("gsheets", type=GSheetsConnection)
 
-gsheets_leaderboard = conn.read(spreadsheet="gsheets://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
-                                worksheet="leaderboard")
-gsheets_detail_leaderboard = conn.read(spreadsheet="gsheets://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
-                                       worksheet="detail_leaderboard")
-gsheet_models = conn.read(spreadsheet="gsheets://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
-                          worksheet="models")
+gsheets_leaderboard = conn.read(worksheet="leaderboard")
+gsheets_detail_leaderboard = conn.read(worksheet="detail_leaderboard")
+gsheet_models = conn.read(worksheet="models")
 
 
 def select_model(api_key=st.session_state.api_key, authenticated=st.session_state.authenticated):
