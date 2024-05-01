@@ -56,9 +56,9 @@ with open("detail_leaderboards.json", "r") as in_file:
 
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-gsheets_leaderboard = conn.read(worksheet="Sheet1")
-gsheets_detail_leaderboard = conn.read(worksheet="Sheet2")
-gsheet_models = conn.read(worksheet="Sheet3")
+gsheets_leaderboard = conn.read(worksheet="leaderboard")
+gsheets_detail_leaderboard = conn.read(worksheet="detail_leaderboard")
+gsheet_models = conn.read(worksheet="models")
 
 
 def select_model(api_key=st.session_state.api_key, authenticated=st.session_state.authenticated):
