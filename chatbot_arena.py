@@ -1,5 +1,5 @@
 import streamlit as st
-# from streamlit.streamlit_gsheets import GSheetsConnection
+from streamlit_gsheets import GSheetsConnection
 from unify import AsyncUnify
 from unify import Unify
 import os
@@ -55,13 +55,13 @@ with open("detail_leaderboards.json", "r") as in_file:
     st.session_state.detailed_leaderboards = json.load(in_file)
 
 
-# conn = st.connection("gsheets", type=GSheetsConnection)
-# gsheets_leaderboard = conn.read(url="https://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
-#                                 worksheet="leaderboard")
-# gsheets_detail_leaderboard = conn.read(url="https://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
-#                                        worksheet="detail_leaderboard")
-# gsheet_models = conn.read(url="https://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
-#                           worksheet="models")
+conn = st.connection("gsheets", type=GSheetsConnection)
+gsheets_leaderboard = conn.read(url="https://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
+                                worksheet="leaderboard")
+gsheets_detail_leaderboard = conn.read(url="https://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
+                                       worksheet="detail_leaderboard")
+gsheet_models = conn.read(url="https://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing",
+                          worksheet="models")
 
 
 def select_model(api_key=st.session_state.api_key, authenticated=st.session_state.authenticated):

@@ -24,7 +24,7 @@ mdurl==0.1.2
 numpy==1.26.4
 openai==1.21.2
 packaging==24.0
-pandas==2.2.2
+pandas
 pillow==10.3.0
 protobuf==4.25.3
 pyarrow==15.0.2
@@ -52,3 +52,4 @@ tzdata==2024.1
 unifyai==0.8.1
 urllib3==2.2.1
 watchdog==4.0.0
+st-gsheets-connection
