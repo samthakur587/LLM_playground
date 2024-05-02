@@ -63,9 +63,14 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     model2_other_disabled = True
     models = json_data
     
+    placeholder_model1 = 'mixtral-8x7b-instruct-v0.1@fireworks-ai' if "model1_selectbox" not in st.session_state.keys() else st.session_state.model1_selectbox
+    placeholder_model1_other = 'model@provider' if "model1_other" not in st.session_state.keys() else st.session_state.model1_other
+    placeholder_model2 = 'mixtral-8x7b-instruct-v0.1@fireworks-ai' if "model2_selectbox" not in st.session_state.keys() else st.session_state.model2_selectbox
+    placeholder_model2_other = 'model@provider' if "model2_other" not in st.session_state.keys() else st.session_state.model2_other
+
     st.selectbox("Select the first model's endpoint:",
                          all_models,
-                         placeholder='mixtral-8x7b-instruct-v0.1@fireworks-ai',
+                         placeholder=placeholder_model1,
                          disabled=disabled,
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
@@ -74,7 +79,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                          key="model1_selectbox")
     if st.session_state.model1_selectbox == 'other':
         model1_other_disabled = False
-    st.text_input('If "other", provide your own model:', placeholder='model@provider',
+    st.text_input('If "other", provide your own model:', placeholder=placeholder_model1_other,
                           disabled=model1_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
@@ -83,7 +88,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                           key='model1_other')
     st.selectbox("Select the second model's endpoint:",
                          all_models,
-                         placeholder='mixtral-8x7b-instruct-v0.1@fireworks-ai',
+                         placeholder=placeholder_model2,
                          disabled=disabled,
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
@@ -92,7 +97,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                          key="model2_selectbox")
     if st.session_state.model2_selectbox == 'other':
         model2_other_disabled = False
-    st.text_input('If "other", provide your own model:', placeholder='model@provider',
+    st.text_input('If "other", provide your own model:', placeholder=placeholder_model2_other,
                           disabled=model2_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
