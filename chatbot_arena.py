@@ -258,7 +258,7 @@ async def main():
                     upd_models.append("other")
                     upd_models = {"models": tuple(upd_models)}
                     json.dump(upd_models, models_file_update)
-            if (model1_to_add := st.session_state['model1'][:st.session_state['model1'].find("@")]) not in data.keys():
+            if (model1_to_add := st.session_state['model1'][:st.session_state['model1'].find("@")]) not in all_models:
                 st.session_state['vote_counts'][f"{model1_to_add}"]["Wins ⭐"] = 0
                 st.session_state['vote_counts'][f"{model1_to_add}"]["Losses ❌"] = 0
                     
@@ -279,7 +279,7 @@ async def main():
                     upd_models.append("other")
                     upd_models = {"models": tuple(upd_models)}
                     json.dump(upd_models, models_file_update)
-            if (model2_to_add := st.session_state['model2'][:st.session_state['model2'].find("@")]) not in data.keys():
+            if (model2_to_add := st.session_state['model2'][:st.session_state['model2'].find("@")]) not in all_models:
                 st.session_state['vote_counts'][f"{model2_to_add}"]["Wins ⭐"] = 0
                 st.session_state['vote_counts'][f"{model2_to_add}"]["Losses ❌"] = 0
         except UnifyError:
