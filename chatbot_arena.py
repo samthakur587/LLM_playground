@@ -9,7 +9,7 @@ import pandas as pd
 import json
 import requests
 import random
-import get_database
+import helpers
 
 st.set_page_config(
     page_title="Chatbot Arena",
@@ -55,7 +55,7 @@ def init_session(mode: str="keys"):
             st.session_state.api_key = ""
 
     if mode == "offline":
-        get_database.offline()
+        helpers.database.get_offline()
         # Load JSON data from file
         all_models = st.session_state.models
         #model_options = [model.split("@")[0] for model in all_models]
@@ -66,7 +66,7 @@ def init_session(mode: str="keys"):
             st.session_state['vote_counts'] = json_data
 
     if mode == "online":
-        get_database.online()
+        helpers.database.get_online()
         all_models = tuple(st.session_state.models)
         json_data = st.session_state.leaderboard
 
