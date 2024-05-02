@@ -85,7 +85,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                                             st.session_state.__setattr__("new_models_selected", True)))
     if st.session_state.model1_selectbox == 'other':
         model1_other_disabled = False
-    st.session_state.model1_other = st.text_input('If "other", provide your own model:', placeholder=st.session_state.model1_other,
+    st.session_state.model1_other = st.text_input('If "other", provide your own 1st model:', placeholder=st.session_state.model1_other,
                           disabled=model1_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
@@ -101,7 +101,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                                             st.session_state.__setattr__("new_models_selected", True)))
     if st.session_state.model2_selectbox == 'other':
         model2_other_disabled = False
-    st.session_state.model2_other = st.text_input('If "other", provide your own model:', placeholder=st.session_state.model2_other,
+    st.session_state.model2_other = st.text_input('If "other", provide your own 2nd model:', placeholder=st.session_state.model2_other,
                           disabled=model2_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
