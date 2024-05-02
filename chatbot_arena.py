@@ -90,8 +90,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
                                              st.session_state.__setattr__("winner_selected", False),
-                                             st.session_state.__setattr__("new_models_selected", True)),
-                          key='model1_other')
+                                             st.session_state.__setattr__("new_models_selected", True)))
     st.session_state.model2_selectbox = st.selectbox("Select the second model's endpoint:",
                          all_models,
                          placeholder=st.session_state.model2_selectbox,
@@ -108,8 +107,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
                                              st.session_state.__setattr__("winner_selected", False),
-                                             st.session_state.__setattr__("new_models_selected", True)),
-                          key='model2_other')
+                                             st.session_state.__setattr__("new_models_selected", True)))
     selected_model1 = st.session_state.model1_selectbox if st.session_state.model1_selectbox != "other" else st.session_state.model1_other
     selected_model2 = st.session_state.model2_selectbox if st.session_state.model2_selectbox != "other" else st.session_state.model2_other
 
