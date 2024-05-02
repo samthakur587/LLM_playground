@@ -10,6 +10,7 @@ import json
 import requests
 import random
 import online_database
+import offline_database
 
 st.set_page_config(
     page_title="Chatbot Arena",
@@ -20,7 +21,7 @@ st.set_page_config(
 
 keys = ["chat_input", "winner_selected", "api_key_provided",
         "vote1", "vote2", "model1", "model2", "api_key", "scores",
-        "authenticated", "new_models_selected", "detailed_leaderboards"]
+        "authenticated", "new_models_selected", "detailed_leaderboards", "detail"]
 
 for key in keys:
     if key not in st.session_state.keys():
@@ -297,9 +298,9 @@ async def main():
                 model1 = st.session_state['model1'].split("@")[0]
                 st.session_state['vote_counts'][model1]["Wins ⭐"] += 1
                 st.session_state['vote_counts'][st.session_state['model2'].split("@")[0]]["Losses ❌"] += 1
-                if model2 not in st.session_state.detail_leaderboards["scores"].keys() or model1 not in st.session_state.detail_leaderboards["scores"].keys():
-                    st.session_state.detail_leaderboards["scores"][model1][model2] = 0
-                st.session_state.detail_leaderboards["scores"][model1][model2] += 1
+                if model2 not in st.session_state.detailed_leaderboards["scores"].keys() or model1 not in st.session_state.detailed_leaderboards["scores"].keys():
+                    st.session_state.detailed_leaderboards["scores"][model1][model2] = 0
+                st.session_state.detailed_leaderboards["scores"][model1][model2] += 1
 
                 print_history(contain=(cont1, cont2))
                 try:
@@ -314,9 +315,9 @@ async def main():
                 model2 = st.session_state['model2'].split("@")[0]
                 st.session_state['vote_counts'][model2]["Wins ⭐"] += 1
                 st.session_state['vote_counts'][st.session_state['model1'].split("@")[0]]["Losses ❌"] += 1
-                if model2 not in st.session_state.detail_leaderboards["scores"].keys() or model1 not in st.session_state.detail_leaderboards["scores"].keys():
-                    st.session_state.detail_leaderboards["scores"][model2][model1] = 0
-                st.session_state.detail_leaderboards["scores"][model2][model1] += 1
+                if model2 not in st.session_state.detailed_leaderboards["scores"].keys() or model1 not in st.session_state.detailed_leaderboards["scores"].keys():
+                    st.session_state.detailed_leaderboards["scores"][model2][model1] = 0
+                st.session_state.detailed_leaderboards["scores"][model2][model1] += 1
                 
                 print_history(contain=(cont1, cont2))
                 try:
