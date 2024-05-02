@@ -98,8 +98,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
                                             st.session_state.__setattr__("winner_selected", False),
-                                            st.session_state.__setattr__("new_models_selected", True)),
-                         key="model2_selectbox")
+                                            st.session_state.__setattr__("new_models_selected", True)))
     if st.session_state.model2_selectbox == 'other':
         model2_other_disabled = False
     st.session_state.model2_other = st.text_input('If "other", provide your own model:', placeholder=st.session_state.model2_other,
