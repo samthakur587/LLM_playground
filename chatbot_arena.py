@@ -298,7 +298,7 @@ async def main():
                 model1 = st.session_state['model1'].split("@")[0]
                 st.session_state['vote_counts'][model1]["Wins ⭐"] += 1
                 st.session_state['vote_counts'][st.session_state['model2'].split("@")[0]]["Losses ❌"] += 1
-                if model2 not in st.session_state.detailed_leaderboards["scores"].keys() or model1 not in st.session_state.detailed_leaderboards["scores"].keys():
+                if model1 not in st.session_state.detailed_leaderboards["scores"].keys() or model1 not in st.session_state.detailed_leaderboards["scores"].keys():
                     st.session_state.detailed_leaderboards["scores"][model1][model2] = 0
                 st.session_state.detailed_leaderboards["scores"][model1][model2] += 1
 
