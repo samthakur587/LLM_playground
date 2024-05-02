@@ -9,6 +9,7 @@ import pandas as pd
 import json
 import requests
 import random
+import online_database
 
 st.set_page_config(
     page_title="Chatbot Arena",
@@ -53,13 +54,6 @@ if not os.path.exists("./detail_leaderboards.csv"):
 
 with open("detail_leaderboards.json", "r") as in_file:
     st.session_state.detailed_leaderboards = json.load(in_file)
-
-conn = st.connection("gsheets", type=GSheetsConnection)
-
-gsheets_leaderboard = conn.read(worksheet=0)
-gsheets_detail_leaderboard = conn.read(worksheet=1113438455)
-gsheet_models = conn.read(worksheet=1855482431)
-
 
 def select_model(api_key=st.session_state.api_key, authenticated=st.session_state.authenticated):
     global json_data, all_models
