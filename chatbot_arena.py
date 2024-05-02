@@ -43,7 +43,7 @@ if "model2_selectbox" not in st.session_state.keys():
 if "model2_other" not in st.session_state.keys():
     st.session_state.placeholder_model2_other = 'model@provider'
 
-if "index_model1" not in st.session_state.keys()
+if "index_model1" not in st.session_state.keys():
     st.session_state.index_model1 = 0 
 if "index_model2" not in st.session_state.keys():
     st.session_state.index_model2 = 0
@@ -54,7 +54,7 @@ if "value_model2_other" not in st.session_state.keys():
 
 if "api_key" not in st.session_state.keys():
     st.session_state.api_key = ""
-    
+
 # Load JSON data from file
 with open("models.json", "r") as f:
     data = json.load(f)
