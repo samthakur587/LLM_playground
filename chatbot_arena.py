@@ -38,7 +38,7 @@ if "model1_selectbox" not in st.session_state.keys():
 if "model1_other" not in st.session_state.keys():
     st.session_state.placeholder_model1_other = 'model@provider'
 if "model2_selectbox" not in st.session_state.keys():
-    st.session_state.placeholder_model2 = 'mixtral-8x7b-instruct-v0.1@fireworks-ai'
+    st.session_state.placeholder_model2 = 'other'
 if "model2_other" not in st.session_state.keys():
     st.session_state.placeholder_model2_other = 'model@provider'
 
@@ -74,7 +74,6 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     
     st.selectbox("Select the first model's endpoint:",
                          all_models,
-                         placeholder=st.session_state.placeholder_model1,
                          disabled=disabled,
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
@@ -84,7 +83,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     if st.session_state.model1_selectbox == 'other':
         model1_other_disabled = False
     st.text_input('If "other", provide your own model:',
-                          placeholder=st.session_state.placeholder_model1_other,
+                          placeholder="<model>@<provider>",
                           disabled=model1_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
@@ -93,7 +92,6 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                           key='model1_other')
     st.selectbox("Select the second model's endpoint:",
                          all_models,
-                         placeholder=st.session_state.placeholder_model2,
                          disabled=disabled,
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
@@ -103,7 +101,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     if st.session_state.model2_selectbox == 'other':
         model2_other_disabled = False
     st.text_input('If "other", provide your own model:',
-                          placeholder=st.session_state.placeholder_model2_other,
+                          placeholder="<model>@<provider>",
                           disabled=model2_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
@@ -112,15 +110,6 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                           key='model2_other')
     selected_model1 = st.session_state.model1_selectbox if st.session_state.model1_selectbox != "other" else st.session_state.model1_other
     selected_model2 = st.session_state.model2_selectbox if st.session_state.model2_selectbox != "other" else st.session_state.model2_other
-    if st.session_state.model1_selectbox != "other":
-        st.session_state.placeholder_model1 = selected_model1
-    else:
-        st.session_state.placeholder_model1_other = selected_model1
-
-    if st.session_state.model2_selectbox != "other":
-        st.session_state.placeholder_model2 = selected_model2
-    else:
-        st.session_state.placeholder_model2_other = selected_model2
 
     selected_models = [selected_model1, selected_model2]
     random.shuffle(selected_models)
