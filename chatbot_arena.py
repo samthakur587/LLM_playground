@@ -33,18 +33,6 @@ if "chat_history1" not in st.session_state.keys():
 if "chat_history2" not in st.session_state.keys():
     st.session_state.chat_history2 = []
 
-if "model1_selectbox" not in st.session_state.keys():
-    st.session_state.model1_selectbox = 'mixtral-8x7b-instruct-v0.1@fireworks-ai'
-
-if "model1_other" not in st.session_state.keys():
-    st.session_state.model1_other = "<model>@<provider>"
-
-if "model2_other" not in st.session_state.keys():
-    st.session_state.model2_other = "<model>@<provider>"
-
-if "model2_selectbox" not in st.session_state.keys():
-    st.session_state.model2_selectbox = 'mixtral-8x7b-instruct-v0.1@fireworks-ai'
-
 # Load JSON data from file
 with open("models.json", "r") as f:
     data = json.load(f)
@@ -75,38 +63,42 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     model2_other_disabled = True
     models = json_data
     
-    st.session_state.model1_selectbox = st.selectbox("Select the first model's endpoint:",
+    st.selectbox("Select the first model's endpoint:",
                          all_models,
-                         placeholder=st.session_state.model1_selectbox,
+                         placeholder='mixtral-8x7b-instruct-v0.1@fireworks-ai',
                          disabled=disabled,
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
                                             st.session_state.__setattr__("winner_selected", False),
-                                            st.session_state.__setattr__("new_models_selected", True)))
+                                            st.session_state.__setattr__("new_models_selected", True)),
+                         key="model1_selectbox")
     if st.session_state.model1_selectbox == 'other':
         model1_other_disabled = False
-    st.session_state.model1_other = st.text_input('If "other", provide your own 1st model:', placeholder=st.session_state.model1_other,
+    st.text_input('If "other", provide your own model:', placeholder='model@provider',
                           disabled=model1_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
                                              st.session_state.__setattr__("winner_selected", False),
-                                             st.session_state.__setattr__("new_models_selected", True)))
-    st.session_state.model2_selectbox = st.selectbox("Select the second model's endpoint:",
+                                             st.session_state.__setattr__("new_models_selected", True)),
+                          key='model1_other')
+    st.selectbox("Select the second model's endpoint:",
                          all_models,
-                         placeholder=st.session_state.model2_selectbox,
+                         placeholder='mixtral-8x7b-instruct-v0.1@fireworks-ai',
                          disabled=disabled,
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
                                             st.session_state.__setattr__("winner_selected", False),
-                                            st.session_state.__setattr__("new_models_selected", True)))
+                                            st.session_state.__setattr__("new_models_selected", True)),
+                         key="model2_selectbox")
     if st.session_state.model2_selectbox == 'other':
         model2_other_disabled = False
-    st.session_state.model2_other = st.text_input('If "other", provide your own 2nd model:', placeholder=st.session_state.model2_other,
+    st.text_input('If "other", provide your own model:', placeholder='model@provider',
                           disabled=model2_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
                                              st.session_state.__setattr__("winner_selected", False),
-                                             st.session_state.__setattr__("new_models_selected", True)))
+                                             st.session_state.__setattr__("new_models_selected", True)),
+                          key='model2_other')
     selected_model1 = st.session_state.model1_selectbox if st.session_state.model1_selectbox != "other" else st.session_state.model1_other
     selected_model2 = st.session_state.model2_selectbox if st.session_state.model2_selectbox != "other" else st.session_state.model2_other
 
