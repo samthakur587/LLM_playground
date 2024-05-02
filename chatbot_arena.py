@@ -19,8 +19,9 @@ st.set_page_config(
 
 )
 
+
 keys = ["chat_input", "winner_selected", "api_key_provided",
-        "vote1", "vote2", "model1", "model2", "api_key", "scores",
+        "vote1", "vote2", "model1", "model2", "scores",
         "authenticated", "new_models_selected", "detailed_leaderboards", "detail"]
 
 for key in keys:
@@ -42,6 +43,18 @@ if "model2_selectbox" not in st.session_state.keys():
 if "model2_other" not in st.session_state.keys():
     st.session_state.placeholder_model2_other = 'model@provider'
 
+if "index_model1" not in st.session_state.keys()
+    st.session_state.index_model1 = 0 
+if "index_model2" not in st.session_state.keys():
+    st.session_state.index_model2 = 0
+if "value_model1_other" not in st.session_state.keys():
+    st.session_state.value_model1_other = ""
+if "value_model2_other" not in st.session_state.keys():
+    st.session_state.value_model2_other = ""
+
+if "api_key" not in st.session_state.keys():
+    st.session_state.api_key = ""
+    
 # Load JSON data from file
 with open("models.json", "r") as f:
     data = json.load(f)
@@ -71,10 +84,11 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     model1_other_disabled = True
     model2_other_disabled = True
     models = json_data
-    
+
     st.selectbox("Select the first model's endpoint:",
                          all_models,
                          disabled=disabled,
+                         index=st.session_state.index_model1,
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
                                             st.session_state.__setattr__("winner_selected", False),
@@ -84,7 +98,8 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
         model1_other_disabled = False
     st.text_input('If "other", provide your own model:',
                           placeholder="<model>@<provider>",
-                          disabled=model1_other_disabled,
+                          disabled=st.session_state.model1_other_disabled,
+                          value=value_model1_other,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
                                              st.session_state.__setattr__("winner_selected", False),
@@ -93,6 +108,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     st.selectbox("Select the second model's endpoint:",
                          all_models,
                          disabled=disabled,
+                         index=st.session_state.index_model2,
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
                                             st.session_state.__setattr__("winner_selected", False),
@@ -103,6 +119,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     st.text_input('If "other", provide your own model:',
                           placeholder="<model>@<provider>",
                           disabled=model2_other_disabled,
+                          value=st.session_state.value_model2_other,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
                                              st.session_state.__setattr__("winner_selected", False),
@@ -111,6 +128,13 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     selected_model1 = st.session_state.model1_selectbox if st.session_state.model1_selectbox != "other" else st.session_state.model1_other
     selected_model2 = st.session_state.model2_selectbox if st.session_state.model2_selectbox != "other" else st.session_state.model2_other
 
+    st.session_state.index_model1 = all_models.index(st.session_state.model1_selectbox)
+    st.session_state.index_model2 = all_models.index(st.session_state.model2_selectbox)
+    if st.session_state.model1_selectbox == "other":
+        st.session_state.value_model1_other = selected_model1
+    if st.session_state.model2_selectbox == "other":
+        st.session_state.value_model2_other = selected_model2
+    
     selected_models = [selected_model1, selected_model2]
     random.shuffle(selected_models)
     if st.session_state.new_models_selected is True:
@@ -191,7 +215,7 @@ async def main():
     """,
     unsafe_allow_html=True)
     st.sidebar.subheader("Unify API Key")
-    api_key = st.sidebar.text_input(" ", placeholder="API key is required to proceed.",type="password")
+    api_key = st.sidebar.text_input(" ", value=st.session_state.api_key, placeholder="API key is required to proceed.",type="password")
     input_api_key(api_key)
     # Display sidebar widgets
     with st.sidebar:
