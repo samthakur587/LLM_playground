@@ -23,7 +23,6 @@ def init_session(mode: str="keys"):
         keys = ["chat_input", "winner_selected", "api_key_provided",
                 "vote1", "vote2", "model1", "model2", "scores",
                 "authenticated", "new_models_selected", "detailed_leaderboards", "detail"]
-
         for key in keys:
             if key not in st.session_state.keys():
                 st.session_state[key] = None
@@ -54,6 +53,7 @@ def init_session(mode: str="keys"):
 
         if "api_key" not in st.session_state.keys():
             st.session_state.api_key = ""
+
     if mode == "offline":
         get_database.offline()
         # Load JSON data from file
@@ -68,7 +68,7 @@ def init_session(mode: str="keys"):
     if mode == "online":
         ...
 
-def select_model(api_key=st.session_state.api_key, authenticated=st.session_state.authenticated):
+def select_model(api_key="", authenticated=False):
     global json_data, all_models
     disabled = not (bool(api_key) and bool(authenticated))
     model1_other_disabled = True
