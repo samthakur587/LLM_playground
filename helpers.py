@@ -83,3 +83,22 @@ class database:
         st.session_state.leaderboard = gsheets_leaderboard
         st.session_state.detail = gsheets_detail
         st.session_state.models = gsheets_models['Models']
+
+    def save_offline():
+        keys = ["leaderboard", "detail", "models"]
+        for key in keys:
+            if key not in st.session_state.keys():
+                st.session_state[key] = None
+
+        sorted_counts = sorted(st.session_state['vote_counts'].items(), key=lambda x: x[1]["Wins ⭐"] + x[1]["Losses ❌"], reverse=True)
+        for idx, votes in enumerate(sorted_counts):
+            sorted_counts[idx] = (votes[0], votes[1]["Wins ⭐"], votes[1]["Losses ❌"])
+        sorted_counts_df = pd.DataFrame(sorted_counts, columns=['Model Name', 'Wins ⭐', 'Losses ❌'])
+
+        detail_leaderboards = st.session_state.detailed_leaderboards
+        with open("detail_leaderboards.json", "w") as out_file:        
+            json.dump(detail_leaderboards, out_file)
+        sorted_counts_df.to_csv('leaderboard.csv', index=False)
+
+    def save_online():
+        ...

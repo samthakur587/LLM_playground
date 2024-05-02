@@ -188,17 +188,6 @@ def call_model(Endpoint):
     return async_unify
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
-def save_leaderboards():
-    sorted_counts = sorted(st.session_state['vote_counts'].items(), key=lambda x: x[1]["Wins ⭐"] + x[1]["Losses ❌"], reverse=True)
-    for idx, votes in enumerate(sorted_counts):
-        sorted_counts[idx] = (votes[0], votes[1]["Wins ⭐"], votes[1]["Losses ❌"])
-    sorted_counts_df = pd.DataFrame(sorted_counts, columns=['Model Name', 'Wins ⭐', 'Losses ❌'])
-
-    detail_leaderboards = st.session_state.detailed_leaderboards
-    with open("detail_leaderboards.json", "w") as out_file:        
-        json.dump(detail_leaderboards, out_file)
-    sorted_counts_df.to_csv('leaderboard.csv', index=False)
-
 async def main():
     global all_models, data
     init_session("keys")
@@ -363,11 +352,11 @@ async def main():
     if history_button_clicked:
             st.session_state["chat_history1"] = []
             st.session_state["chat_history2"] = []
-    save_leaderboards()
+    
+    if source == "offline":
+        helpers.database.save_offline()
+    if source == "online":
+        helpers.database.save_online()
 
 if __name__ == "__main__":
     asyncio.run(main())
-    
-    
-     
-
