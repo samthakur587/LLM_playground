@@ -67,7 +67,7 @@ def init_session(mode: str="keys"):
 
     if mode == "online":
         get_database.online()
-        all_models = st.session_state.models
+        all_models = tuple(st.session_state.models)
         json_data = st.session_state.leaderboard
 
 def select_model(api_key="", authenticated=False):
