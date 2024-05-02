@@ -129,7 +129,8 @@ def select_model(api_key="", authenticated=False):
     
     selected_models = [selected_model1, selected_model2]
     random.shuffle(selected_models)
-    if st.session_state.new_models_selected is True:
+    st.write(st.session_state.new_models_selected)
+    if st.session_state.new_models_selected is in [True, None]:
         st.session_state['model1'] = selected_models.pop(0)
         st.session_state['model2'] = selected_models.pop(0)
         st.session_state.new_models_selected = False
