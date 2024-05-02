@@ -33,11 +33,14 @@ if "chat_history1" not in st.session_state.keys():
 if "chat_history2" not in st.session_state.keys():
     st.session_state.chat_history2 = []
 
-
-placeholder_model1 = 'mixtral-8x7b-instruct-v0.1@fireworks-ai' if "model1_selectbox" not in st.session_state.keys() else st.session_state.placeholder_model1
-placeholder_model1_other = 'model@provider' if "model1_other" not in st.session_state.keys() else st.session_state.placeholder_model1_other
-placeholder_model2 = 'mixtral-8x7b-instruct-v0.1@fireworks-ai' if "model2_selectbox" not in st.session_state.keys() else st.session_state.placeholder_model2
-placeholder_model2_other = 'model@provider' if "model2_other" not in st.session_state.keys() else st.session_state.placeholder_model2_other
+if "model1_selectbox" not in st.session_state.keys():
+    st.session_state.placeholder_model1 = 'mixtral-8x7b-instruct-v0.1@fireworks-ai'
+if "model1_other" not in st.session_state.keys():
+    st.session_state.placeholder_model1_other = 'model@provider'
+if "model2_selectbox" not in st.session_state.keys():
+    st.session_state.placeholder_model2 = 'mixtral-8x7b-instruct-v0.1@fireworks-ai'
+if "model2_other" not in st.session_state.keys():
+    st.session_state.placeholder_model2_other = 'model@provider'
 
 # Load JSON data from file
 with open("models.json", "r") as f:
