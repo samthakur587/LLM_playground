@@ -74,7 +74,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     
     st.session_state.placeholder_model1 = st.selectbox("Select the first model's endpoint:",
                          all_models,
-                         placeholder=placeholder_model1,
+                         placeholder=st.session_state.placeholder_model1,
                          disabled=disabled,
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
@@ -83,7 +83,8 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                          key="model1_selectbox")
     if st.session_state.model1_selectbox == 'other':
         model1_other_disabled = False
-    st.session_state.placeholder_model1_other = st.text_input('If "other", provide your own model:', placeholder=placeholder_model1_other,
+    st.session_state.placeholder_model1_other = st.text_input('If "other", provide your own model:',
+                          placeholder=st.session_state.placeholder_model1_other,
                           disabled=model1_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
@@ -92,7 +93,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                           key='model1_other')
     st.session_state.placeholder_model2 = st.selectbox("Select the second model's endpoint:",
                          all_models,
-                         placeholder=placeholder_model2,
+                         placeholder=st.session_state.placeholder_model2,
                          disabled=disabled,
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
@@ -101,7 +102,8 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                          key="model2_selectbox")
     if st.session_state.model2_selectbox == 'other':
         model2_other_disabled = False
-    st.session_state.placeholder_model2_other = st.text_input('If "other", provide your own model:', placeholder=placeholder_model2_other,
+    st.session_state.placeholder_model2_other = st.text_input('If "other", provide your own model:',
+                          placeholder=st.session_state.placeholder_model2_other,
                           disabled=model2_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
