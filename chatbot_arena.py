@@ -66,15 +66,16 @@ def init_session(mode: str="keys"):
             st.session_state['vote_counts'] = json_data
 
     if mode == "online":
-        ...
+        get_database.online()
+        all_models = st.session_state.models
+        json_data = st.session_state.leaderboard
 
 def select_model(api_key="", authenticated=False):
-    json_data = st.session_state.leaderboard
-    all_models = st.session_state.models
+    global json_data, all_models
+
     disabled = not (bool(api_key) and bool(authenticated))
     model1_other_disabled = True
     model2_other_disabled = True
-    models = json_data
 
     st.selectbox("Select the first model's endpoint:",
                          all_models,
