@@ -72,7 +72,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     model2_other_disabled = True
     models = json_data
     
-    placeholder_model1 = st.selectbox("Select the first model's endpoint:",
+    st.selectbox("Select the first model's endpoint:",
                          all_models,
                          placeholder=st.session_state.placeholder_model1,
                          disabled=disabled,
@@ -81,10 +81,9 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                                             st.session_state.__setattr__("winner_selected", False),
                                             st.session_state.__setattr__("new_models_selected", True)),
                          key="model1_selectbox")
-    st.session_state.placeholder_model1 = placeholder_model1
     if st.session_state.model1_selectbox == 'other':
         model1_other_disabled = False
-    placeholder_model1_other = st.text_input('If "other", provide your own model:',
+    st.text_input('If "other", provide your own model:',
                           placeholder=st.session_state.placeholder_model1_other,
                           disabled=model1_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
@@ -92,8 +91,7 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                                              st.session_state.__setattr__("winner_selected", False),
                                              st.session_state.__setattr__("new_models_selected", True)),
                           key='model1_other')
-    st.session_state.placeholder_model1_other = placeholder_model1_other
-    placeholder_model2 = st.selectbox("Select the second model's endpoint:",
+    st.selectbox("Select the second model's endpoint:",
                          all_models,
                          placeholder=st.session_state.placeholder_model2,
                          disabled=disabled,
@@ -102,10 +100,9 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                                             st.session_state.__setattr__("winner_selected", False),
                                             st.session_state.__setattr__("new_models_selected", True)),
                          key="model2_selectbox")
-    st.session_state.placeholder_model2 = placeholder_model2
     if st.session_state.model2_selectbox == 'other':
         model2_other_disabled = False
-    placeholder_model2_other = st.text_input('If "other", provide your own model:',
+    st.text_input('If "other", provide your own model:',
                           placeholder=st.session_state.placeholder_model2_other,
                           disabled=model2_other_disabled,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
@@ -113,9 +110,17 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                                              st.session_state.__setattr__("winner_selected", False),
                                              st.session_state.__setattr__("new_models_selected", True)),
                           key='model2_other')
-    st.session_state.placeholder_model2_other = placeholder_model2_other
     selected_model1 = st.session_state.model1_selectbox if st.session_state.model1_selectbox != "other" else st.session_state.model1_other
     selected_model2 = st.session_state.model2_selectbox if st.session_state.model2_selectbox != "other" else st.session_state.model2_other
+    if st.session_state.model1_selectbox != "other":
+        st.session_state.placeholder_model1 = selected_model1
+    else:
+        st.session_state.placeholder_model1_other = selected_model1
+
+    if st.session_state.model2_selectbox != "other":
+        st.session_state.placeholder_model2 = selected_model2
+    else:
+        st.session_state.placeholder_model2_other = selected_model2
 
     selected_models = [selected_model1, selected_model2]
     random.shuffle(selected_models)
