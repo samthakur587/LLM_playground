@@ -209,7 +209,7 @@ async def main():
     st.sidebar.subheader("Unify API Key")
     api_key = st.sidebar.text_input(" ", value=st.session_state.api_key, placeholder="API key is required to proceed.",type="password")
     input_api_key(api_key)
-    st.checkbox("Use online database (google sheets).", key="source")
+    st.sidebar.checkbox("Use online database (google sheets).", key="source")
     source = "online" if st.session_state.source is True else "offline"
     init_session(source)
     # Display sidebar widgets
