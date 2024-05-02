@@ -296,6 +296,7 @@ async def main():
                 
                 # Increase the vote count for the selected model by 1 when the button is clicked
                 model1 = st.session_state['model1'].split("@")[0]
+                model2 = st.session_state['model2'].split("@")[0]
                 st.session_state['vote_counts'][model1]["Wins ⭐"] += 1
                 st.session_state['vote_counts'][st.session_state['model2'].split("@")[0]]["Losses ❌"] += 1
                 if model1 not in st.session_state.detailed_leaderboards["scores"].keys() or model1 not in st.session_state.detailed_leaderboards["scores"].keys():
@@ -312,6 +313,7 @@ async def main():
                                          on_click=lambda: st.session_state.__setattr__("winner_selected", True))
         if right_button_clicked:
                 # Increase the vote count for the selected model by 1 when the button is clicked
+                model1 = st.session_state['model1'].split("@")[0]
                 model2 = st.session_state['model2'].split("@")[0]
                 st.session_state['vote_counts'][model2]["Wins ⭐"] += 1
                 st.session_state['vote_counts'][st.session_state['model1'].split("@")[0]]["Losses ❌"] += 1
