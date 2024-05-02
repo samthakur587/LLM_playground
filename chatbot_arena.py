@@ -9,7 +9,6 @@ import pandas as pd
 import json
 import requests
 import random
-import online_database
 import get_database
 
 st.set_page_config(
