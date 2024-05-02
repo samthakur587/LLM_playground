@@ -10,73 +10,64 @@ import json
 import requests
 import random
 import online_database
-import offline_database
+import get_database
 
 st.set_page_config(
     page_title="Chatbot Arena",
     page_icon="🤖",
     layout="wide",
-
 )
 
+def init_session(mode: str="keys"):
+    global all_models, data, json_data
+    if mode == "keys":
+        keys = ["chat_input", "winner_selected", "api_key_provided",
+                "vote1", "vote2", "model1", "model2", "scores",
+                "authenticated", "new_models_selected", "detailed_leaderboards", "detail"]
 
-keys = ["chat_input", "winner_selected", "api_key_provided",
-        "vote1", "vote2", "model1", "model2", "scores",
-        "authenticated", "new_models_selected", "detailed_leaderboards", "detail"]
+        for key in keys:
+            if key not in st.session_state.keys():
+                st.session_state[key] = None
+        if "code_input" not in st.session_state.keys():
+            st.session_state.code_input = " "
+        if "chat_history1" not in st.session_state.keys():
+            st.session_state.chat_history1 = []
+        if "chat_history2" not in st.session_state.keys():
+            st.session_state.chat_history2 = []
 
-for key in keys:
-    if key not in st.session_state.keys():
-        st.session_state[key] = None
-if "code_input" not in st.session_state.keys():
-    st.session_state.code_input = " "
-if "chat_history1" not in st.session_state.keys():
-    st.session_state.chat_history1 = []
-if "chat_history2" not in st.session_state.keys():
-    st.session_state.chat_history2 = []
+        if "model1_selectbox" not in st.session_state.keys():
+            st.session_state.placeholder_model1 = 'other'
+        if "model1_other" not in st.session_state.keys():
+            st.session_state.placeholder_model1_other = 'model@provider'
+        if "model2_selectbox" not in st.session_state.keys():
+            st.session_state.placeholder_model2 = 'other'
+        if "model2_other" not in st.session_state.keys():
+            st.session_state.placeholder_model2_other = 'model@provider'
 
-if "model1_selectbox" not in st.session_state.keys():
-    st.session_state.placeholder_model1 = 'other'
-if "model1_other" not in st.session_state.keys():
-    st.session_state.placeholder_model1_other = 'model@provider'
-if "model2_selectbox" not in st.session_state.keys():
-    st.session_state.placeholder_model2 = 'other'
-if "model2_other" not in st.session_state.keys():
-    st.session_state.placeholder_model2_other = 'model@provider'
+        if "index_model1" not in st.session_state.keys():
+            st.session_state.index_model1 = 0 
+        if "index_model2" not in st.session_state.keys():
+            st.session_state.index_model2 = 0
+        if "value_model1_other" not in st.session_state.keys():
+            st.session_state.value_model1_other = ""
+        if "value_model2_other" not in st.session_state.keys():
+            st.session_state.value_model2_other = ""
 
-if "index_model1" not in st.session_state.keys():
-    st.session_state.index_model1 = 0 
-if "index_model2" not in st.session_state.keys():
-    st.session_state.index_model2 = 0
-if "value_model1_other" not in st.session_state.keys():
-    st.session_state.value_model1_other = ""
-if "value_model2_other" not in st.session_state.keys():
-    st.session_state.value_model2_other = ""
+        if "api_key" not in st.session_state.keys():
+            st.session_state.api_key = ""
+    if mode == "offline":
+        get_database.offline()
+        # Load JSON data from file
+        all_models = st.session_state.models
+        #model_options = [model.split("@")[0] for model in all_models]
+        data = pd.read_csv("leaderboard.csv")  # This will raise an error if the file does not exist   
+        json_data = st.session_state.leaderboard
 
-if "api_key" not in st.session_state.keys():
-    st.session_state.api_key = ""
+        if 'vote_counts' not in st.session_state:
+            st.session_state['vote_counts'] = json_data
 
-# Load JSON data from file
-with open("models.json", "r") as f:
-    data = json.load(f)
-all_models = tuple(data['models'])
-#model_options = [model.split("@")[0] for model in all_models]
-data = pd.read_csv("leaderboard.csv")  # This will raise an error if the file does not exist   
-json_data = {model: {"Wins ⭐": wins, "Losses ❌": losses} for model, wins, losses in zip(data["Model Name"], data["Wins ⭐"], data["Losses ❌"])}
-
-if 'vote_counts' not in st.session_state:
-        st.session_state['vote_counts'] = json_data
-
-if not os.path.exists("./detail_leaderboards.json"):
-    with open("detail_leaderboards.json", "w") as out_file:        
-        detail_leaderboards = {"scores": {winning_model: {losing_model: 0 for losing_model in json_data.keys()} for winning_model in json_data.keys()}}
-        json.dump(detail_leaderboards, out_file)
-
-if not os.path.exists("./detail_leaderboards.csv"):
-    detail_dataframe = pd.DataFrame(data={winning_model: {losing_model: 0 for losing_model in json_data.keys()} for winning_model in json_data.keys()})
-    detail_dataframe.to_csv('detail_leaderboards.csv')
-
-with open("detail_leaderboards.json", "r") as in_file:
-    st.session_state.detailed_leaderboards = json.load(in_file)
+    if mode == "online":
+        ...
 
 def select_model(api_key=st.session_state.api_key, authenticated=st.session_state.authenticated):
     global json_data, all_models
@@ -177,15 +168,16 @@ def input_api_key(api_key=" "):
 def print_history(contain):
     cont1, cont2 = contain
     for i in st.session_state["chat_history1"]:
-            if i['role']=="user":
-                cont1.write("🧑‍💻" +"  "+ i["content"])
-            else:
-                cont1.write(i["content"])
+        if i['role']=="user":
+            cont1.write("🧑‍💻" +"  "+ i["content"])
+        else:
+            cont1.write(i["content"])
     for i in st.session_state["chat_history2"]:
         if i['role']=="user": 
             cont2.write("🧑‍💻" +"  "+ i["content"])
         else:
-            cont2.write(i["content"])       
+            cont2.write(i["content"])     
+
 def call_model(Endpoint):
     async_unify = AsyncUnify(
     api_key=st.session_state['api_key'],
@@ -206,6 +198,7 @@ def save_leaderboards():
 
 async def main():
     global all_models, data
+    init_session("keys")
     st.session_state.code_input = ""
     st.markdown(
     """
@@ -217,6 +210,9 @@ async def main():
     st.sidebar.subheader("Unify API Key")
     api_key = st.sidebar.text_input(" ", value=st.session_state.api_key, placeholder="API key is required to proceed.",type="password")
     input_api_key(api_key)
+    st.checkbox("Use online database (google sheets).", key="source")
+    source = "online" if st.session_state.source == True else "offline"
+    init_session(source)
     # Display sidebar widgets
     with st.sidebar:
         select_model(st.session_state.api_key, st.session_state.authenticated)
