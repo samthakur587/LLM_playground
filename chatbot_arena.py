@@ -98,8 +98,8 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
         model1_other_disabled = False
     st.text_input('If "other", provide your own model:',
                           placeholder="<model>@<provider>",
-                          disabled=st.session_state.model1_other_disabled,
-                          value=value_model1_other,
+                          disabled=model1_other_disabled,
+                          value=st.session_state.value_model1_other,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
                                              st.session_state.__setattr__("winner_selected", False),
