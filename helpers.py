@@ -82,4 +82,4 @@ class database:
 
         st.session_state.leaderboard = gsheets_leaderboard
         st.session_state.detail = gsheets_detail
-        st.session_state.models = gsheets_models
+        st.session_state.models = gsheets_models['Models']

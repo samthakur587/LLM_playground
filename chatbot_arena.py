@@ -67,9 +67,10 @@ def init_session(mode: str="keys"):
 
     if mode == "online":
         helpers.database.get_online()
-        all_models = tuple(st.session_state.models)
+        all_models = list(st.session_state.models)
         json_data = st.session_state.leaderboard
-
+        data = {model: 0 for model in json_data.index}
+        
 def select_model(api_key="", authenticated=False):
     global json_data, all_models
 
@@ -129,7 +130,7 @@ def select_model(api_key="", authenticated=False):
     
     selected_models = [selected_model1, selected_model2]
     random.shuffle(selected_models)
-    st.write(st.session_state.new_models_selected)
+    
     if st.session_state.new_models_selected in [True, None]:
         st.session_state['model1'] = selected_models.pop(0)
         st.session_state['model2'] = selected_models.pop(0)
@@ -258,7 +259,7 @@ async def main():
                     upd_models.append("other")
                     upd_models = {"models": tuple(upd_models)}
                     json.dump(upd_models, models_file_update)
-            if (model1_to_add := st.session_state['model1'][:st.session_state['model1'].find("@")]) not in all_models:
+            if (model1_to_add := st.session_state['model1'][:st.session_state['model1'].find("@")]) not in data.keys():
                 st.session_state['vote_counts'][f"{model1_to_add}"]["Wins ⭐"] = 0
                 st.session_state['vote_counts'][f"{model1_to_add}"]["Losses ❌"] = 0
                     
@@ -279,7 +280,7 @@ async def main():
                     upd_models.append("other")
                     upd_models = {"models": tuple(upd_models)}
                     json.dump(upd_models, models_file_update)
-            if (model2_to_add := st.session_state['model2'][:st.session_state['model2'].find("@")]) not in all_models:
+            if (model2_to_add := st.session_state['model2'][:st.session_state['model2'].find("@")]) not in data.keys():
                 st.session_state['vote_counts'][f"{model2_to_add}"]["Wins ⭐"] = 0
                 st.session_state['vote_counts'][f"{model2_to_add}"]["Losses ❌"] = 0
         except UnifyError:
