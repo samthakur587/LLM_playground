@@ -69,7 +69,8 @@ def init_session(mode: str="keys"):
         ...
 
 def select_model(api_key="", authenticated=False):
-    global json_data, all_models
+    json_data = st.session_state.leaderboard
+    all_models = st.session_state.models
     disabled = not (bool(api_key) and bool(authenticated))
     model1_other_disabled = True
     model2_other_disabled = True
