@@ -124,19 +124,28 @@ class database:
 
         models = st.session_state.models
         
+        with st.echo():
+            # Create GSheets connection
+            conn_up = st.connection("gsheets", type=GSheetsConnection)
 
-        # with st.echo():
-        #     # Create GSheets connection
-        #     conn = st.connection("gsheets", type=GSheetsConnection)
+            # click button to update worksheet
+            # This is behind a button to avoid exceeding Google API Quota
 
-        #     # click button to update worksheet
-        #     # This is behind a button to avoid exceeding Google API Quota
-        #     if st.button("Update worksheet"):
-        #         df = conn.update(
-        #             worksheet="Example 1",
-        #             data=df,
-        #         )
-        #         st.cache_data.clear()
-        #         st.experimental_rerun()
+            conn_up.update(
+                worksheet=leaderboard_worksheet_id,
+                data=sorted_counts_df,
+            )
 
-        #     # Display our Spreadsheet as st.dataframe
+            conn_up.update(
+                worksheet=detail_worksheet_id,
+                data=detail_leaderboards,
+            )
+
+            conn_up.update(
+                worksheet=models_worksheet_id,
+                data=models,
+            )
+            st.cache_data.clear()
+            st.experimental_rerun()
+
+            # Display our Spreadsheet as st.dataframe

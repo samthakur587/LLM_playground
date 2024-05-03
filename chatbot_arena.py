@@ -22,7 +22,8 @@ def init_session(mode: str="keys"):
     if mode == "keys":
         keys = ["chat_input", "winner_selected", "api_key_provided",
                 "vote1", "vote2", "model1", "model2", "scores",
-                "authenticated", "new_models_selected", "detailed_leaderboards", "detail"]
+                "authenticated", "new_models_selected", "detailed_leaderboards",
+                "detail"]
         for key in keys:
             if key not in st.session_state.keys():
                 st.session_state[key] = None
