@@ -26,8 +26,17 @@ jobs:
           pip install -r requirements-test.txt  
       - name: Build Docker Image
         run: docker build -t chat .
-      - name: Run Tests Inside Docker Container
-        run: docker run --rm chat pytest ./test/test_app.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+      - name: display test in ci
+        id: display
+        run: |
+          pip install pytest pytest-cov
+          pytest ./test/test_app.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+      - name: Run Pytest and Capture Results
+        id: pytest
+        run: |
+          pip install pytest
+          pytest_result=$(python -m pytest ./test/test_app.py -qq || true)
+          echo "::set-output name=pytest_result::$pytest_result"
       - name: Notify discord
         uses: th0th/notify-discord@v0.4.1
         if: ${{ always() }}
