@@ -84,8 +84,8 @@ class database:
         gsheets_leaderboard = conn.read(worksheet="leaderboard")
         gsheets_leaderboard.index = list(gsheets_leaderboard['Model Name'])
         gsheets_detail = conn.read(worksheet="detail_leaderboard")
-        gsheets_detail.index = list(gsheets_detail.columns)[1:]
         gsheets_models = conn.read(worksheet="models")
+        gsheets_detail.index = gsheets_models
 
         st.session_state.leaderboard = gsheets_leaderboard
         st.session_state.detail = gsheets_detail
