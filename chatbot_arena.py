@@ -352,12 +352,7 @@ async def main():
     history_button_clicked = st.button("Clear Histroy")
     if history_button_clicked:
             st.session_state["chat_history1"] = []
-            st.session_state["chat_history2"] = []
-    
-    if source == "offline":
-        helpers.database.save_offline()
-    if source == "online":
-        helpers.database.save_online()
+            st.session_state["chat_history2"] = [] 
 
 if __name__ == "__main__":
     asyncio.run(main())

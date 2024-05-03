@@ -8,12 +8,15 @@ import pandas as pd
 import json
 import requests
 import random
+import helpers
 
 st.set_page_config(
     page_title="Leaderboards",
     page_icon="📈",
     layout="wide",
 )
+
+source = "online" if st.session_state.source is True else "offline"
 
 # Add custom CSS for the buttons
 st.markdown(
@@ -48,3 +51,11 @@ with st.container(border=True):
 with open("detail_leaderboards.json", "w") as out_file:        
     json.dump(detail_leaderboards, out_file)
 sorted_counts_df.to_csv('leaderboard.csv', index=False)
+
+with st.sidebar:
+        st.button("Save leaderboards", key="save")
+        if st.session_state.save:
+            if source == "offline":
+                helpers.database.save_offline()
+            if source == "online":
+                helpers.database.save_online()
