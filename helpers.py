@@ -101,4 +101,18 @@ class database:
         sorted_counts_df.to_csv('leaderboard.csv', index=False)
 
     def save_online():
-        ...
+        # with st.echo():
+        #     # Create GSheets connection
+        #     conn = st.connection("gsheets", type=GSheetsConnection)
+
+        #     # click button to update worksheet
+        #     # This is behind a button to avoid exceeding Google API Quota
+        #     if st.button("Update worksheet"):
+        #         df = conn.update(
+        #             worksheet="Example 1",
+        #             data=df,
+        #         )
+        #         st.cache_data.clear()
+        #         st.experimental_rerun()
+
+        #     # Display our Spreadsheet as st.dataframe
