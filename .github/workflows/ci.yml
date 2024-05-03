@@ -1,0 +1,47 @@
+name: Build Docker and run tests
+
+on:
+  push:
+    branches:
+      - '*'
+  schedule:
+    - cron: '0 */12 * * *'  # Run every 12 hours
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Discord Webhook URL 
+        run: echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_URL }}" >> $GITHUB_ENV
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Set Up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9  
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt 
+          pip install -r requirements-test.txt  
+      - name: Build Docker Image
+        run: docker build -t chat .
+      - name: display test in ci
+        id: display
+        run: |
+          pip install pytest pytest-cov
+          pytest ./test/test_helper.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+      - name: Run Pytest and Capture Results
+        id: pytest
+        run: |
+          pip install pytest
+          pytest_result=$(python -m pytest ./test/test_helper.py -qq || true)
+          echo "::set-output name=pytest_result::$pytest_result"
+      - name: Notify discord
+        uses: th0th/notify-discord@v0.4.1
+        if: ${{ always() }}
+        env:
+         DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+         GITHUB_ACTOR: ${{ github.actor }}
+         GITHUB_JOB_NAME: "folder chat build"
+         GITHUB_JOB_STATUS: ${{ job.status }}

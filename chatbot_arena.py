@@ -195,7 +195,7 @@ async def main():
     st.markdown(
     """
     <h1 style='text-align: center; color: green;'>
-        Unify's LLM Playground 🚀
+        ⚔️ Unify Chatbot Arena: Benchmarking LLMs in the Wild 🚀
     </h1>
     """,
     unsafe_allow_html=True)
@@ -284,10 +284,11 @@ async def main():
             try:
                 async_stream = await unify_obj.generate(messages=message, stream=True)
                 placeholder = contain.empty()
-                full_response = '🤖  '
+                full_response = ""
                 async for chunk in async_stream:
                     full_response += chunk
                     placeholder.markdown(full_response)
+                placeholder.markdown(full_response)
                 if full_response == "":
                     full_response = "<No response>"
             except UnifyError as error_message:
@@ -314,7 +315,7 @@ async def main():
         left_button_clicked = st.button("👍 Vote First Model", disabled=vote_disabled,
                                         on_click=lambda: st.session_state.__setattr__("winner_selected", True))
         if left_button_clicked:
-                
+                st.balloons()
                 # Increase the vote count for the selected model by 1 when the button is clicked
                 model1 = st.session_state['model1'].split("@")[0]
                 model2 = st.session_state['model2'].split("@")[0]
@@ -333,6 +334,7 @@ async def main():
         right_button_clicked = st.button("👍 Vote Second Model", disabled=vote_disabled,
                                          on_click=lambda: st.session_state.__setattr__("winner_selected", True))
         if right_button_clicked:
+                st.balloons()
                 # Increase the vote count for the selected model by 1 when the button is clicked
                 model1 = st.session_state['model1'].split("@")[0]
                 model2 = st.session_state['model2'].split("@")[0]

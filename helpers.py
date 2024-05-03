@@ -10,7 +10,8 @@ import json
 import requests
 import random
 
-
+def hello():
+    return "Hello, World!"
 class database:
     def get_offline():
 
