@@ -10,7 +10,7 @@ import requests
 import random
 
 st.set_page_config(
-    page_title="Import model",
+    page_title="Import Model",
     page_icon="📝",
     layout="wide",
 )

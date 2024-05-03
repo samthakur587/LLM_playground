@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_gsheets import GSheetsConnection
 from unify import AsyncUnify
 from unify import Unify
 import os
@@ -8,49 +9,79 @@ import pandas as pd
 import json
 import requests
 import random
+import helpers
 
 st.set_page_config(
     page_title="Chatbot Arena",
     page_icon="🤖",
     layout="wide",
-
 )
 
-keys = ["chat_input", "winner_selected", "api_key_provided",
-        "vote1", "vote2", "model1", "model2", "api_key", "scores",
-        "authenticated", "new_models_selected"]
+def init_session(mode: str="keys"):
+    global all_models, data, json_data
+    if mode == "keys":
+        keys = ["chat_input", "winner_selected", "api_key_provided",
+                "vote1", "vote2", "model1", "model2", "scores",
+                "authenticated", "new_models_selected", "detailed_leaderboards", "detail"]
+        for key in keys:
+            if key not in st.session_state.keys():
+                st.session_state[key] = None
+        if "code_input" not in st.session_state.keys():
+            st.session_state.code_input = " "
+        if "chat_history1" not in st.session_state.keys():
+            st.session_state.chat_history1 = []
+        if "chat_history2" not in st.session_state.keys():
+            st.session_state.chat_history2 = []
 
-for key in keys:
-    if key not in st.session_state.keys():
-        st.session_state[key] = None
-if "code_input" not in st.session_state.keys():
-    st.session_state.code_input = " "
-if "chat_history1" not in st.session_state.keys():
-    st.session_state.chat_history1 = []
-if "chat_history2" not in st.session_state.keys():
-    st.session_state.chat_history2 = []
+        if "model1_selectbox" not in st.session_state.keys():
+            st.session_state.placeholder_model1 = 'other'
+        if "model1_other" not in st.session_state.keys():
+            st.session_state.placeholder_model1_other = 'model@provider'
+        if "model2_selectbox" not in st.session_state.keys():
+            st.session_state.placeholder_model2 = 'other'
+        if "model2_other" not in st.session_state.keys():
+            st.session_state.placeholder_model2_other = 'model@provider'
 
-# Load JSON data from file
-with open("models.json", "r") as f:
-    data = json.load(f)
-all_models = tuple(data['models'])
-#model_options = [model.split("@")[0] for model in all_models]
-data = pd.read_csv("leaderboard.csv")  # This will raise an error if the file does not exist   
-json_data = {model: {"Wins ⭐": wins, "Losses ❌": losses} for model, wins, losses in zip(data["Model Name"], data["Wins ⭐"], data["Losses ❌"])}
+        if "index_model1" not in st.session_state.keys():
+            st.session_state.index_model1 = 0 
+        if "index_model2" not in st.session_state.keys():
+            st.session_state.index_model2 = 0
+        if "value_model1_other" not in st.session_state.keys():
+            st.session_state.value_model1_other = ""
+        if "value_model2_other" not in st.session_state.keys():
+            st.session_state.value_model2_other = ""
 
+        if "api_key" not in st.session_state.keys():
+            st.session_state.api_key = ""
 
-def select_model(api_key=st.session_state.api_key, authenticated=st.session_state.authenticated):
+    if mode == "offline":
+        helpers.database.get_offline()
+        # Load JSON data from file
+        all_models = st.session_state.models
+        #model_options = [model.split("@")[0] for model in all_models]
+        data = pd.read_csv("leaderboard.csv")  # This will raise an error if the file does not exist   
+        json_data = st.session_state.leaderboard
+
+        if 'vote_counts' not in st.session_state:
+            st.session_state['vote_counts'] = json_data
+
+    if mode == "online":
+        helpers.database.get_online()
+        all_models = list(st.session_state.models)
+        json_data = st.session_state.leaderboard
+        data = {model: 0 for model in json_data.index}
+        
+def select_model(api_key="", authenticated=False):
     global json_data, all_models
+
     disabled = not (bool(api_key) and bool(authenticated))
     model1_other_disabled = True
     model2_other_disabled = True
-    models = json_data
-    if 'vote_counts' not in st.session_state:
-        st.session_state['vote_counts'] = models
+
     st.selectbox("Select the first model's endpoint:",
                          all_models,
-                         placeholder='mixtral-8x7b-instruct-v0.1@fireworks-ai',
                          disabled=disabled,
+                         index=st.session_state.index_model1,
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
                                             st.session_state.__setattr__("winner_selected", False),
@@ -58,8 +89,10 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                          key="model1_selectbox")
     if st.session_state.model1_selectbox == 'other':
         model1_other_disabled = False
-    st.text_input('If "other", provide your own model:', placeholder='model@provider',
+    st.text_input('If "other", provide your own model:',
+                          placeholder="<model>@<provider>",
                           disabled=model1_other_disabled,
+                          value=st.session_state.value_model1_other,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
                                              st.session_state.__setattr__("winner_selected", False),
@@ -67,8 +100,8 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                           key='model1_other')
     st.selectbox("Select the second model's endpoint:",
                          all_models,
-                         placeholder='mixtral-8x7b-instruct-v0.1@fireworks-ai',
                          disabled=disabled,
+                         index=st.session_state.index_model2,
                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                             st.session_state.__setattr__("chat_history2", []),
                                             st.session_state.__setattr__("winner_selected", False),
@@ -76,8 +109,10 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
                          key="model2_selectbox")
     if st.session_state.model2_selectbox == 'other':
         model2_other_disabled = False
-    st.text_input('If "other", provide your own model:', placeholder='model@provider',
+    st.text_input('If "other", provide your own model:',
+                          placeholder="<model>@<provider>",
                           disabled=model2_other_disabled,
+                          value=st.session_state.value_model2_other,
                           on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
                                              st.session_state.__setattr__("chat_history2", []),
                                              st.session_state.__setattr__("winner_selected", False),
@@ -86,9 +121,17 @@ def select_model(api_key=st.session_state.api_key, authenticated=st.session_stat
     selected_model1 = st.session_state.model1_selectbox if st.session_state.model1_selectbox != "other" else st.session_state.model1_other
     selected_model2 = st.session_state.model2_selectbox if st.session_state.model2_selectbox != "other" else st.session_state.model2_other
 
+    st.session_state.index_model1 = all_models.index(st.session_state.model1_selectbox)
+    st.session_state.index_model2 = all_models.index(st.session_state.model2_selectbox)
+    if st.session_state.model1_selectbox == "other":
+        st.session_state.value_model1_other = selected_model1
+    if st.session_state.model2_selectbox == "other":
+        st.session_state.value_model2_other = selected_model2
+    
     selected_models = [selected_model1, selected_model2]
     random.shuffle(selected_models)
-    if st.session_state.new_models_selected is True:
+    
+    if st.session_state.new_models_selected in [True, None]:
         st.session_state['model1'] = selected_models.pop(0)
         st.session_state['model2'] = selected_models.pop(0)
         st.session_state.new_models_selected = False
@@ -128,23 +171,26 @@ def input_api_key(api_key=" "):
 def print_history(contain):
     cont1, cont2 = contain
     for i in st.session_state["chat_history1"]:
-            if i['role']=="user":
-                cont1.write("🧑‍💻" +"  "+ i["content"])
-            else:
-                cont1.write(i["content"])
+        if i['role']=="user":
+            cont1.write("🧑‍💻" +"  "+ i["content"])
+        else:
+            cont1.write(i["content"])
     for i in st.session_state["chat_history2"]:
         if i['role']=="user": 
             cont2.write("🧑‍💻" +"  "+ i["content"])
         else:
-            cont2.write(i["content"])       
+            cont2.write(i["content"])     
+
 def call_model(Endpoint):
     async_unify = AsyncUnify(
     api_key=st.session_state['api_key'],
     endpoint=Endpoint)
     return async_unify
 st.set_option('deprecation.showPyplotGlobalUse', False)
+
 async def main():
     global all_models, data
+    init_session("keys")
     st.session_state.code_input = ""
     st.markdown(
     """
@@ -154,8 +200,11 @@ async def main():
     """,
     unsafe_allow_html=True)
     st.sidebar.subheader("Unify API Key")
-    api_key = st.sidebar.text_input(" ", placeholder="API key is required to proceed.",type="password")
+    api_key = st.sidebar.text_input(" ", value=st.session_state.api_key, placeholder="API key is required to proceed.",type="password")
     input_api_key(api_key)
+    st.sidebar.checkbox("Use online database (google sheets).", key="source")
+    source = "online" if st.session_state.source is True else "offline"
+    init_session(source)
     # Display sidebar widgets
     with st.sidebar:
         select_model(st.session_state.api_key, st.session_state.authenticated)
@@ -268,8 +317,13 @@ async def main():
                 
                 # Increase the vote count for the selected model by 1 when the button is clicked
                 model1 = st.session_state['model1'].split("@")[0]
+                model2 = st.session_state['model2'].split("@")[0]
                 st.session_state['vote_counts'][model1]["Wins ⭐"] += 1
                 st.session_state['vote_counts'][st.session_state['model2'].split("@")[0]]["Losses ❌"] += 1
+                if model1 not in st.session_state.detailed_leaderboards["scores"].keys() or model1 not in st.session_state.detailed_leaderboards["scores"].keys():
+                    st.session_state.detailed_leaderboards["scores"][model1][model2] = 0
+                st.session_state.detailed_leaderboards["scores"][model1][model2] += 1
+
                 print_history(contain=(cont1, cont2))
                 try:
                     st.session_state.code_input = st.session_state["chat_history1"][-2]['content']
@@ -280,9 +334,14 @@ async def main():
                                          on_click=lambda: st.session_state.__setattr__("winner_selected", True))
         if right_button_clicked:
                 # Increase the vote count for the selected model by 1 when the button is clicked
+                model1 = st.session_state['model1'].split("@")[0]
                 model2 = st.session_state['model2'].split("@")[0]
                 st.session_state['vote_counts'][model2]["Wins ⭐"] += 1
                 st.session_state['vote_counts'][st.session_state['model1'].split("@")[0]]["Losses ❌"] += 1
+                if model2 not in st.session_state.detailed_leaderboards["scores"].keys() or model1 not in st.session_state.detailed_leaderboards["scores"].keys():
+                    st.session_state.detailed_leaderboards["scores"][model2][model1] = 0
+                st.session_state.detailed_leaderboards["scores"][model2][model1] += 1
+                
                 print_history(contain=(cont1, cont2))
                 try:
                     st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
@@ -293,10 +352,11 @@ async def main():
     if history_button_clicked:
             st.session_state["chat_history1"] = []
             st.session_state["chat_history2"] = []
-        
+    
+    if source == "offline":
+        helpers.database.save_offline()
+    if source == "online":
+        helpers.database.save_online()
+
 if __name__ == "__main__":
     asyncio.run(main())
-    
-    
-     
-
