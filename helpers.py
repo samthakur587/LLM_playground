@@ -81,11 +81,11 @@ class database:
 
         conn = st.connection("gsheets", type=GSheetsConnection)
 
-        gsheets_leaderboard = conn.read(worksheet=leaderboard_worksheet_id)
+        gsheets_leaderboard = conn.read(worksheet="leaderboard")
         gsheets_leaderboard.index = list(gsheets_leaderboard['Model Name'])
-        gsheets_detail = conn.read(worksheet=detail_worksheet_id)
+        gsheets_detail = conn.read(worksheet="detail_leaderboard")
         gsheets_detail.index = list(gsheets_detail.columns)[1:]
-        gsheets_models = conn.read(worksheet=models_worksheet_id)
+        gsheets_models = conn.read(worksheet="models")
 
         st.session_state.leaderboard = gsheets_leaderboard
         st.session_state.detail = gsheets_detail
@@ -132,17 +132,17 @@ class database:
             # This is behind a button to avoid exceeding Google API Quota
 
             conn_up.update(
-                worksheet=leaderboard_worksheet_id,
+                worksheet="leaderboard",
                 data=sorted_counts_df,
             )
 
             conn_up.update(
-                worksheet=detail_worksheet_id,
+                worksheet="detail_leaderboard",
                 data=detail_leaderboards,
             )
 
             conn_up.update(
-                worksheet=models_worksheet_id,
+                worksheet="models",
                 data=models,
             )
             st.cache_data.clear()
