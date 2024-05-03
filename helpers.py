@@ -10,6 +10,9 @@ import json
 import requests
 import random
 
+leaderboard_worksheet_id = 0
+detail_worksheet_id = 1113438455
+models_worksheet_id = 1855482431
 
 class database:
     def get_offline():
@@ -69,7 +72,7 @@ class database:
 
 
     def get_online():
-
+        global leaderboard_worksheet_id, detail_worksheet_id, models_worksheet_id
         keys = ["leaderboard", "detail", "models"]
         for key in keys:
             if key not in st.session_state.keys():
@@ -78,11 +81,11 @@ class database:
 
         conn = st.connection("gsheets", type=GSheetsConnection)
 
-        gsheets_leaderboard = conn.read(worksheet=0)
+        gsheets_leaderboard = conn.read(worksheet=leaderboard_worksheet_id)
         gsheets_leaderboard.index = list(gsheets_leaderboard['Model Name'])
-        gsheets_detail = conn.read(worksheet=1113438455)
+        gsheets_detail = conn.read(worksheet=detail_worksheet_id)
         gsheets_detail.index = list(gsheets_detail.columns)[1:]
-        gsheets_models = conn.read(worksheet=1855482431)
+        gsheets_models = conn.read(worksheet=models_worksheet_id)
 
         st.session_state.leaderboard = gsheets_leaderboard
         st.session_state.detail = gsheets_detail
