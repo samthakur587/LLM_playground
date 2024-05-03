@@ -166,9 +166,9 @@ Contributions are welcome! Here are several ways you can contribute:
 - **[Report Issues](https://github.com/samthakur587/LLM_playground/issues)**: Submit bugs found or log feature requests for the `LLM_playground` project.
 - **[Submit Pull Requests](https://github.com/samthakur587/LLM_playground/blob/main/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
 - **[Join the Discussions](https://github.com/samthakur587/LLM_playground/discussions)**: Share your insights, provide feedback, or ask questions.
+---
 
-<details closed>
-<summary>Contributing Guidelines</summary>
+## Contributing Guidelines
 
 1. **Fork the Repository**: Start by forking the project repository to your github account.
 2. **Clone Locally**: Clone the forked repository to your local machine using a git client.
@@ -190,21 +190,16 @@ Contributions are welcome! Here are several ways you can contribute:
    ```
 7. **Submit a Pull Request**: Create a PR against the original project repository. Clearly describe the changes and their motivations.
 8. **Review**: Once your PR is reviewed and approved, it will be merged into the main branch. Congratulations on your contribution!
-</details>
 
-<details closed>
-
-<summary>Contributor Graph</summary>
-<br>
+---
+## Contributor Graph
 <p align="center">
    <a href="https://github.com{/samthakur587/LLM_playground/}graphs/contributors">
       <img src="https://contrib.rocks/image?repo=samthakur587/LLM_playground">
    </a>
-</p>
-</details>
+
 
 ---
-
 ## Used the Unify streaming API
 ```python
   from unify import AsyncUnify
@@ -225,3 +220,4 @@ asyncio.run(main())
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+---
