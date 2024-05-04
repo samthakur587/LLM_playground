@@ -23,7 +23,7 @@ def init_session(mode: str="keys"):
         keys = ["chat_input", "winner_selected", "api_key_provided",
                 "vote1", "vote2", "model1", "model2", "scores",
                 "authenticated", "new_models_selected", "detailed_leaderboards",
-                "detail", "source"]
+                "detail"]
         for key in keys:
             if key not in st.session_state.keys():
                 st.session_state[key] = None
@@ -54,6 +54,9 @@ def init_session(mode: str="keys"):
 
         if "api_key" not in st.session_state.keys():
             st.session_state.api_key = ""
+
+        if "source" not in st.session_state.keys():
+            st.session_state.source = False
 
     if mode == "offline":
         helpers.database.get_offline()
@@ -203,7 +206,7 @@ async def main():
     st.sidebar.subheader("Unify API Key")
     api_key = st.sidebar.text_input(" ", value=st.session_state.api_key, placeholder="API key is required to proceed.",type="password")
     input_api_key(api_key)
-    st.session_state.source = st.sidebar.checkbox("Use online database (google sheets).")
+    st.session_state.source = st.sidebar.checkbox("Use online database (google sheets).", st.session_state.source)
     source = "online" if st.session_state.source is True else "offline"
     init_session(source)
     # Display sidebar widgets
