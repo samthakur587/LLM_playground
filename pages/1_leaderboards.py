@@ -45,7 +45,7 @@ with c2:
 with st.container(border=True):
     st.markdown(f"<h3 style='text-align: center; color: red;'>{model1_detail} : {model2_detail}</h3>",
                 unsafe_allow_html=True)
-    st.markdown(f"<h4 style='text-align: center;'>{detail_leaderboards['scores'][model1_detail][model2_detail]}:{detail_leaderboards['scores'][model2_detail][model1_detail]}</h4>",
+    st.markdown(f"<h4 style='text-align: center;'>{int(detail_leaderboards['scores'].at[model1_detail, model2_detail])}:{int(detail_leaderboards['scores'].at[model2_detail, model1_detail])}</h4>",
                 unsafe_allow_html=True)
 
 with st.sidebar:
