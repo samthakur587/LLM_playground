@@ -36,7 +36,7 @@ st.data_editor(sorted_counts_df, num_rows="dynamic", use_container_width=True)
 
 
 detail_leaderboards = st.session_state.detailed_leaderboards
-model_selection = list(detail_leaderboards["scores"].keys())
+model_selection = list(detail_leaderboards["scores"].keys())[1:]
 c1, c2 = st.columns(2)
 with c1:
     model1_detail = st.selectbox("Select model 1", model_selection, placeholder=model_selection[0])
