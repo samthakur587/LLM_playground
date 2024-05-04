@@ -48,10 +48,6 @@ with st.container(border=True):
     st.markdown(f"<h4 style='text-align: center;'>{detail_leaderboards['scores'][model1_detail][model2_detail]}:{detail_leaderboards['scores'][model2_detail][model1_detail]}</h4>",
                 unsafe_allow_html=True)
 
-with open("detail_leaderboards.json", "w") as out_file:        
-    json.dump(detail_leaderboards, out_file)
-sorted_counts_df.to_csv('leaderboard.csv', index=False)
-
 with st.sidebar:
         st.button("Save leaderboards", key="save")
         if st.session_state.save:
