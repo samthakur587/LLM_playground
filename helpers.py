@@ -62,10 +62,7 @@ class database:
                     json.dump(detail_leaderboards, out_file)
 
         with open("detail_leaderboards.csv", "r") as in_file:
-            st.session_state.detail = pd.read_csv(in_file, index_col=0)
-
-        with open("detail_leaderboards.json", "r") as in_file:
-                st.session_state.detailed_leaderboards = json.load(in_file)
+            st.session_state.detailed_leaderboards = {"scores": pd.read_csv(in_file, index_col=0)}
 
         st.session_state.leaderboard = json_data
         st.session_state.models = all_models
@@ -85,10 +82,10 @@ class database:
         gsheets_leaderboard.index = list(gsheets_leaderboard['Model Name'])
         gsheets_detail = conn.read(worksheet="detail_leaderboard")
         gsheets_models = conn.read(worksheet="models")
-        gsheets_detail.index = gsheets_models
+        gsheets_detail.index = list(gsheets_leaderboard['Model Name'])
 
         st.session_state.leaderboard = gsheets_leaderboard
-        st.session_state.detail = gsheets_detail
+        st.session_state.detailed_leaderboards = {"scores": gsheets_detail}
         st.session_state.models = gsheets_models['Models']
 
     def save_offline():
