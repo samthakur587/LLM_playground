@@ -117,7 +117,7 @@ class database:
 
         sorted_counts_df = pd.DataFrame(sorted_counts, columns=['Model Name', 'Wins ⭐', 'Losses ❌'])
 
-        detail_leaderboards = st.session_state.detailed_leaderboards
+        detail_leaderboards = st.session_state.detailed_leaderboards["scores"]
 
         models = st.session_state.models
         
