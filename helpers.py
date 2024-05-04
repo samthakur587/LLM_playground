@@ -69,7 +69,6 @@ class database:
 
 
     def get_online():
-        global leaderboard_worksheet_id, detail_worksheet_id, models_worksheet_id
         keys = ["leaderboard", "detail", "models"]
         for key in keys:
             if key not in st.session_state.keys():
