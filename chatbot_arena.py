@@ -22,12 +22,8 @@ def init_session(mode: str="keys"):
     if mode == "keys":
         keys = ["chat_input", "winner_selected", "api_key_provided",
                 "vote1", "vote2", "model1", "model2", "scores",
-<<<<<<< HEAD
                 "authenticated", "new_models_selected", "detailed_leaderboards",
                 "detail", "new_source"]
-=======
-                "authenticated", "new_models_selected", "detailed_leaderboards", "detail"]
->>>>>>> main
         for key in keys:
             if key not in st.session_state.keys():
                 st.session_state[key] = None
@@ -59,12 +55,9 @@ def init_session(mode: str="keys"):
         if "api_key" not in st.session_state.keys():
             st.session_state.api_key = ""
 
-<<<<<<< HEAD
         if "source" not in st.session_state.keys():
             st.session_state.source = False
 
-=======
->>>>>>> main
     if mode == "offline":
         helpers.database.get_offline()
         # Load JSON data from file
