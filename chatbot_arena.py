@@ -23,7 +23,7 @@ def init_session(mode: str="keys"):
         keys = ["chat_input", "winner_selected", "api_key_provided",
                 "vote1", "vote2", "model1", "model2", "scores",
                 "authenticated", "new_models_selected", "detailed_leaderboards",
-                "detail"]
+                "detail", "source"]
         for key in keys:
             if key not in st.session_state.keys():
                 st.session_state[key] = None
@@ -203,7 +203,7 @@ async def main():
     st.sidebar.subheader("Unify API Key")
     api_key = st.sidebar.text_input(" ", value=st.session_state.api_key, placeholder="API key is required to proceed.",type="password")
     input_api_key(api_key)
-    st.sidebar.checkbox("Use online database (google sheets).", key="source")
+    st.session_state.source = st.sidebar.checkbox("Use online database (google sheets).")
     source = "online" if st.session_state.source is True else "offline"
     init_session(source)
     # Display sidebar widgets
@@ -322,8 +322,8 @@ async def main():
                 st.session_state['vote_counts'][model1]["Wins ⭐"] += 1
                 st.session_state['vote_counts'][st.session_state['model2'].split("@")[0]]["Losses ❌"] += 1
                 if model1 not in st.session_state.detailed_leaderboards["scores"].keys() or model1 not in st.session_state.detailed_leaderboards["scores"].keys():
-                    st.session_state.detailed_leaderboards["scores"][model1][model2] = 0
-                st.session_state.detailed_leaderboards["scores"][model1][model2] += 1
+                    st.session_state.detailed_leaderboards["scores"].at[model1, model2] = 0
+                st.session_state.detailed_leaderboards["scores"].at[model1, model2] += 1
 
                 print_history(contain=(cont1, cont2))
                 try:
@@ -340,8 +340,8 @@ async def main():
                 st.session_state['vote_counts'][model2]["Wins ⭐"] += 1
                 st.session_state['vote_counts'][st.session_state['model1'].split("@")[0]]["Losses ❌"] += 1
                 if model2 not in st.session_state.detailed_leaderboards["scores"].keys() or model1 not in st.session_state.detailed_leaderboards["scores"].keys():
-                    st.session_state.detailed_leaderboards["scores"][model2][model1] = 0
-                st.session_state.detailed_leaderboards["scores"][model2][model1] += 1
+                    st.session_state.detailed_leaderboards["scores"].at[model2, model1] = 0
+                st.session_state.detailed_leaderboards["scores"].at[model2, model1] += 1
                 
                 print_history(contain=(cont1, cont2))
                 try:
