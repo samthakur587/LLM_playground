@@ -14,6 +14,7 @@ st.set_page_config(
     page_icon="📝",
     layout="wide",
 )
+
 code_input = st.session_state.code_input
 api1 = f'''
         # if you like the {st.session_state.model1} model, then you can add this to your code:

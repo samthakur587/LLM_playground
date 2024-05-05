@@ -14,8 +14,24 @@ leaderboard_worksheet_id = 0
 detail_worksheet_id = 1113438455
 models_worksheet_id = 1855482431
 
+
 class database:
-    def get_offline():
+
+    def get_offline() -> None:
+
+        '''
+        Static method. Assigns the local database's contents to
+        the corresponding session states.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        '''
 
         keys = ["leaderboard", "detail", "models", "detailed_leaderboards"]
         for key in keys:
@@ -57,9 +73,9 @@ class database:
             detail_dataframe.to_csv('detail_leaderboards.csv')
 
         if not os.path.exists("./detail_leaderboards.json"):
-                with open("detail_leaderboards.json", "w") as out_file:        
-                    detail_leaderboards = {"scores": {winning_model: {losing_model: 0 for losing_model in json_data.keys()} for winning_model in json_data.keys()}}
-                    json.dump(detail_leaderboards, out_file)
+            with open("detail_leaderboards.json", "w") as out_file:        
+                detail_leaderboards = {"scores": {winning_model: {losing_model: 0 for losing_model in json_data.keys()} for winning_model in json_data.keys()}}
+                json.dump(detail_leaderboards, out_file)
 
         with open("detail_leaderboards.csv", "r") as in_file:
             st.session_state.detailed_leaderboards = {"scores": pd.read_csv(in_file, index_col=0)}
@@ -67,13 +83,26 @@ class database:
         st.session_state.leaderboard = json_data
         st.session_state.models = all_models
 
-
     def get_online():
+
+        '''
+        Static method. Assigns the online database's contents to
+        the corresponding session states.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        '''
+
         keys = ["leaderboard", "detail", "models"]
         for key in keys:
             if key not in st.session_state.keys():
                 st.session_state[key] = None
-
 
         conn = st.connection("gsheets", type=GSheetsConnection)
 
@@ -88,6 +117,21 @@ class database:
         st.session_state.models = gsheets_models['Models']
 
     def save_offline():
+
+        '''
+        Static method. Saves the session states
+        in the local database.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        '''
+
         keys = ["leaderboard", "detail", "models"]
         for key in keys:
             if key not in st.session_state.keys():
@@ -105,6 +149,20 @@ class database:
 
     def save_online():
 
+        '''
+        Static method. Saves the session states
+        in the online database.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        '''
+
         keys = ["leaderboard", "detail", "models"]
         for key in keys:
             if key not in st.session_state.keys():
@@ -119,7 +177,7 @@ class database:
         detail_leaderboards = st.session_state.detailed_leaderboards["scores"]
 
         models = st.session_state.models
-        
+
         with st.echo():
             # Create GSheets connection
             conn_up = st.connection("gsheets", type=GSheetsConnection)

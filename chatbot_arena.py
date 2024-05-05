@@ -17,7 +17,28 @@ st.set_page_config(
     layout="wide",
 )
 
-def init_session(mode: str="keys"):
+
+def init_session(mode: str = "keys") -> None:
+
+    '''
+    Initialize session states and databases.
+
+    Parameters
+    ----------
+    mode
+        defines elements to assign.
+        - ''keys'': initializes keys for st.session_state elements.
+        - ''online'': connects to the database (Google Sheets) and assigns its contents to
+            their corresponding session states.
+        - ''offline': loads the database from the project's folder and assigns its contents
+            to their corresponding session states.
+        Default: "keys".
+
+    Returns
+    -------
+    None
+    '''
+
     global all_models, data, json_data
     if mode == "keys":
         keys = ["chat_input", "winner_selected", "api_key_provided",
@@ -74,8 +95,28 @@ def init_session(mode: str="keys"):
         all_models = list(st.session_state.models)
         json_data = st.session_state.leaderboard
         data = {model: 0 for model in json_data.index}
-        
-def select_model(api_key="", authenticated=False):
+
+
+def select_model(api_key: str = "", authenticated: bool = False) -> None:
+
+    '''
+    Select two models for the Unify API. The models are picked through selectbox options.
+    
+    Parameters
+    ----------
+    api_key
+        The key to the Unify API. If none is provided, the UI of the app remains disabled.
+        Default: "".
+    authenticated
+        The return value of the request call to the Unify API. If API key authentication returns
+        an error or is not assigned to any user, this parameters disables the app's UI.
+        Default: False
+
+    Returns
+    -------
+    None
+    '''
+
     global json_data, all_models
 
     disabled = not (bool(api_key) and bool(authenticated))
@@ -86,10 +127,10 @@ def select_model(api_key="", authenticated=False):
                          all_models,
                          disabled=disabled,
                          index=st.session_state.index_model1,
-                         on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
-                                            st.session_state.__setattr__("chat_history2", []),
-                                            st.session_state.__setattr__("winner_selected", False),
-                                            st.session_state.__setattr__("new_models_selected", True)),
+                         on_change=lambda: (setattr(st.session_state, "chat_history1", []),
+                                            setattr(st.session_state, "chat_history2", []),
+                                            setattr(st.session_state, "winner_selected", False),
+                                            setattr(st.session_state, "new_models_selected", True)),
                          key="model1_selectbox")
     if st.session_state.model1_selectbox == 'other':
         model1_other_disabled = False
@@ -97,19 +138,19 @@ def select_model(api_key="", authenticated=False):
                           placeholder="<model>@<provider>",
                           disabled=model1_other_disabled,
                           value=st.session_state.value_model1_other,
-                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
-                                             st.session_state.__setattr__("chat_history2", []),
-                                             st.session_state.__setattr__("winner_selected", False),
-                                             st.session_state.__setattr__("new_models_selected", True)),
+                          on_change=lambda: (setattr(st.session_state, "chat_history1", []),
+                                             setattr(st.session_state, "chat_history2", []),
+                                             setattr(st.session_state, "winner_selected", False),
+                                             setattr(st.session_state, "new_models_selected", True)),
                           key='model1_other')
     st.selectbox("Select the second model's endpoint:",
                          all_models,
                          disabled=disabled,
                          index=st.session_state.index_model2,
-                         on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
-                                            st.session_state.__setattr__("chat_history2", []),
-                                            st.session_state.__setattr__("winner_selected", False),
-                                            st.session_state.__setattr__("new_models_selected", True)),
+                         on_change=lambda: (setattr(st.session_state, "chat_history1", []),
+                                            setattr(st.session_state, "chat_history2", []),
+                                            setattr(st.session_state, "winner_selected", False),
+                                            setattr(st.session_state, "new_models_selected", True)),
                          key="model2_selectbox")
     if st.session_state.model2_selectbox == 'other':
         model2_other_disabled = False
@@ -117,10 +158,10 @@ def select_model(api_key="", authenticated=False):
                           placeholder="<model>@<provider>",
                           disabled=model2_other_disabled,
                           value=st.session_state.value_model2_other,
-                          on_change=lambda: (st.session_state.__setattr__("chat_history1", []),
-                                             st.session_state.__setattr__("chat_history2", []),
-                                             st.session_state.__setattr__("winner_selected", False),
-                                             st.session_state.__setattr__("new_models_selected", True)),
+                          on_change=lambda: (setattr(st.session_state, "chat_history1", []),
+                                             setattr(st.session_state, "chat_history2", []),
+                                             setattr(st.session_state, "winner_selected", False),
+                                             setattr(st.session_state, "new_models_selected", True)),
                           key='model2_other')
     selected_model1 = st.session_state.model1_selectbox if st.session_state.model1_selectbox != "other" else st.session_state.model1_other
     selected_model2 = st.session_state.model2_selectbox if st.session_state.model2_selectbox != "other" else st.session_state.model2_other
@@ -131,16 +172,36 @@ def select_model(api_key="", authenticated=False):
         st.session_state.value_model1_other = selected_model1
     if st.session_state.model2_selectbox == "other":
         st.session_state.value_model2_other = selected_model2
-    
+
     selected_models = [selected_model1, selected_model2]
     random.shuffle(selected_models)
-    
+
     if st.session_state.new_models_selected in [True, None]:
         st.session_state['model1'] = selected_models.pop(0)
         st.session_state['model2'] = selected_models.pop(0)
         st.session_state.new_models_selected = False
 
-def history(model='model1', output='how are you'):
+
+def history(model: str = "model1", output: str = "") -> None:
+
+    '''
+    Assign to session states and manage the contents of the chat history.
+
+    Parameters
+    ----------
+    model
+        the key of the model. Takes on the values in ["model1", "model2"].
+        Default: "model1".
+    output
+        the response of the model to the prompt.
+        Default: ""
+
+    Returns
+    -------
+    None
+
+    '''
+
     if model == 'model1':
         st.session_state['chat_history1'].append({"role": "assistant", "content": output})
     elif model == 'model2':
@@ -153,26 +214,57 @@ def history(model='model1', output='how are you'):
     if len(st.session_state['chat_history2']) >= 10:
         st.session_state['chat_history2'].pop(0)
 
-# Define function to input API key
-def input_api_key(api_key=" "):
+
+def input_api_key(api_key: str = " ") -> None:
+    '''
+    Authorize the Unify API key provided by the user. If the key is recognised,
+    the app's UI will be unlocked.
+
+    Parameters
+    ----------
+    api_key
+        The key to the Unify API.
+        Default: " ".
+
+    Returns
+    -------
+    None
+
+    '''
+
     authorisation_url = "https://api.unify.ai/v0/get_credits"
     r = requests.get(authorisation_url, headers={"accept": "application/json", "Authorization": f"Bearer {api_key}"}).json()
 
     if "id" in r.keys():
-        st.session_state.__setattr__("api_key_provided", True)
-        st.session_state.__setattr__("authenticated", True)
+        setattr(st.session_state, "api_key_provided", True)
+        setattr(st.session_state, "authenticated", True)
         st.sidebar.write(f"Session user credits: {r['credits']}")
         st.session_state['api_key'] = api_key
     elif "detail" in r.keys():
-        st.session_state.__setattr__("api_key_provided", False)
-        st.session_state.__setattr__("authenticated", False)
+        setattr(st.session_state, "api_key_provided", False)
+        setattr(st.session_state, "authenticated", False)
         st.sidebar.write(f"{r['detail']}")
     elif "error" in r.keys():
-        st.session_state.__setattr__("api_key_provided", False)
-        st.session_state.__setattr__("authenticated", False)
+        setattr(st.session_state, "api_key_provided", False)
+        setattr(st.session_state, "authenticated", False)
         st.sidebar.write(f"{r['error']}")
-        
-def print_history(contain):
+
+
+def print_history(contain: st.container) -> None:
+    '''
+    Print the chat history in a streamlit split container.
+
+    Parameters
+    ----------
+    contain
+        streamlit container to print the chat history into.
+
+    Returns
+    -------
+    None
+
+    '''
+
     cont1, cont2 = contain
     for i in st.session_state["chat_history1"]:
         if i['role']=="user":
@@ -185,29 +277,65 @@ def print_history(contain):
         else:
             cont2.write(i["content"])     
 
-def call_model(Endpoint):
-    async_unify = AsyncUnify(
-    api_key=st.session_state['api_key'],
-    endpoint=Endpoint)
-    return async_unify
-st.set_option('deprecation.showPyplotGlobalUse', False)
 
-async def main():
+def call_model(Endpoint: str) -> AsyncUnify:
+    '''
+    Prepare the Unify model to which the prompts will be sent.
+
+    Parameters
+    ----------
+    Endpoint
+        the endpoint of the LLM model in the format "<model>@<provider>".
+
+    Returns
+    -------
+    async_unify
+        the AsyncUnify object with the endpoint assigned to it.
+
+    '''
+
+    async_unify = AsyncUnify(
+        api_key=st.session_state['api_key'],
+        endpoint=Endpoint)
+    return async_unify
+
+
+async def main() -> None:
+    '''
+    Main loop of the streamlit app. Contains all of the flow control of the app
+    and generates UI elements.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+
+    '''
+
     global all_models, data
+
+    st.set_option('deprecation.showPyplotGlobalUse', False)
     init_session("keys")
     st.session_state.code_input = ""
     st.markdown(
-    """
-    <h1 style='text-align: center; color: green;'>
-        ⚔️ Unify Chatbot Arena: Benchmarking LLMs in the Wild 🚀
-    </h1>
-    """,
-    unsafe_allow_html=True)
+        """
+        <h1 style='text-align: center; color: green;'>
+            ⚔️ Unify Chatbot Arena: Benchmarking LLMs in the Wild 🚀
+        </h1>
+        """,
+        unsafe_allow_html=True)
     st.sidebar.subheader("Unify API Key")
-    api_key = st.sidebar.text_input(" ", value=st.session_state.api_key, placeholder="API key is required to proceed.",type="password")
+    api_key = st.sidebar.text_input(" ", value=st.session_state.api_key,
+                                    placeholder="API key is required to proceed.",
+                                    type="password")
     input_api_key(api_key)
-    st.session_state.source = st.sidebar.checkbox("Use online database (google sheets).", value=st.session_state.source,
-                                                  on_change=lambda: st.session_state.__setattr__("new_source", True))
+    st.session_state.source = st.sidebar.checkbox("Use online database (google sheets).",
+                                                  value=st.session_state.source,
+                                                  on_change=lambda: setattr(st.session_state, "new_source",
+                                                                                                 True))
     source = "online" if st.session_state.source is True else "offline"
     if st.session_state.new_source in [True, None]:
         init_session(source)
@@ -235,7 +363,7 @@ async def main():
         st.session_state["chat_history1"] = []
     if "chat_history2" not in st.session_state:
         st.session_state["chat_history2"] = []
-    if prompt := st.chat_input("Say something", disabled=False if st.session_state.api_key_provided is True else True, on_submit=lambda: st.session_state.__setattr__("winner_selected", False)):
+    if prompt := st.chat_input("Say something", disabled=False if st.session_state.api_key_provided is True else True, on_submit=lambda: setattr(st.session_state, "winner_selected", False)):
         st.session_state["chat_input"] = prompt
         st.session_state.code_input = prompt
         st.session_state['chat_history1'].append({"role": "user", "content": st.session_state["chat_input"]})
@@ -252,14 +380,13 @@ async def main():
                     upd_models = [model for model in all_models]
                     upd_models[-1] = st.session_state['model1']
                     upd_models.append("other")
-                    upd_models = {"models": tuple(upd_models)}
-                    json.dump(upd_models, models_file_update)
+                    upd_models_dict = {"models": tuple(upd_models)}
+                    json.dump(upd_models_dict, models_file_update)
             if (model1_to_add := st.session_state['model1'][:st.session_state['model1'].find("@")]) not in data.keys():
                 st.session_state['vote_counts'][f"{model1_to_add}"]["Wins ⭐"] = 0
                 st.session_state['vote_counts'][f"{model1_to_add}"]["Losses ❌"] = 0
-                    
         except UnifyError:
-            st.session_state.__setattr__("winner_selected", True)
+            setattr(st.session_state, "winner_selected", True)
             if "@" not in st.session_state['model1']:
                 cont1.error("Model endpoints have to follow the '<model>@<provider>' format")
                 cont2.error("Model endpoints have to follow the '<model>@<provider>' format")
@@ -273,19 +400,20 @@ async def main():
                     upd_models = [model for model in all_models]
                     upd_models[-1] = st.session_state['model2']
                     upd_models.append("other")
-                    upd_models = {"models": tuple(upd_models)}
-                    json.dump(upd_models, models_file_update)
+                    upd_models_dict = {"models": tuple(upd_models)}
+                    json.dump(upd_models_dict, models_file_update)
             if (model2_to_add := st.session_state['model2'][:st.session_state['model2'].find("@")]) not in data.keys():
                 st.session_state['vote_counts'][f"{model2_to_add}"]["Wins ⭐"] = 0
                 st.session_state['vote_counts'][f"{model2_to_add}"]["Losses ❌"] = 0
         except UnifyError:
-            st.session_state.__setattr__("winner_selected", True)
+            setattr(st.session_state, "winner_selected", True)
             if "@" not in st.session_state['model2']:
                 cont1.error("Model endpoints have to follow the '<model>@<provider>' format")
                 cont2.error("Model endpoints have to follow the '<model>@<provider>' format")
             else:
                 cont1.error("One of the models is not currently supported.")
-                cont2.error("One of the models is not currently supported.")                
+                cont2.error("One of the models is not currently supported.")
+
         async def call(unify_obj, model, contain, message):
             try:
                 async_stream = await unify_obj.generate(messages=message, stream=True)
@@ -303,58 +431,59 @@ async def main():
                     st.session_state.chat_history1 = []
                 if model == "model2":
                     st.session_state.chat_history2 = []
-                st.session_state.__setattr__("winner_selected", False)
+                setattr(st.session_state, "winner_selected", False)
             except IndexError as error_message:
                 contain.error(f"There was an issue with the model's response:\n {error_message}", icon="🚨")
-                st.session_state.__setattr__("winner_selected", False)
+                setattr(st.session_state, "winner_selected", False)
             finally:
                 history(model=model, output=full_response)
-            
+
         await asyncio.gather(
             call(u1,model='model1', contain=cont1,message=message1),
             call(u2,model='model2', contain=cont2,message=message2)
         )
-    c1, c2= st.columns(2)
+
+    c1, c2 = st.columns(2)
     # Display the vote buttons
     vote_disabled = True if st.session_state.winner_selected in [None, True] else False
     with c1:
         left_button_clicked = st.button("👍 Vote First Model", disabled=vote_disabled,
-                                        on_click=lambda: st.session_state.__setattr__("winner_selected", True))
+                                        on_click=lambda: setattr(st.session_state, "winner_selected", True))
         if left_button_clicked:
-                st.balloons()
-                # Increase the vote count for the selected model by 1 when the button is clicked
-                model1 = st.session_state['model1'].split("@")[0]
-                model2 = st.session_state['model2'].split("@")[0]
-                st.session_state['vote_counts'][model1]["Wins ⭐"] += 1
-                st.session_state['vote_counts'][st.session_state['model2'].split("@")[0]]["Losses ❌"] += 1
-                if model1 not in st.session_state.detailed_leaderboards["scores"].keys() or model1 not in st.session_state.detailed_leaderboards["scores"].keys():
-                    st.session_state.detailed_leaderboards["scores"].at[model1, model2] = 0
-                st.session_state.detailed_leaderboards["scores"].at[model1, model2] += 1
+            st.balloons()
+            # Increase the vote count for the selected model by 1 when the button is clicked
+            model1 = st.session_state['model1'].split("@")[0]
+            model2 = st.session_state['model2'].split("@")[0]
+            st.session_state['vote_counts'][model1]["Wins ⭐"] += 1
+            st.session_state['vote_counts'][st.session_state['model2'].split("@")[0]]["Losses ❌"] += 1
+            if model1 not in st.session_state.detailed_leaderboards["scores"].keys() or model1 not in st.session_state.detailed_leaderboards["scores"].keys():
+                st.session_state.detailed_leaderboards["scores"].at[model1, model2] = 0
+            st.session_state.detailed_leaderboards["scores"].at[model1, model2] += 1
 
-                print_history(contain=(cont1, cont2))
-                try:
-                    st.session_state.code_input = st.session_state["chat_history1"][-2]['content']
-                except IndexError:
-                    st.session_state.code_input = " "
+            print_history(contain=(cont1, cont2))
+            try:
+                st.session_state.code_input = st.session_state["chat_history1"][-2]['content']
+            except IndexError:
+                st.session_state.code_input = " "
     with c2:
         right_button_clicked = st.button("👍 Vote Second Model", disabled=vote_disabled,
-                                         on_click=lambda: st.session_state.__setattr__("winner_selected", True))
+                                         on_click=lambda: setattr(st.session_state, "winner_selected", True))
         if right_button_clicked:
-                st.balloons()
-                # Increase the vote count for the selected model by 1 when the button is clicked
-                model1 = st.session_state['model1'].split("@")[0]
-                model2 = st.session_state['model2'].split("@")[0]
-                st.session_state['vote_counts'][model2]["Wins ⭐"] += 1
-                st.session_state['vote_counts'][st.session_state['model1'].split("@")[0]]["Losses ❌"] += 1
-                if model2 not in st.session_state.detailed_leaderboards["scores"].keys() or model1 not in st.session_state.detailed_leaderboards["scores"].keys():
-                    st.session_state.detailed_leaderboards["scores"].at[model2, model1] = 0
-                st.session_state.detailed_leaderboards["scores"].at[model2, model1] += 1
-                
-                print_history(contain=(cont1, cont2))
-                try:
-                    st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
-                except IndexError:
-                    st.session_state.code_input = " "
+            st.balloons()
+            # Increase the vote count for the selected model by 1 when the button is clicked
+            model1 = st.session_state['model1'].split("@")[0]
+            model2 = st.session_state['model2'].split("@")[0]
+            st.session_state['vote_counts'][model2]["Wins ⭐"] += 1
+            st.session_state['vote_counts'][st.session_state['model1'].split("@")[0]]["Losses ❌"] += 1
+            if model2 not in st.session_state.detailed_leaderboards["scores"].keys() or model1 not in st.session_state.detailed_leaderboards["scores"].keys():
+                st.session_state.detailed_leaderboards["scores"].at[model2, model1] = 0
+            st.session_state.detailed_leaderboards["scores"].at[model2, model1] += 1
+            
+            print_history(contain=(cont1, cont2))
+            try:
+                st.session_state.code_input = st.session_state["chat_history2"][-2]['content']
+            except IndexError:
+                st.session_state.code_input = " "
             # Add custom CSS for the buttons
     history_button_clicked = st.button("Clear Histroy")
     if history_button_clicked:
