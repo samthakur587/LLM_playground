@@ -438,7 +438,7 @@ async def main() -> None:
                     upd_models = [model for model in all_models]
                     upd_models[-1] = st.session_state["model1"]
                     upd_models.append("other")
-                    st.session_state_models = upd_models
+                    st.session_state.models = upd_models
                     upd_models_dict = {"models": tuple(upd_models)}
                     json.dump(upd_models_dict, models_file_update)
             if (
@@ -539,13 +539,10 @@ async def main() -> None:
             # Increase the vote count for the selected model by 1 when the button is clicked
             model1 = st.session_state["model1"].split("@")[0]
             model2 = st.session_state["model2"].split("@")[0]
-            if model1 not in st.session_state.vote_counts.keys():
-                st.session_state.vote_counts[model1] = {"Wins ⭐": 0, "Losses ❌": 0}
-            if model2 not in st.session_state.vote_counts.keys():
-                st.session_state.vote_counts[model2] = {"Wins ⭐": 0, "Losses ❌": 0}
-            st.session_state["vote_counts"][model1]["Wins ⭐"] += 1
-            st.session_state["vote_counts"][st.session_state["model2"].split("@")[0]][
-                "Losses ❌"
+
+            st.session_state["vote_counts"].at[model1, "Wins ⭐"] += 1
+            st.session_state["vote_counts"].at[
+                st.session_state["model2"].split("@")[0], "Losses ❌"
             ] += 1
             if (
                 model1 not in st.session_state.detailed_leaderboards["scores"].keys()
@@ -572,13 +569,10 @@ async def main() -> None:
             # Increase the vote count for the selected model by 1 when the button is clicked
             model1 = st.session_state["model1"].split("@")[0]
             model2 = st.session_state["model2"].split("@")[0]
-            if model1 not in st.session_state.vote_counts.keys():
-                st.session_state.vote_counts[model1] = {"Wins ⭐": 0, "Losses ❌": 0}
-            if model2 not in st.session_state.vote_counts.keys():
-                st.session_state.vote_counts[model2] = {"Wins ⭐": 0, "Losses ❌": 0}
-            st.session_state["vote_counts"][model2]["Wins ⭐"] += 1
-            st.session_state["vote_counts"][st.session_state["model1"].split("@")[0]][
-                "Losses ❌"
+
+            st.session_state["vote_counts"].at[model2, "Wins ⭐"] += 1
+            st.session_state["vote_counts"].at[
+                st.session_state["model1"].split("@")[0], "Losses ❌"
             ] += 1
             if (
                 model2 not in st.session_state.detailed_leaderboards["scores"].keys()
