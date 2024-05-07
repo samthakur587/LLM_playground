@@ -539,6 +539,10 @@ async def main() -> None:
             # Increase the vote count for the selected model by 1 when the button is clicked
             model1 = st.session_state["model1"].split("@")[0]
             model2 = st.session_state["model2"].split("@")[0]
+            if model1 not in st.session_state.vote_counts.keys():
+                st.session_state.vote_counts[model1] = {"Wins ⭐": 0, "Losses ❌": 0}
+            if model2 not in st.session_state.vote_counts.keys():
+                st.session_state.vote_counts[model2] = {"Wins ⭐": 0, "Losses ❌": 0}
             st.session_state["vote_counts"][model1]["Wins ⭐"] += 1
             st.session_state["vote_counts"][st.session_state["model2"].split("@")[0]][
                 "Losses ❌"
@@ -568,6 +572,10 @@ async def main() -> None:
             # Increase the vote count for the selected model by 1 when the button is clicked
             model1 = st.session_state["model1"].split("@")[0]
             model2 = st.session_state["model2"].split("@")[0]
+            if model1 not in st.session_state.vote_counts.keys():
+                st.session_state.vote_counts[model1] = {"Wins ⭐": 0, "Losses ❌": 0}
+            if model2 not in st.session_state.vote_counts.keys():
+                st.session_state.vote_counts[model2] = {"Wins ⭐": 0, "Losses ❌": 0}
             st.session_state["vote_counts"][model2]["Wins ⭐"] += 1
             st.session_state["vote_counts"][st.session_state["model1"].split("@")[0]][
                 "Losses ❌"
