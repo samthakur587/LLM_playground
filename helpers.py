@@ -221,19 +221,18 @@ class database:
             if key not in st.session_state.keys():
                 st.session_state[key] = None
 
-        sorted_counts = sorted(
-            st.session_state["vote_counts"].items(),
-            key=lambda x: x[1]["Wins ⭐"] + x[1]["Losses ❌"],
-            reverse=True,
-        )
-        for idx, votes in enumerate(sorted_counts):
-            sorted_counts[idx] = (votes[0], votes[1]["Wins ⭐"], votes[1]["Losses ❌"])
+        database.get_online(True)
 
-        sorted_counts_df = pd.DataFrame(
-            sorted_counts, columns=["Model Name", "Wins ⭐", "Losses ❌"]
+        vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
+        vote_counts_df = vote_counts_df.add(
+            st.session_state.online_leaderboard, fill_value=0
         )
+        sorted_counts_df = vote_counts_df[["Model Name", "Wins ⭐", "Losses ❌"]]
+        sorted_counts_df.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
 
-        detail_leaderboards = st.session_state.detailed_leaderboards["scores"]
+        detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
+            st.session_state.online_detailed["scores"]
+        )
 
         models = st.session_state.models
 

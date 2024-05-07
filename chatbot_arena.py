@@ -438,6 +438,7 @@ async def main() -> None:
                     upd_models = [model for model in all_models]
                     upd_models[-1] = st.session_state["model1"]
                     upd_models.append("other")
+                    st.session_state_models = upd_models
                     upd_models_dict = {"models": tuple(upd_models)}
                     json.dump(upd_models_dict, models_file_update)
             if (
@@ -466,6 +467,7 @@ async def main() -> None:
                     upd_models = [model for model in all_models]
                     upd_models[-1] = st.session_state["model2"]
                     upd_models.append("other")
+                    st.session_state.models = upd_models
                     upd_models_dict = {"models": tuple(upd_models)}
                     json.dump(upd_models_dict, models_file_update)
             if (
