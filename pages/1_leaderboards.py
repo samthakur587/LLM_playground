@@ -28,22 +28,32 @@ if source == "offline":
     )
     for idx, votes in enumerate(sorted_counts):
         sorted_counts[idx] = (votes[0], votes[1]["Wins ⭐"], votes[1]["Losses ❌"])
+
+    detail_leaderboards = st.session_state.detailed_leaderboards
+    model_selection = list(detail_leaderboards["scores"].keys())[1:]
+
 if source == "online":
+    helpers.database.get_online(True)
+    detail_leaderboards = st.session_state.detailed_leaderboards.add(
+        st.session_state.online_detailed, fill_value=0
+    )
+    model_selection = list(detail_leaderboards["scores"].keys())[1:]
     vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
+    vote_counts_df.add(st.session_state.online_leaderboard, fill_value=0)
     sorted_counts = vote_counts_df[["Model Name", "Wins ⭐", "Losses ❌"]]
     sorted_counts.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
     sorted_counts.style.hide()
+
 sorted_counts_df = pd.DataFrame(
     sorted_counts, columns=["Model Name", "Wins ⭐", "Losses ❌"]
 )
 sorted_counts_df.style.hide()
+
 st.data_editor(
     sorted_counts_df, num_rows="dynamic", use_container_width=True, hide_index=True
 )
 
 
-detail_leaderboards = st.session_state.detailed_leaderboards
-model_selection = list(detail_leaderboards["scores"].keys())[1:]
 c1, c2 = st.columns(2)
 with c1:
     model1_detail = st.selectbox("Select model 1", model_selection)

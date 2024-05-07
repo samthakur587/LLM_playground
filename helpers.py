@@ -11,6 +11,7 @@ models_worksheet_id = 1855482431
 
 class database:
 
+    @staticmethod
     def get_offline() -> None:
         """Static method. Assigns the local database's contents to the
         corresponding session states.
@@ -105,6 +106,7 @@ class database:
         st.session_state.leaderboard = json_data
         st.session_state.models = all_models
 
+    @staticmethod
     def get_online(update: bool = False):
         """Static method. Assigns the online database's contents to the
         corresponding session states.
@@ -167,6 +169,7 @@ class database:
                 )
             )
 
+    @staticmethod
     def save_offline():
         """Static method. Saves the session states in the local database.
 
@@ -200,6 +203,7 @@ class database:
         detail_leaderboards.to_csv("detail_leaderboards.csv", index=False)
         sorted_counts_df.to_csv("leaderboard.csv", index=False)
 
+    @staticmethod
     def save_online():
         """Static method. Saves the session states in the online database.
 
