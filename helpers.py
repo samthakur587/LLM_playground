@@ -156,19 +156,24 @@ class database:
         st.session_state.online_models = gsheets_models["Models"]
 
         if not update:
-            st.session_state.leaderboard = gsheets_leaderboard.convert_dtypes()
-            st.session_state.detailed_leaderboard = {
-                "scores": gsheets_detail.convert_dtypes()
-            }
+            st.session_state.leaderboard = gsheets_leaderboard
+            st.session_state.detailed_leaderboard = {"scores": gsheets_detail}
             st.session_state.models = gsheets_models["Models"]
 
             st.session_state.leaderboard = st.session_state.leaderboard.where(
                 gsheets_leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
             )
+
+            st.session_state.leaderboard = st.session_state.leaderboard.convert_dtypes()
+
             st.session_state.detailed_leaderboard["scores"] = (
                 st.session_state.detailed_leaderboard["scores"].where(
                     gsheets_detail == 0, 0
                 )
+            )
+
+            st.session_state.detailed_leaderboard["scores"] = (
+                st.session_state.detailed_leaderboard["scores"].convert_dtypes()
             )
 
     @staticmethod
