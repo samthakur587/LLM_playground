@@ -34,8 +34,8 @@ if source == "offline":
 
 if source == "online":
     helpers.database.get_online(True)
-    detail_leaderboards = st.session_state.detailed_leaderboards.add(
-        st.session_state.online_detailed, fill_value=0
+    detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
+        st.session_state.online_detailed["scores"], fill_value=0
     )
     model_selection = list(detail_leaderboards["scores"].keys())[1:]
     vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
