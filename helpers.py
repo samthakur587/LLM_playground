@@ -105,11 +105,15 @@ class database:
         st.session_state.leaderboard = json_data
         st.session_state.models = all_models
 
-    def get_online():
+    def get_online(update: bool = False):
         """Static method. Assigns the online database's contents to the
         corresponding session states.
 
         Parameters
+            update
+                if True, the session states with the new votes will not get reset, only the full leaderboards
+                will be refreshed. Used to ensure that the online database will get correctly updated.
+                Default: False
         ----------
         None
 
@@ -149,18 +153,19 @@ class database:
         st.session_state.online_detailed = {"scores": gsheets_detail}
         st.session_state.online_models = gsheets_models["Models"]
 
-        st.session_state.leaderboard = gsheets_leaderboard
-        st.session_state.detailed_leaderboard = {"scores": gsheets_detail}
-        st.session_state.models = gsheets_models["Models"]
+        if not update:
+            st.session_state.leaderboard = gsheets_leaderboard
+            st.session_state.detailed_leaderboard = {"scores": gsheets_detail}
+            st.session_state.models = gsheets_models["Models"]
 
-        st.session_state.leaderboard = st.session_state.leaderboard.where(
-            gsheets_leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
-        )
-        st.session_state.detailed_leaderboard["scores"] = (
-            st.session_state.detailed_leaderboard["scores"].where(
-                gsheets_detail == 0, 0
+            st.session_state.leaderboard = st.session_state.leaderboard.where(
+                gsheets_leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
             )
-        )
+            st.session_state.detailed_leaderboard["scores"] = (
+                st.session_state.detailed_leaderboard["scores"].where(
+                    gsheets_detail == 0, 0
+                )
+            )
 
     def save_offline():
         """Static method. Saves the session states in the local database.
