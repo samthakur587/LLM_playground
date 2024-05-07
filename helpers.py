@@ -151,6 +151,9 @@ class database:
         gsheets_models.dropna(axis=0, how="all", inplace=True)
         gsheets_models.dropna(axis=1, how="all", inplace=True)
 
+        if "Unnamed: 0" in list(gsheets_detail.columns):
+            gsheets_detail.drop("Unnamed: 0", axis=1, inplace=True)
+
         st.session_state.online_leaderboard = gsheets_leaderboard.convert_dtypes()
         st.session_state.online_detailed = {"scores": gsheets_detail.convert_dtypes()}
         st.session_state.online_models = gsheets_models["Models"]
@@ -160,8 +163,10 @@ class database:
             st.session_state.detailed_leaderboard = {"scores": gsheets_detail}
             st.session_state.models = gsheets_models["Models"]
 
-            st.session_state.leaderboard = st.session_state.leaderboard.where(
-                gsheets_leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
+            st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
+                st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
+                    gsheets_leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
+                )
             )
 
             st.session_state.leaderboard = st.session_state.leaderboard.convert_dtypes()
@@ -231,9 +236,9 @@ class database:
         database.get_online(True)
 
         vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
-        vote_counts_df = vote_counts_df.add(
-            st.session_state.online_leaderboard, fill_value=0
-        )
+        vote_counts_df[["Wins ⭐", "Losses ❌"]] = vote_counts_df[
+            ["Wins ⭐", "Losses ❌"]
+        ].add(st.session_state.online_leaderboard[["Wins ⭐", "Losses ❌"]], fill_value=0)
         sorted_counts_df = vote_counts_df[["Model Name", "Wins ⭐", "Losses ❌"]]
         sorted_counts_df.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
 

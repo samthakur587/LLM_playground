@@ -446,8 +446,11 @@ async def main() -> None:
                     : st.session_state["model1"].find("@")
                 ]
             ) not in data.keys():
-                st.session_state["vote_counts"][f"{model1_to_add}"]["Wins ⭐"] = 0
-                st.session_state["vote_counts"][f"{model1_to_add}"]["Losses ❌"] = 0
+                st.session_state["vote_counts"].at[f"{model1_to_add}", "Wins ⭐"] = 0
+                st.session_state["vote_counts"].at[f"{model1_to_add}", "Losses ❌"] = 0
+                st.session_state["vote_counts"].at[
+                    f"{model1_to_add}", "Model Name"
+                ] = f"{model1_to_add}"
         except UnifyError:
             setattr(st.session_state, "winner_selected", True)
             if "@" not in st.session_state["model1"]:
@@ -477,6 +480,9 @@ async def main() -> None:
             ) not in data.keys():
                 st.session_state["vote_counts"][f"{model2_to_add}"]["Wins ⭐"] = 0
                 st.session_state["vote_counts"][f"{model2_to_add}"]["Losses ❌"] = 0
+                st.session_state["vote_counts"].at[
+                    f"{model2_to_add}", "Model Name"
+                ] = f"{model2_to_add}"
         except UnifyError:
             setattr(st.session_state, "winner_selected", True)
             if "@" not in st.session_state["model2"]:

@@ -37,14 +37,17 @@ if source == "online":
     detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
         st.session_state.online_detailed["scores"], fill_value=0
     )
-    model_selection = list(detail_leaderboards["scores"].keys())[1:]
+
+    model_selection = list(detail_leaderboards.keys())
+    detail_leaderboards = {"scores": detail_leaderboards}
+
     vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
-    vote_counts_df = vote_counts_df.add(
-        st.session_state.online_leaderboard, fill_value=0
-    )
+    vote_counts_df[["Wins ⭐", "Losses ❌"]] = vote_counts_df[
+        ["Wins ⭐", "Losses ❌"]
+    ].add(st.session_state.online_leaderboard[["Wins ⭐", "Losses ❌"]], fill_value=0)
     sorted_counts = vote_counts_df[["Model Name", "Wins ⭐", "Losses ❌"]]
     sorted_counts.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
-    sorted_counts.style.hide()
+    sorted_counts.index = range(sorted_counts.shape[0])
 
 sorted_counts_df = pd.DataFrame(
     sorted_counts, columns=["Model Name", "Wins ⭐", "Losses ❌"]
