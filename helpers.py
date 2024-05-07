@@ -151,13 +151,15 @@ class database:
         gsheets_models.dropna(axis=0, how="all", inplace=True)
         gsheets_models.dropna(axis=1, how="all", inplace=True)
 
-        st.session_state.online_leaderboard = gsheets_leaderboard
-        st.session_state.online_detailed = {"scores": gsheets_detail}
+        st.session_state.online_leaderboard = gsheets_leaderboard.convert_dtypes()
+        st.session_state.online_detailed = {"scores": gsheets_detail.convert_dtypes()}
         st.session_state.online_models = gsheets_models["Models"]
 
         if not update:
-            st.session_state.leaderboard = gsheets_leaderboard
-            st.session_state.detailed_leaderboard = {"scores": gsheets_detail}
+            st.session_state.leaderboard = gsheets_leaderboard.convert_dtypes()
+            st.session_state.detailed_leaderboard = {
+                "scores": gsheets_detail.convert_dtypes()
+            }
             st.session_state.models = gsheets_models["Models"]
 
             st.session_state.leaderboard = st.session_state.leaderboard.where(
