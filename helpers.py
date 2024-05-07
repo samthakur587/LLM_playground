@@ -118,7 +118,14 @@ class database:
         None
         """
 
-        keys = ["leaderboard", "detail", "models"]
+        keys = [
+            "leaderboard",
+            "detail",
+            "models",
+            "online_leaderboard",
+            "online_detailed",
+            "online_models",
+        ]
         for key in keys:
             if key not in st.session_state.keys():
                 st.session_state[key] = None
@@ -138,9 +145,18 @@ class database:
         gsheets_models.dropna(axis=0, how="all", inplace=True)
         gsheets_models.dropna(axis=1, how="all", inplace=True)
 
+        st.session_state.online_leaderboard = gsheets_leaderboard
+        st.session_state.online_detailed = {"scores": gsheets_detail}
+        st.session_state.online_models = gsheets_models["Models"]
+
         st.session_state.leaderboard = gsheets_leaderboard
-        st.session_state.detailed_leaderboards = {"scores": gsheets_detail}
+        st.session_state.detailed_leaderboard = {"scores": gsheets_detail}
         st.session_state.models = gsheets_models["Models"]
+
+        st.session_state.leaderboard.where(
+            gsheets_leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0, inplace=True
+        )
+        st.session_state.detailed_leaderboard["scores"].where(gsheets_detail == 0, 0)
 
     def save_offline():
         """Static method. Saves the session states in the local database.
