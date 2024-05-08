@@ -112,7 +112,6 @@ def init_session(mode: str = "keys") -> None:
         all_models = list(st.session_state.models)
         json_data = st.session_state.leaderboard
         data = {model: 0 for model in json_data.index}
-        st.session_state["vote_counts"] = json_data
 
 
 def select_model(api_key: str = "", authenticated: bool = False) -> None:

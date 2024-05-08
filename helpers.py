@@ -12,7 +12,7 @@ models_worksheet_id = 1855482431
 class database:
 
     @staticmethod
-    def get_offline() -> None:
+    def get_offline(update: bool = False) -> None:
         """Static method. Assigns the local database's contents to the
         corresponding session states.
 
@@ -98,12 +98,29 @@ class database:
                 json.dump(detail_leaderboards, out_file)
 
         with open("detail_leaderboards.csv", "r") as in_file:
-            st.session_state.detailed_leaderboards = {
+            st.session_state.offline_detailed = {
                 "scores": pd.read_csv(in_file, index_col=0)
             }
 
-        st.session_state.leaderboard = json_data
-        st.session_state.models = all_models
+        st.session_state.offline_leaderboard = json_data
+        st.session_state.offline_models = all_models
+
+        if not update:
+            st.session_state.leaderboard = pd.DataFrame(json_data)
+            st.session_state.detailed_leaderboard = st.session_state.offline_detailed
+            st.session_state.models = st.session_state.offline_models
+
+            st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
+                st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
+                    st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
+                )
+            )
+
+            st.session_state.detailed_leaderboard["scores"] = (
+                st.session_state.detailed_leaderboard["scores"].where(
+                    st.session_state.detailed_leaderboard["scores"] == 0, 0
+                )
+            )
 
     @staticmethod
     def get_online(update: bool = False):
