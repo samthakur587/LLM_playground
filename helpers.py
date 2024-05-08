@@ -56,10 +56,9 @@ class database:
             "leaderboard.csv"
         )  # This will raise an error if the file does not exist
         json_data = {
-            model: {"Wins ⭐": wins, "Losses ❌": losses}
-            for model, wins, losses in zip(
-                data["Model Name"], data["Wins ⭐"], data["Losses ❌"]
-            )
+            "Model Name": [model for model in data["Model Name"]],
+            "Wins ⭐": [wins for wins in data["Wins ⭐"]],
+            "Losses ❌": [losses for losses in data["Losses ❌"]],
         }
 
         if not os.path.exists("./detail_leaderboards.json"):

@@ -101,7 +101,11 @@ def init_session(mode: str = "keys") -> None:
             "leaderboard.csv"
         )  # This will raise an error if the file does not exist
         json_data = st.session_state.leaderboard
-        st.session_state["vote_counts"] = json_data
+
+        st.session_state["vote_counts"] = pd.DataFrame(
+            json_data, columns=["Model Name", "Wins ⭐", "Losses ❌"]
+        )
+        st.session_state["vote_counts"].set_index("Model Name", inplace=True)
 
     if mode == "online":
         helpers.database.get_online()
@@ -480,8 +484,8 @@ async def main() -> None:
                     : st.session_state["model2"].find("@")
                 ]
             ) not in data.keys():
-                st.session_state["vote_counts"][f"{model2_to_add}"]["Wins ⭐"] = 0
-                st.session_state["vote_counts"][f"{model2_to_add}"]["Losses ❌"] = 0
+                st.session_state["vote_counts"].at[f"{model2_to_add}", "Wins ⭐"] = 0
+                st.session_state["vote_counts"].at[f"{model2_to_add}", "Losses ❌"] = 0
                 st.session_state["vote_counts"].at[
                     f"{model2_to_add}", "Model Name"
                 ] = f"{model2_to_add}"

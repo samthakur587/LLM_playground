@@ -21,13 +21,11 @@ st.markdown(
 )
 # Create a DataFrame with the sorted vote counts
 if source == "offline":
-    sorted_counts = sorted(
-        st.session_state["vote_counts"].items(),
-        key=lambda x: x[1]["Wins ⭐"] + x[1]["Losses ❌"],
-        reverse=True,
-    )
-    for idx, votes in enumerate(sorted_counts):
-        sorted_counts[idx] = (votes[0], votes[1]["Wins ⭐"], votes[1]["Losses ❌"])
+    vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
+    vote_counts_df["Model Name"] = vote_counts_df.index
+    sorted_counts = vote_counts_df[["Model Name", "Wins ⭐", "Losses ❌"]]
+    sorted_counts.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
+    sorted_counts.index = range(sorted_counts.shape[0])
 
     detail_leaderboards = st.session_state.detailed_leaderboards
     model_selection = list(detail_leaderboards["scores"].keys())[1:]
