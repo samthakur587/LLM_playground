@@ -30,7 +30,7 @@ if source == "offline":
     sorted_counts.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
     sorted_counts.index = range(sorted_counts.shape[0])
 
-    detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
+    detail_leaderboards = st.session_state.detailed_leaderboard["scores"].add(
         st.session_state.offline_detailed["scores"], fill_value=0
     )
 
@@ -39,7 +39,7 @@ if source == "offline":
 
 if source == "online":
     helpers.database.get_online(True)
-    detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
+    detail_leaderboards = st.session_state.detailed_leaderboard["scores"].add(
         st.session_state.online_detailed["scores"], fill_value=0
     )
 
@@ -60,8 +60,12 @@ sorted_counts_df = pd.DataFrame(
 sorted_counts_df.style.hide()
 
 with st.sidebar:
-    st.session_state.enable_detail = st.checkbox(
-        "Enable detailed view", value=st.session_state.enable_detail
+    enable_detail = st.checkbox(
+        "Enable detailed view",
+        value=st.session_state.enable_detail,
+        on_change=lambda: setattr(
+            st.session_state, "enable_detail", not st.session_state.enable_detail
+        ),
     )
 
 sorted_counts_detail = sorted_counts_df.assign(Compare=False)
@@ -69,7 +73,7 @@ sorted_counts_detail = sorted_counts_detail[
     ["Compare", "Model Name", "Wins ⭐", "Losses ❌"]
 ]
 
-detail_leaderboards = st.session_state.detailed_leaderboards
+detail_leaderboards = st.session_state.detailed_leaderboard
 model_selection = list(detail_leaderboards["scores"].keys())[1:]
 
 if st.session_state.enable_detail:
@@ -120,10 +124,13 @@ else:
             f"<h4 style='text-align: center;'>{int(detail_leaderboards['scores'].at[model1_detail, model2_detail])}:{int(detail_leaderboards['scores'].at[model2_detail, model1_detail])}</h4>",
             unsafe_allow_html=True,
         )
-st.session_state.source = st.sidebar.checkbox(
-    "Use online database (google sheets).",
+enable_global = st.sidebar.checkbox(
+    "Enable global leaderboards",
     value=st.session_state.source,
-    on_change=lambda: setattr(st.session_state, "new_source", True),
+    on_change=lambda: (
+        setattr(st.session_state, "new_source", True),
+        setattr(st.session_state, "source", not st.session_state.source),
+    ),
 )
 source = "online" if st.session_state.source is True else "offline"
 if st.session_state.new_source in [True, None]:

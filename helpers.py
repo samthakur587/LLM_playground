@@ -102,7 +102,7 @@ class database:
                 "scores": pd.read_csv(in_file, index_col=0)
             }
 
-        st.session_state.offline_leaderboard = json_data
+        st.session_state.offline_leaderboard = pd.DataFrame(json_data)
         st.session_state.offline_models = all_models
 
         if not update:
