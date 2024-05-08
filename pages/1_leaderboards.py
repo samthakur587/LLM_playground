@@ -71,9 +71,7 @@ if st.session_state.enable_detail:
     select_for_comparison = st.data_editor(
         sorted_counts_detail, num_rows="dynamic", use_container_width=True
     )
-    models_to_compare = select_for_comparison.loc[
-        select_for_comparison["Compare"] is True
-    ]
+    models_to_compare = select_for_comparison.loc[select_for_comparison["Compare"]]
 
     model_names = models_to_compare["Model Name"]
 
