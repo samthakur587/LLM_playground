@@ -15,100 +15,6 @@ st.set_page_config(
 )
 
 
-def init_session(mode: str = "keys") -> None:
-    """Initialize session states and databases.
-
-    Parameters
-    ----------
-    mode
-        defines elements to assign.
-        - ''keys'': initializes keys for st.session_state elements.
-        - ''online'': connects to the database (Google Sheets) and assigns its contents to
-            their corresponding session states.
-        - ''offline': loads the database from the project's folder and assigns its contents
-            to their corresponding session states.
-        Default: "keys".
-
-    Returns
-    -------
-    None
-    """
-
-    global all_models, data, json_data
-    if mode == "keys":
-        keys = [
-            "chat_input",
-            "winner_selected",
-            "api_key_provided",
-            "vote1",
-            "vote2",
-            "model1",
-            "model2",
-            "scores",
-            "authenticated",
-            "new_models_selected",
-            "detailed_leaderboards",
-            "detail",
-            "new_source",
-        ]
-        for key in keys:
-            if key not in st.session_state.keys():
-                st.session_state[key] = None
-        if "code_input" not in st.session_state.keys():
-            st.session_state.code_input = " "
-        if "chat_history1" not in st.session_state.keys():
-            st.session_state.chat_history1 = []
-        if "chat_history2" not in st.session_state.keys():
-            st.session_state.chat_history2 = []
-
-        if "model1_selectbox" not in st.session_state.keys():
-            st.session_state.placeholder_model1 = "other"
-        if "model1_other" not in st.session_state.keys():
-            st.session_state.placeholder_model1_other = "model@provider"
-        if "model2_selectbox" not in st.session_state.keys():
-            st.session_state.placeholder_model2 = "other"
-        if "model2_other" not in st.session_state.keys():
-            st.session_state.placeholder_model2_other = "model@provider"
-
-        if "index_model1" not in st.session_state.keys():
-            st.session_state.index_model1 = 0
-        if "index_model2" not in st.session_state.keys():
-            st.session_state.index_model2 = 0
-        if "value_model1_other" not in st.session_state.keys():
-            st.session_state.value_model1_other = ""
-        if "value_model2_other" not in st.session_state.keys():
-            st.session_state.value_model2_other = ""
-
-        if "api_key" not in st.session_state.keys():
-            st.session_state.api_key = ""
-
-        if "source" not in st.session_state.keys():
-            st.session_state.source = False
-
-        if "vote_counts" not in st.session_state:
-            st.session_state["vote_counts"] = {
-                model: {"Wins ⭐": 0, "Losses ❌": 0} for model in ["others"]
-            }
-
-    if mode == "offline":
-        helpers.database.get_offline()
-        # Load JSON data from file
-        all_models = st.session_state.models
-        # model_options = [model.split("@")[0] for model in all_models]
-        data = pd.read_csv(
-            "leaderboard.csv"
-        )  # This will raise an error if the file does not exist
-        json_data = st.session_state.leaderboard
-        st.session_state["vote_counts"] = json_data
-
-    if mode == "online":
-        helpers.database.get_online()
-        all_models = list(st.session_state.models)
-        json_data = st.session_state.leaderboard
-        data = {model: 0 for model in json_data.index}
-        st.session_state["vote_counts"] = json_data
-
-
 def select_model(api_key: str = "", authenticated: bool = False) -> None:
     """Select two models for the Unify API. The models are picked through
     selectbox options.
@@ -128,7 +34,7 @@ def select_model(api_key: str = "", authenticated: bool = False) -> None:
     None
     """
 
-    global json_data, all_models
+    global json_data, all_models, data
 
     disabled = not (bool(api_key) and bool(authenticated))
     model1_other_disabled = True
@@ -344,10 +250,26 @@ async def main() -> None:
     None
     """
 
-    global all_models, data
+    global all_models, data, json_data
 
     st.set_option("deprecation.showPyplotGlobalUse", False)
-    init_session("keys")
+    helpers.init_session("keys")
+    if st.session_state.source is True:
+        source = "online"
+    else:
+        source = "offline"
+    helpers.init_session(source)
+
+    all_models = list(st.session_state.models)
+    json_data = st.session_state.leaderboard
+
+    if st.session_state.source is True:
+        data = {model: 0 for model in json_data.index}
+    else:
+        data = pd.read_csv(
+            "leaderboard.csv"
+        )  # This will raise an error if the file does not exist
+
     st.session_state.code_input = ""
     st.markdown(
         """
@@ -365,14 +287,7 @@ async def main() -> None:
         type="password",
     )
     input_api_key(api_key)
-    st.session_state.source = st.sidebar.checkbox(
-        "Use online database (google sheets).",
-        value=st.session_state.source,
-        on_change=lambda: setattr(st.session_state, "new_source", True),
-    )
-    source = "online" if st.session_state.source is True else "offline"
-    if st.session_state.new_source in [True, None]:
-        init_session(source)
+
     # Display sidebar widgets
     with st.sidebar:
         select_model(st.session_state.api_key, st.session_state.authenticated)
@@ -478,8 +393,9 @@ async def main() -> None:
                     : st.session_state["model2"].find("@")
                 ]
             ) not in data.keys():
-                st.session_state["vote_counts"][f"{model2_to_add}"]["Wins ⭐"] = 0
-                st.session_state["vote_counts"][f"{model2_to_add}"]["Losses ❌"] = 0
+                st.session_state["vote_counts"].at[f"{model2_to_add}", "Wins ⭐"] = 0
+                st.session_state["vote_counts"].at[f"{model2_to_add}", "Losses ❌"] = 0
+
                 st.session_state["vote_counts"].at[
                     f"{model2_to_add}", "Model Name"
                 ] = f"{model2_to_add}"
