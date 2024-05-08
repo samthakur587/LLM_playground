@@ -12,7 +12,7 @@ models_worksheet_id = 1855482431
 class database:
 
     @staticmethod
-    def get_offline() -> None:
+    def get_offline(update: bool = False) -> None:
         """Static method. Assigns the local database's contents to the
         corresponding session states.
 
@@ -56,10 +56,9 @@ class database:
             "leaderboard.csv"
         )  # This will raise an error if the file does not exist
         json_data = {
-            model: {"Wins ⭐": wins, "Losses ❌": losses}
-            for model, wins, losses in zip(
-                data["Model Name"], data["Wins ⭐"], data["Losses ❌"]
-            )
+            "Model Name": [model for model in data["Model Name"]],
+            "Wins ⭐": [wins for wins in data["Wins ⭐"]],
+            "Losses ❌": [losses for losses in data["Losses ❌"]],
         }
 
         if not os.path.exists("./detail_leaderboards.json"):
@@ -99,12 +98,29 @@ class database:
                 json.dump(detail_leaderboards, out_file)
 
         with open("detail_leaderboards.csv", "r") as in_file:
-            st.session_state.detailed_leaderboards = {
+            st.session_state.offline_detailed = {
                 "scores": pd.read_csv(in_file, index_col=0)
             }
 
-        st.session_state.leaderboard = json_data
-        st.session_state.models = all_models
+        st.session_state.offline_leaderboard = pd.DataFrame(json_data)
+        st.session_state.offline_models = all_models
+
+        if not update:
+            st.session_state.leaderboard = pd.DataFrame(json_data)
+            st.session_state.detailed_leaderboard = st.session_state.offline_detailed
+            st.session_state.models = st.session_state.offline_models
+
+            st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
+                st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
+                    st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
+                )
+            )
+
+            st.session_state.detailed_leaderboard["scores"] = (
+                st.session_state.detailed_leaderboard["scores"].where(
+                    st.session_state.detailed_leaderboard["scores"] == 0, 0
+                )
+            )
 
     @staticmethod
     def get_online(update: bool = False):
@@ -199,21 +215,28 @@ class database:
             if key not in st.session_state.keys():
                 st.session_state[key] = None
 
-        sorted_counts = sorted(
-            st.session_state["vote_counts"].items(),
-            key=lambda x: x[1]["Wins ⭐"] + x[1]["Losses ❌"],
-            reverse=True,
+        database.get_offline(True)
+
+        vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
+        vote_counts_df[["Wins ⭐", "Losses ❌"]] = vote_counts_df[
+            ["Wins ⭐", "Losses ❌"]
+        ].add(
+            st.session_state.offline_leaderboard[["Wins ⭐", "Losses ❌"]], fill_value=0
         )
-        for idx, votes in enumerate(sorted_counts):
-            sorted_counts[idx] = (votes[0], votes[1]["Wins ⭐"], votes[1]["Losses ❌"])
-        sorted_counts_df = pd.DataFrame(
-            sorted_counts, columns=["Model Name", "Wins ⭐", "Losses ❌"]
+        sorted_counts_df = vote_counts_df[["Model Name", "Wins ⭐", "Losses ❌"]]
+        sorted_counts_df.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
+
+        detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
+            st.session_state.offline_detailed["scores"]
         )
+
+        models = st.session_state.models
 
         detail_leaderboards = st.session_state.detailed_leaderboards["scores"]
 
         detail_leaderboards.to_csv("detail_leaderboards.csv", index=False)
         sorted_counts_df.to_csv("leaderboard.csv", index=False)
+        models.to_csv("models.csv", index=False)
 
     @staticmethod
     def save_online():
@@ -272,4 +295,103 @@ class database:
             st.cache_data.clear()
             st.experimental_rerun()
 
-            # Display our Spreadsheet as st.dataframe
+
+def init_session(mode: str = "keys") -> None:
+    """Initialize session states and databases.
+
+    Parameters
+    ----------
+    mode
+        defines elements to assign.
+        - ''keys'': initializes keys for st.session_state elements.
+        - ''online'': connects to the database (Google Sheets) and assigns its contents to
+            their corresponding session states.
+        - ''offline': loads the database from the project's folder and assigns its contents
+            to their corresponding session states.
+        Default: "keys".
+
+    Returns
+    -------
+    None
+    """
+
+    global all_models, data, json_data
+    if mode == "keys":
+        keys = [
+            "chat_input",
+            "winner_selected",
+            "api_key_provided",
+            "vote1",
+            "vote2",
+            "model1",
+            "model2",
+            "scores",
+            "authenticated",
+            "new_models_selected",
+            "detailed_leaderboards",
+            "detail",
+            "new_source",
+        ]
+        for key in keys:
+            if key not in st.session_state.keys():
+                st.session_state[key] = None
+        if "code_input" not in st.session_state.keys():
+            st.session_state.code_input = " "
+        if "chat_history1" not in st.session_state.keys():
+            st.session_state.chat_history1 = []
+        if "chat_history2" not in st.session_state.keys():
+            st.session_state.chat_history2 = []
+
+        if "model1_selectbox" not in st.session_state.keys():
+            st.session_state.placeholder_model1 = "other"
+        if "model1_other" not in st.session_state.keys():
+            st.session_state.placeholder_model1_other = "model@provider"
+        if "model2_selectbox" not in st.session_state.keys():
+            st.session_state.placeholder_model2 = "other"
+        if "model2_other" not in st.session_state.keys():
+            st.session_state.placeholder_model2_other = "model@provider"
+
+        if "index_model1" not in st.session_state.keys():
+            st.session_state.index_model1 = 0
+        if "index_model2" not in st.session_state.keys():
+            st.session_state.index_model2 = 0
+        if "value_model1_other" not in st.session_state.keys():
+            st.session_state.value_model1_other = ""
+        if "value_model2_other" not in st.session_state.keys():
+            st.session_state.value_model2_other = ""
+
+        if "api_key" not in st.session_state.keys():
+            st.session_state.api_key = ""
+
+        if "source" not in st.session_state.keys():
+            st.session_state.source = False
+
+        if "vote_counts" not in st.session_state:
+            st.session_state["vote_counts"] = {
+                model: {"Wins ⭐": 0, "Losses ❌": 0} for model in ["others"]
+            }
+
+        if "enable_detail" not in st.session_state.keys():
+            st.session_state.enable_detail = False
+
+    if mode == "offline":
+        database.get_offline(st.session_state.new_source is True)
+        # Load JSON data from file
+        all_models = st.session_state.models
+        # model_options = [model.split("@")[0] for model in all_models]
+        data = pd.read_csv(
+            "leaderboard.csv"
+        )  # This will raise an error if the file does not exist
+        json_data = st.session_state.leaderboard
+
+        st.session_state["vote_counts"] = pd.DataFrame(
+            json_data, columns=["Model Name", "Wins ⭐", "Losses ❌"]
+        )
+        st.session_state["vote_counts"].set_index("Model Name", inplace=True)
+
+    if mode == "online":
+        database.get_online(st.session_state.new_source is True)
+        all_models = list(st.session_state.models)
+        json_data = st.session_state.leaderboard
+        data = {model: 0 for model in json_data.index}
+        st.session_state["vote_counts"] = json_data
