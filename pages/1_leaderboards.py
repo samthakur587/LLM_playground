@@ -50,6 +50,7 @@ if source == "online":
     vote_counts_df[["Wins ⭐", "Losses ❌"]] = vote_counts_df[
         ["Wins ⭐", "Losses ❌"]
     ].add(st.session_state.online_leaderboard[["Wins ⭐", "Losses ❌"]], fill_value=0)
+    vote_counts_df["Model Name"] = vote_counts_df.index
     sorted_counts = vote_counts_df[["Model Name", "Wins ⭐", "Losses ❌"]]
     sorted_counts.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
     sorted_counts.index = range(sorted_counts.shape[0])
@@ -132,9 +133,12 @@ enable_global = st.sidebar.checkbox(
         setattr(st.session_state, "source", not st.session_state.source),
     ),
 )
-source = "online" if st.session_state.source is True else "offline"
+source = "online" if enable_global is True else "offline"
 if st.session_state.new_source in [True, None]:
-    helpers.init_session(source)
+    if source == "online":
+        helpers.database.get_online(True)
+    if source == "offline":
+        helpers.database.get_offline(True)
     st.session_state.new_source = False
 with st.sidebar:
     st.button("Save leaderboards", key="save")
