@@ -89,6 +89,7 @@ def init_session(mode: str = "keys") -> None:
             st.session_state["vote_counts"] = {
                 model: {"Wins ⭐": 0, "Losses ❌": 0} for model in ["others"]
             }
+            
         if "enable_detail" not in st.session_state.keys():
             st.session_state.enable_detail = False
 
@@ -112,6 +113,7 @@ def init_session(mode: str = "keys") -> None:
         all_models = list(st.session_state.models)
         json_data = st.session_state.leaderboard
         data = {model: 0 for model in json_data.index}
+        st.session_state["vote_counts"] = json_data
 
 
 def select_model(api_key: str = "", authenticated: bool = False) -> None:
@@ -485,6 +487,7 @@ async def main() -> None:
             ) not in data.keys():
                 st.session_state["vote_counts"].at[f"{model2_to_add}", "Wins ⭐"] = 0
                 st.session_state["vote_counts"].at[f"{model2_to_add}", "Losses ❌"] = 0
+
                 st.session_state["vote_counts"].at[
                     f"{model2_to_add}", "Model Name"
                 ] = f"{model2_to_add}"
