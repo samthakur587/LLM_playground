@@ -13,7 +13,6 @@ class database:
 
     @staticmethod
     def get_offline(update: bool = False) -> None:
-
         """Static method. Assigns the local database's contents to the
         corresponding session states.
 
@@ -60,7 +59,6 @@ class database:
             "Model Name": [model for model in data["Model Name"]],
             "Wins ⭐": [wins for wins in data["Wins ⭐"]],
             "Losses ❌": [losses for losses in data["Losses ❌"]],
-
         }
 
         if not os.path.exists("./detail_leaderboards.json"):
@@ -123,7 +121,6 @@ class database:
                     st.session_state.detailed_leaderboard["scores"] == 0, 0
                 )
             )
-
 
     @staticmethod
     def get_online(update: bool = False):
@@ -290,5 +287,3 @@ class database:
             )
             st.cache_data.clear()
             st.experimental_rerun()
-
-            # Display our Spreadsheet as st.dataframe
