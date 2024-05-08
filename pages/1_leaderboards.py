@@ -150,3 +150,14 @@ with st.sidebar:
         except Exception as e:
             st.write("Could not upload the results.")
             st.write(e)
+        st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
+            st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
+                st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
+            )
+        )
+
+        st.session_state.detailed_leaderboard["scores"] = (
+            st.session_state.detailed_leaderboard["scores"].where(
+                st.session_state.detailed_leaderboard["scores"] == 0, 0
+            )
+        )
