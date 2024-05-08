@@ -31,7 +31,7 @@ if source == "offline":
     sorted_counts.index = range(sorted_counts.shape[0])
 
     detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
-        st.session_state.online_detailed["scores"], fill_value=0
+        st.session_state.offline_detailed["scores"], fill_value=0
     )
 
     model_selection = list(detail_leaderboards.keys())
