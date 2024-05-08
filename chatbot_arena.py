@@ -89,6 +89,8 @@ def init_session(mode: str = "keys") -> None:
             st.session_state["vote_counts"] = {
                 model: {"Wins ⭐": 0, "Losses ❌": 0} for model in ["others"]
             }
+        if "enable_detail" not in st.session_state.keys():
+            st.session_state.enable_detail = False
 
     if mode == "offline":
         helpers.database.get_offline()
