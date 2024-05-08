@@ -120,11 +120,22 @@ else:
             f"<h4 style='text-align: center;'>{int(detail_leaderboards['scores'].at[model1_detail, model2_detail])}:{int(detail_leaderboards['scores'].at[model2_detail, model1_detail])}</h4>",
             unsafe_allow_html=True,
         )
-
+st.session_state.source = st.sidebar.checkbox(
+    "Use online database (google sheets).",
+    value=st.session_state.source,
+    on_change=lambda: setattr(st.session_state, "new_source", True),
+)
+source = "online" if st.session_state.source is True else "offline"
+if st.session_state.new_source in [True, None]:
+    helpers.init_session(source)
+    st.session_state.new_source = False
 with st.sidebar:
     st.button("Save leaderboards", key="save")
     if st.session_state.save:
-        if source == "offline":
-            helpers.database.save_offline()
-        if source == "online":
+
+        helpers.database.save_offline()
+        try:
             helpers.database.save_online()
+        except Exception as e:
+            st.write("Could not upload the results.")
+            st.write(e)
