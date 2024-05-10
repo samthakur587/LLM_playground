@@ -116,9 +116,9 @@ class database:
                 )
             )
 
-            st.session_state.detailed_leaderboard["scores"] = (
-                st.session_state.detailed_leaderboard["scores"].where(
-                    st.session_state.detailed_leaderboard["scores"] == 0, 0
+            st.session_state.detailed_leaderboards["scores"] = (
+                st.session_state.detailed_leaderboards["scores"].where(
+                    st.session_state.detailed_leaderboards["scores"] == 0, 0
                 )
             )
 
@@ -187,14 +187,14 @@ class database:
 
             st.session_state.leaderboard = st.session_state.leaderboard.convert_dtypes()
 
-            st.session_state.detailed_leaderboard["scores"] = (
-                st.session_state.detailed_leaderboard["scores"].where(
+            st.session_state.detailed_leaderboards["scores"] = (
+                st.session_state.detailed_leaderboards["scores"].where(
                     gsheets_detail == 0, 0
                 )
             )
 
-            st.session_state.detailed_leaderboard["scores"] = (
-                st.session_state.detailed_leaderboard["scores"].convert_dtypes()
+            st.session_state.detailed_leaderboards["scores"] = (
+                st.session_state.detailed_leaderboards["scores"].convert_dtypes()
             )
 
     @staticmethod
@@ -230,7 +230,7 @@ class database:
             st.session_state.offline_detailed["scores"]
         )
 
-        models = st.session_state.models
+        models = pd.DataFrame(st.session_state.models)
 
         detail_leaderboards = st.session_state.detailed_leaderboards["scores"]
 
@@ -269,7 +269,7 @@ class database:
             st.session_state.online_detailed["scores"]
         )
 
-        models = st.session_state.models
+        models = pd.DataFrame(st.session_state.models)
 
         with st.echo():
             # Create GSheets connection
