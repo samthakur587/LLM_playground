@@ -1,12 +1,7 @@
 Model Name,Wins ⭐,Losses ❌
-<<<<<<< HEAD
 mixtral-8x7b-instruct-v0.1,0,0
 llama-2-70b-chat,0,0
-=======
-mixtral-8x7b-instruct-v0.1,1,1
-llama-2-70b-chat,0,1
-llama-2-7b-chat,1,0
->>>>>>> deploy
+llama-2-7b-chat,0,0
 gpt-4-turbo,0,0
 mistral-large,0,0
 gemma-2b-it,0,0

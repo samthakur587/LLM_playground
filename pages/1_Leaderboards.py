@@ -24,6 +24,7 @@ st.markdown(
 if source == "offline":
     vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
     vote_counts_df["Model Name"] = vote_counts_df.index
+    st.write(vote_counts_df)
     vote_counts_df[["Wins ⭐", "Losses ❌"]] = vote_counts_df[
         ["Wins ⭐", "Losses ❌"]
     ].add(st.session_state.offline_leaderboard[["Wins ⭐", "Losses ❌"]], fill_value=0)
