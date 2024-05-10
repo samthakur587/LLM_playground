@@ -13,4 +13,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 80
 
 # Run app.py when the container launches
-CMD ["streamlit", "run", "chatbot_arena.py", "--server.port=80", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "Chatbot_arena.py", "--server.port=80", "--server.address=0.0.0.0"]
