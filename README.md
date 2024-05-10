@@ -200,7 +200,7 @@ Contributions are welcome! Here are several ways you can contribute:
 ---
 ## Contributor Graph
 <p align="center">
-   <a href="https://github.com{/samthakur587/LLM_playground/}graphs/contributors">
+   <a href="https://github.com/samthakur587/LLM_playground/graphs/contributors">
       <img src="https://contrib.rocks/image?repo=samthakur587/LLM_playground">
    </a>
 
