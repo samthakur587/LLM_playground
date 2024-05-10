@@ -61,7 +61,7 @@ This Streamlit application provides a user interface for interacting with Unify 
 ---
 ## Usage
 
-1. Input Unify API Key: Enter your Unify API key in the provided text input box on the sidebar.
+1. Input Unify API Key: Enter your Unify API key in the provided text input box on the sidebar you can get the api key from [here](https://console.unify.ai/).
 
 2. Select endpoints : Choose the models and providers from the sidebar dropdown menus.
 
@@ -70,6 +70,10 @@ This Streamlit application provides a user interface for interacting with Unify 
 4. View Conversation History: The conversation history with the AI assistant for each model is displayed in separate containers.
 
 5. Clear History: You can clear the conversation history by clicking the "Clear History" button.
+
+6. Vote: you can vote the model which one is doing great as it reflict in leaderboard.
+
+7. Leaderboard: you can see the winner and losser model as globel result.
 
 ---
 ##  Repository Structure
@@ -112,7 +116,7 @@ This Streamlit application provides a user interface for interacting with Unify 
 
 **System Requirements:**
 
-* **Python**: `version x.y.z`
+* **Python**: `version >=3.10`
 
 ###  Installation
 
@@ -147,15 +151,17 @@ This Streamlit application provides a user interface for interacting with Unify 
 
 > Run the test suite using the command below:
 > ```console
-> $ pytest
+> $ pytest -v test/*
 > ```
 ---
 
 ##  Project Roadmap
 
-- [X] `► INSERT-TASK-1`
-- [ ] `► INSERT-TASK-2`
-- [ ] `► ...`
+- [X] `► building a simple web app`
+- [X] `► add gcp templte and dockerfile for deployment`
+- [X] `► add precommit hooks for clean code writing`
+- [ ] `► merge the webapp into unify demos`
+- [ ] `► deploy the webapp to gcp`
 
 ---
 
