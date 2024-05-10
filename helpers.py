@@ -1,8 +1,9 @@
+import json
+import os
+
+import pandas as pd
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
-import os
-import pandas as pd
-import json
 
 leaderboard_worksheet_id = 0
 detail_worksheet_id = 1113438455
@@ -53,7 +54,7 @@ class database:
             leaderboard.to_csv("leaderboard.csv")
 
         data = pd.read_csv(
-            "leaderboard.csv"
+            "leaderboard.csv",
         )  # This will raise an error if the file does not exist
         json_data = {
             "Model Name": [model for model in data["Model Name"]],
@@ -69,7 +70,7 @@ class database:
                             losing_model: 0 for losing_model in json_data.keys()
                         }
                         for winning_model in json_data.keys()
-                    }
+                    },
                 }
                 json.dump(detail_leaderboards, out_file)
 
@@ -80,7 +81,7 @@ class database:
                         losing_model: 0 for losing_model in json_data.keys()
                     }
                     for winning_model in json_data.keys()
-                }
+                },
             )
             detail_dataframe.index = list(json_data.keys())
             detail_dataframe.to_csv("detail_leaderboards.csv")
@@ -93,13 +94,13 @@ class database:
                             losing_model: 0 for losing_model in json_data.keys()
                         }
                         for winning_model in json_data.keys()
-                    }
+                    },
                 }
                 json.dump(detail_leaderboards, out_file)
 
         with open("detail_leaderboards.csv", "r") as in_file:
             st.session_state.offline_detailed = {
-                "scores": pd.read_csv(in_file, index_col=0)
+                "scores": pd.read_csv(in_file, index_col=0),
             }
 
         st.session_state.offline_leaderboard = pd.DataFrame(json_data)
@@ -107,19 +108,21 @@ class database:
 
         if not update:
             st.session_state.leaderboard = pd.DataFrame(json_data)
-            st.session_state.detailed_leaderboard = st.session_state.offline_detailed
+            st.session_state.detailed_leaderboards = st.session_state.offline_detailed
             st.session_state.models = st.session_state.offline_models
 
-            st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
-                st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
-                    st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
-                )
+            st.session_state.leaderboard[
+                ["Wins ⭐", "Losses ❌"]
+            ] = st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
+                st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] == 0,
+                0,
             )
 
-            st.session_state.detailed_leaderboard["scores"] = (
-                st.session_state.detailed_leaderboard["scores"].where(
-                    st.session_state.detailed_leaderboard["scores"] == 0, 0
-                )
+            st.session_state.detailed_leaderboards[
+                "scores"
+            ] = st.session_state.detailed_leaderboards["scores"].where(
+                st.session_state.detailed_leaderboards["scores"] == 0,
+                0,
             )
 
     @staticmethod
@@ -129,8 +132,9 @@ class database:
 
         Parameters
             update
-                if True, the session states with the new votes will not get reset, only the full leaderboards
-                will be refreshed. Used to ensure that the online database will get correctly updated.
+                if True, the session states with the new votes will not get reset,
+                only the full leaderboards will be refreshed. Used to ensure that
+                the online database will get correctly updated.
                 Default: False
         ----------
         None
@@ -144,7 +148,7 @@ class database:
             "leaderboard",
             "detail",
             "models",
-            "online_leaderboard",
+            "online_leaderboards",
             "online_detailed",
             "online_models",
         ]
@@ -176,25 +180,27 @@ class database:
 
         if not update:
             st.session_state.leaderboard = gsheets_leaderboard
-            st.session_state.detailed_leaderboard = {"scores": gsheets_detail}
+            st.session_state.detailed_leaderboards = {"scores": gsheets_detail}
             st.session_state.models = gsheets_models["Models"]
 
-            st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
-                st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
-                    gsheets_leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
-                )
+            st.session_state.leaderboard[
+                ["Wins ⭐", "Losses ❌"]
+            ] = st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
+                gsheets_leaderboard[["Wins ⭐", "Losses ❌"]] == 0,
+                0,
             )
 
             st.session_state.leaderboard = st.session_state.leaderboard.convert_dtypes()
 
-            st.session_state.detailed_leaderboard["scores"] = (
-                st.session_state.detailed_leaderboard["scores"].where(
-                    gsheets_detail == 0, 0
-                )
+            st.session_state.detailed_leaderboards[
+                "scores"
+            ] = st.session_state.detailed_leaderboards["scores"].where(
+                gsheets_detail == 0,
+                0,
             )
 
-            st.session_state.detailed_leaderboard["scores"] = (
-                st.session_state.detailed_leaderboard["scores"].convert_dtypes()
+            st.session_state.detailed_leaderboards["scores"] = (
+                st.session_state.detailed_leaderboards["scores"].convert_dtypes()
             )
 
     @staticmethod
@@ -221,16 +227,21 @@ class database:
         vote_counts_df[["Wins ⭐", "Losses ❌"]] = vote_counts_df[
             ["Wins ⭐", "Losses ❌"]
         ].add(
-            st.session_state.offline_leaderboard[["Wins ⭐", "Losses ❌"]], fill_value=0
+            st.session_state.offline_leaderboard[["Wins ⭐", "Losses ❌"]],
+            fill_value=0,
         )
         sorted_counts_df = vote_counts_df[["Model Name", "Wins ⭐", "Losses ❌"]]
         sorted_counts_df.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
 
         detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
-            st.session_state.offline_detailed["scores"]
+            st.session_state.offline_detailed["scores"],
         )
 
-        models = st.session_state.models
+        models = (
+            pd.DataFrame(st.session_state.models)
+            if type(st.session_state.models) in [tuple, list]
+            else st.session_state.models
+        )
 
         detail_leaderboards = st.session_state.detailed_leaderboards["scores"]
 
@@ -266,10 +277,14 @@ class database:
         sorted_counts_df.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
 
         detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
-            st.session_state.online_detailed["scores"]
+            st.session_state.online_detailed["scores"],
         )
 
-        models = st.session_state.models
+        models = (
+            pd.DataFrame(st.session_state.models)
+            if type(st.session_state.models) in [tuple, list]
+            else st.session_state.models
+        )
 
         with st.echo():
             # Create GSheets connection
@@ -380,12 +395,13 @@ def init_session(mode: str = "keys") -> None:
         all_models = st.session_state.models
         # model_options = [model.split("@")[0] for model in all_models]
         data = pd.read_csv(
-            "leaderboard.csv"
+            "leaderboard.csv",
         )  # This will raise an error if the file does not exist
         json_data = st.session_state.leaderboard
 
         st.session_state["vote_counts"] = pd.DataFrame(
-            json_data, columns=["Model Name", "Wins ⭐", "Losses ❌"]
+            json_data,
+            columns=["Model Name", "Wins ⭐", "Losses ❌"],
         )
         st.session_state["vote_counts"].set_index("Model Name", inplace=True)
 
@@ -395,6 +411,7 @@ def init_session(mode: str = "keys") -> None:
         json_data = st.session_state.leaderboard
         data = {model: 0 for model in json_data.index}
         st.session_state["vote_counts"] = json_data
+
 
 def hello():
     return "Hello, World!"

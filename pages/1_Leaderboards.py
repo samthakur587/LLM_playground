@@ -1,5 +1,6 @@
-import streamlit as st
 import pandas as pd
+import streamlit as st
+
 import helpers
 
 st.set_page_config(
@@ -23,6 +24,7 @@ st.markdown(
 if source == "offline":
     vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
     vote_counts_df["Model Name"] = vote_counts_df.index
+    st.write(vote_counts_df)
     vote_counts_df[["Wins ⭐", "Losses ❌"]] = vote_counts_df[
         ["Wins ⭐", "Losses ❌"]
     ].add(st.session_state.offline_leaderboard[["Wins ⭐", "Losses ❌"]], fill_value=0)
@@ -30,8 +32,9 @@ if source == "offline":
     sorted_counts.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
     sorted_counts.index = range(sorted_counts.shape[0])
 
-    detail_leaderboards = st.session_state.detailed_leaderboard["scores"].add(
-        st.session_state.offline_detailed["scores"], fill_value=0
+    detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
+        st.session_state.offline_detailed["scores"],
+        fill_value=0,
     )
 
     model_selection = list(detail_leaderboards.keys())
@@ -39,8 +42,9 @@ if source == "offline":
 
 if source == "online":
     helpers.database.get_online(True)
-    detail_leaderboards = st.session_state.detailed_leaderboard["scores"].add(
-        st.session_state.online_detailed["scores"], fill_value=0
+    detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
+        st.session_state.online_detailed["scores"],
+        fill_value=0,
     )
 
     model_selection = list(detail_leaderboards.keys())
@@ -56,7 +60,8 @@ if source == "online":
     sorted_counts.index = range(sorted_counts.shape[0])
 
 sorted_counts_df = pd.DataFrame(
-    sorted_counts, columns=["Model Name", "Wins ⭐", "Losses ❌"]
+    sorted_counts,
+    columns=["Model Name", "Wins ⭐", "Losses ❌"],
 )
 sorted_counts_df.style.hide()
 
@@ -65,7 +70,9 @@ with st.sidebar:
         "Enable detailed view",
         value=st.session_state.enable_detail,
         on_change=lambda: setattr(
-            st.session_state, "enable_detail", not st.session_state.enable_detail
+            st.session_state,
+            "enable_detail",
+            not st.session_state.enable_detail,
         ),
     )
 
@@ -74,12 +81,14 @@ sorted_counts_detail = sorted_counts_detail[
     ["Compare", "Model Name", "Wins ⭐", "Losses ❌"]
 ]
 
-detail_leaderboards = st.session_state.detailed_leaderboard
+detail_leaderboards = st.session_state.detailed_leaderboards
 model_selection = list(detail_leaderboards["scores"].keys())[1:]
 
 if st.session_state.enable_detail:
     select_for_comparison = st.data_editor(
-        sorted_counts_detail, num_rows="dynamic", use_container_width=True
+        sorted_counts_detail,
+        num_rows="dynamic",
+        use_container_width=True,
     )
     models_to_compare = select_for_comparison.loc[select_for_comparison["Compare"]]
 
@@ -141,7 +150,7 @@ if st.session_state.new_source in [True, None]:
         helpers.database.get_offline(True)
     st.session_state.new_source = False
 with st.sidebar:
-    st.button("Save leaderboards", key="save")
+    st.button("Save leaderboards", key="save_2")
     if st.session_state.save:
 
         helpers.database.save_offline()
@@ -150,14 +159,16 @@ with st.sidebar:
         except Exception as e:
             st.write("Could not upload the results.")
             st.write(e)
-        st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
-            st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
-                st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
-            )
+        st.session_state.leaderboard[
+            ["Wins ⭐", "Losses ❌"]
+        ] = st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
+            st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] == 0,
+            0,
         )
 
-        st.session_state.detailed_leaderboard["scores"] = (
-            st.session_state.detailed_leaderboard["scores"].where(
-                st.session_state.detailed_leaderboard["scores"] == 0, 0
-            )
+        st.session_state.detailed_leaderboards[
+            "scores"
+        ] = st.session_state.detailed_leaderboards["scores"].where(
+            st.session_state.detailed_leaderboards["scores"] == 0,
+            0,
         )
