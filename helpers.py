@@ -395,3 +395,6 @@ def init_session(mode: str = "keys") -> None:
         json_data = st.session_state.leaderboard
         data = {model: 0 for model in json_data.index}
         st.session_state["vote_counts"] = json_data
+
+def hello():
+    return "Hello, World!"

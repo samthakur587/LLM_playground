@@ -1,1 +1,5 @@
-pytest==8.0.0
+pytest
+pre-commit
+mypy
+isort
+flake8
