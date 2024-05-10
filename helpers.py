@@ -107,7 +107,7 @@ class database:
 
         if not update:
             st.session_state.leaderboard = pd.DataFrame(json_data)
-            st.session_state.detailed_leaderboard = st.session_state.offline_detailed
+            st.session_state.detailed_leaderboards = st.session_state.offline_detailed
             st.session_state.models = st.session_state.offline_models
 
             st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
@@ -176,7 +176,7 @@ class database:
 
         if not update:
             st.session_state.leaderboard = gsheets_leaderboard
-            st.session_state.detailed_leaderboard = {"scores": gsheets_detail}
+            st.session_state.detailed_leaderboards = {"scores": gsheets_detail}
             st.session_state.models = gsheets_models["Models"]
 
             st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (

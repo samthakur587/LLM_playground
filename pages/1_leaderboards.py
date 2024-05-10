@@ -30,7 +30,7 @@ if source == "offline":
     sorted_counts.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
     sorted_counts.index = range(sorted_counts.shape[0])
 
-    detail_leaderboards = st.session_state.detailed_leaderboard["scores"].add(
+    detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
         st.session_state.offline_detailed["scores"], fill_value=0
     )
 
@@ -39,7 +39,7 @@ if source == "offline":
 
 if source == "online":
     helpers.database.get_online(True)
-    detail_leaderboards = st.session_state.detailed_leaderboard["scores"].add(
+    detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
         st.session_state.online_detailed["scores"], fill_value=0
     )
 
@@ -74,7 +74,7 @@ sorted_counts_detail = sorted_counts_detail[
     ["Compare", "Model Name", "Wins ⭐", "Losses ❌"]
 ]
 
-detail_leaderboards = st.session_state.detailed_leaderboard
+detail_leaderboards = st.session_state.detailed_leaderboards
 model_selection = list(detail_leaderboards["scores"].keys())[1:]
 
 if st.session_state.enable_detail:
@@ -156,8 +156,8 @@ with st.sidebar:
             )
         )
 
-        st.session_state.detailed_leaderboard["scores"] = (
-            st.session_state.detailed_leaderboard["scores"].where(
-                st.session_state.detailed_leaderboard["scores"] == 0, 0
+        st.session_state.detailed_leaderboards["scores"] = (
+            st.session_state.detailed_leaderboards["scores"].where(
+                st.session_state.detailed_leaderboards["scores"] == 0, 0
             )
         )
