@@ -1,5 +1,10 @@
 .env
 code/
 __pycache__/
+<<<<<<< HEAD
 .streamlit
 .streamlit/secrets.toml
+=======
+.mypy_cache/
+.pytest_cache/
+>>>>>>> deploy

@@ -1,29 +1,52 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-    hooks:
-      - id: check-yaml
-      - id: trailing-whitespace
-      - id: check-toml
-      - id: end-of-file-fixer
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.13
-    hooks:
-      # Run the linter.
-      - id: ruff
-        args: [ --fix ]
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 24.1.1
-    hooks:
-      - id: black
-        language_version: python3
-        args:
-          - "--preview"
-  - repo: https://github.com/PyCQA/autoflake
-    rev: v2.2.1
-    hooks:
-      - id: autoflake
-  - repo: https://github.com/PyCQA/docformatter
-    rev: v1.7.5
-    hooks:
-      - id: docformatter
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.6.0
+  hooks:
+  - id: check-ast
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+
+- repo: https://github.com/asottile/add-trailing-comma
+  rev: v3.1.0
+  hooks:
+  - id: add-trailing-comma
+
+- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  rev: v2.13.0
+  hooks:
+  - id: pretty-format-yaml
+    args:
+    - --autofix
+    - --preserve-quotes
+    - --indent=2
+
+- repo: local
+  hooks:
+  - id: autoflake
+    name: autoflake
+    entry: autoflake
+    language: system
+    types: [python]
+    args: [--in-place, --remove-all-unused-imports, --remove-duplicate-keys]
+
+  - id: black
+    name: Format with Black
+    entry: black
+    language: system
+    types: [python]
+
+  - id: isort
+    name: isort
+    entry: isort
+    language: system
+    types: [python]
+
+  - id: flake8
+    name: Check with Flake8
+    entry: flake8
+    language: system
+    pass_filenames: false
+    types: [python]
+    args: [--count, .]
