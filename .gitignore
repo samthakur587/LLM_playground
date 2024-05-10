@@ -1,5 +1,6 @@
 .env
 code/
 __pycache__/
+.mypy_cache/
+.pytest_cache/
 .streamlit
-.streamlit/secrets.toml
