@@ -149,7 +149,7 @@ if st.session_state.new_source in [True, None]:
         helpers.database.get_offline(True)
     st.session_state.new_source = False
 with st.sidebar:
-    st.button("Save leaderboards", key="save")
+    st.button("Save leaderboards", key="save_2")
     if st.session_state.save:
 
         helpers.database.save_offline()
