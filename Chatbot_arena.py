@@ -17,8 +17,8 @@ st.set_page_config(
 
 
 def select_model(api_key="", authenticated=False):
-    global json_data, all_models
-
+    global json_data
+    all_models = st.session_state.models
     disabled = not (bool(api_key) and bool(authenticated))
     model1_other_disabled = True
     model2_other_disabled = True
@@ -173,7 +173,7 @@ st.set_option("deprecation.showPyplotGlobalUse", False)
 
 
 async def main():
-    global all_models, data
+    global data
     helpers.init_session("keys")
     st.session_state.code_input = ""
     st.markdown(
@@ -195,6 +195,7 @@ async def main():
     st.sidebar.checkbox("Use online database (google sheets).", key="source")
     source = "online" if st.session_state.source is True else "offline"
     helpers.init_session(source)
+    all_models = st.session_state.models
     # Display sidebar widgets
     with st.sidebar:
         select_model(st.session_state.api_key, st.session_state.authenticated)
