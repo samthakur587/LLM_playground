@@ -12,6 +12,8 @@ ignore =
 
     WPS221,
 
+    C901,
+    # 'main' is too complex
     D100,
     # Missing docstring in magic method
     D105,
