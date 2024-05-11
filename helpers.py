@@ -77,12 +77,12 @@ class database:
             detail_dataframe = pd.DataFrame(
                 data={
                     winning_model: {
-                        losing_model: 0 for losing_model in json_data.keys()
+                        losing_model: 0 for losing_model in json_data["Model Name"]
                     }
-                    for winning_model in json_data.keys()
+                    for winning_model in json_data["Model Name"]
                 }
             )
-            detail_dataframe.index = list(json_data.keys())
+            detail_dataframe.index = list(json_data["Model Name"])
             detail_dataframe.to_csv("detail_leaderboards.csv")
 
         if not os.path.exists("./detail_leaderboards.json"):
@@ -236,8 +236,9 @@ class database:
         models = pd.DataFrame({"Models": st.session_state.models})
 
         detail_leaderboards = st.session_state.detailed_leaderboards["scores"]
+        detail_leaderboards.index = detail_leaderboards.columns
 
-        detail_leaderboards.to_csv("detail_leaderboards.csv", index=False)
+        detail_leaderboards.to_csv("detail_leaderboards.csv", index=True)
         sorted_counts_df.to_csv("leaderboard.csv", index=False)
         models.to_csv("models.csv", index=False)
 
@@ -273,6 +274,11 @@ class database:
         detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
             st.session_state.online_detailed["scores"]
         )
+        detail_leaderboards.index = detail_leaderboards.columns
+        try:
+            detail_leaderboards.insert(0, "", detail_leaderboards.index)
+        except ValueError:
+            pass
 
         models = pd.DataFrame({"Models": st.session_state.models})
 
