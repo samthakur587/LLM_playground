@@ -144,5 +144,6 @@ if st.session_state.new_source in [True, None]:
     if source == "offline":
         helpers.database.get_offline(True)
     st.session_state.new_source = False
+    st.rerun()
 with st.sidebar:
     helpers.Buttons.save_button()

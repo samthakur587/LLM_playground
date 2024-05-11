@@ -232,11 +232,9 @@ class database:
         detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
             st.session_state.offline_detailed["scores"]
         )
+        detail_leaderboards.index = detail_leaderboards.columns
 
         models = pd.DataFrame({"Models": st.session_state.models})
-
-        detail_leaderboards = st.session_state.detailed_leaderboards["scores"]
-        detail_leaderboards.index = detail_leaderboards.columns
 
         detail_leaderboards.to_csv("detail_leaderboards.csv", index=True)
         sorted_counts_df.to_csv("leaderboard.csv", index=False)
