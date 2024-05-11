@@ -458,6 +458,8 @@ def ChangeTheme():
 
 
 class Buttons:
+
+    @staticmethod
     def change_theme_button() -> None:
         """The button to switch between the light and dark modes.
 
@@ -480,6 +482,7 @@ class Buttons:
             st.session_state.themes["refreshed"] = True
             st.rerun()
 
+    @staticmethod
     def left_button_clicked(
         cont1: st.container = None, cont2: st.container = None
     ) -> None:
@@ -523,6 +526,7 @@ class Buttons:
         except IndexError:
             st.session_state.code_input = " "
 
+    @staticmethod
     def right_button_clicked(
         cont1: st.container = None, cont2: st.container = None
     ) -> None:
@@ -566,6 +570,7 @@ class Buttons:
         except IndexError:
             st.session_state.code_input = " "
 
+    @staticmethod
     def tie_button(cont1: st.container = None, cont2: st.container = None) -> None:
         """The button to declare a tie.
 
@@ -606,6 +611,7 @@ class Buttons:
         except IndexError:
             st.session_state.code_input = " "
 
+    @staticmethod
     def no_win_button(cont1: st.container = None, cont2: st.container = None) -> None:
         """The button to declare that both models provided bad answers.
 
@@ -644,6 +650,7 @@ class Buttons:
         except IndexError:
             st.session_state.code_input = " "
 
+    @staticmethod
     def save_button() -> None:
         """Update the leaderboards with the results from the session.
 
