@@ -233,7 +233,7 @@ class database:
             st.session_state.offline_detailed["scores"]
         )
 
-        models = pd.DataFrame(st.session_state.models)
+        models = pd.DataFrame({"Models": st.session_state.models})
 
         detail_leaderboards = st.session_state.detailed_leaderboards["scores"]
 
