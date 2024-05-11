@@ -421,7 +421,7 @@ def init_session(mode: str = "keys") -> None:
         data = pd.read_csv(
             "leaderboard.csv"
         )  # This will raise an error if the file does not exist
-        st.session_state.leaderboards.set_index("Model Name", inplace=True)
+        st.session_state.leaderboard.set_index("Model Name", inplace=True)
         json_data = st.session_state.leaderboard
 
         st.session_state["vote_counts"] = pd.DataFrame(
