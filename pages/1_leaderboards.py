@@ -130,7 +130,7 @@ else:
             unsafe_allow_html=True,
         )
 enable_global = st.sidebar.checkbox(
-    "Enable global leaderboards",
+    "Enable [global leaderboards](https://docs.google.com/spreadsheets/d/10QrEik70RYY_LM8RW8GGq-vZWK2e1dka6agRGtKZPHU/edit?usp=sharing)",
     value=st.session_state.source,
     on_change=lambda: (
         setattr(st.session_state, "new_source", True),
