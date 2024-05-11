@@ -7,7 +7,7 @@ st.set_page_config(
     layout="wide",
 )
 
-_, theme_col = st.column([7, 1])
+_, theme_col = st.columns([7, 1])
 with theme_col:
     helpers.change_theme_button()
 
