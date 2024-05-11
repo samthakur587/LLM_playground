@@ -330,7 +330,6 @@ def init_session(mode: str = "keys") -> None:
     if mode == "keys":
         keys = [
             "chat_input",
-            "winner_selected",
             "api_key_provided",
             "vote1",
             "vote2",
@@ -342,7 +341,6 @@ def init_session(mode: str = "keys") -> None:
             "detailed_leaderboards",
             "detail",
             "new_source",
-            "prompt_provided",
         ]
         for key in keys:
             if key not in st.session_state.keys():
@@ -356,10 +354,12 @@ def init_session(mode: str = "keys") -> None:
 
         if "model1_selectbox" not in st.session_state.keys():
             st.session_state.placeholder_model1 = "other"
+            st.session_state.model1_selectbox = None
         if "model1_other" not in st.session_state.keys():
             st.session_state.placeholder_model1_other = "model@provider"
         if "model2_selectbox" not in st.session_state.keys():
             st.session_state.placeholder_model2 = "other"
+            st.session_state.model2_selectbox = None
         if "model2_other" not in st.session_state.keys():
             st.session_state.placeholder_model2_other = "model@provider"
 
@@ -386,6 +386,11 @@ def init_session(mode: str = "keys") -> None:
 
         if "enable_detail" not in st.session_state.keys():
             st.session_state.enable_detail = False
+
+        if "winner_selected" not in st.session_state.keys():
+            st.session_state.winner_selected = True
+        if "prompt_provided" not in st.session_state.keys():
+            st.session_state.prompt_provided = True
 
         if (
             "themes" not in st.session_state

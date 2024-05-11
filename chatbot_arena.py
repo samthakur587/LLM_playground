@@ -40,19 +40,21 @@ def select_model(api_key: str = "", authenticated: bool = False) -> None:
     model1_other_disabled = True
     model2_other_disabled = True
 
-    st.selectbox(
+    st.session_state.model1_selectbox = st.selectbox(
         "Select the first model's endpoint:",
-        all_models,
+        options=all_models + ["I'm feeling lucky"],
         disabled=disabled,
         index=st.session_state.index_model1,
         on_change=lambda: (
             setattr(st.session_state, "chat_history1", []),
             setattr(st.session_state, "chat_history2", []),
-            setattr(st.session_state, "winner_selected", False),
+            setattr(st.session_state, "winner_selected", True),
+            setattr(st.session_state, "prompt_provided", True),
             setattr(st.session_state, "new_models_selected", True),
         ),
-        key="model1_selectbox",
     )
+    if st.session_state.model1_selectbox == "I'm feeling lucky":
+        st.session_state.model1_selectbox = random.choice(all_models[:-1])
     st.session_state.index_model1 = all_models.index(st.session_state.model1_selectbox)
 
     if st.session_state.model1_selectbox == "other":
@@ -65,24 +67,27 @@ def select_model(api_key: str = "", authenticated: bool = False) -> None:
         on_change=lambda: (
             setattr(st.session_state, "chat_history1", []),
             setattr(st.session_state, "chat_history2", []),
-            setattr(st.session_state, "winner_selected", False),
+            setattr(st.session_state, "winner_selected", True),
+            setattr(st.session_state, "prompt_provided", True),
             setattr(st.session_state, "new_models_selected", True),
         ),
         key="model1_other",
     )
-    st.selectbox(
+    st.session_state.model2_selectbox = st.selectbox(
         "Select the second model's endpoint:",
-        all_models,
+        options=all_models + ["I'm feeling lucky"],
         disabled=disabled,
         index=st.session_state.index_model2,
         on_change=lambda: (
             setattr(st.session_state, "chat_history1", []),
             setattr(st.session_state, "chat_history2", []),
-            setattr(st.session_state, "winner_selected", False),
+            setattr(st.session_state, "winner_selected", True),
+            setattr(st.session_state, "prompt_provided", True),
             setattr(st.session_state, "new_models_selected", True),
         ),
-        key="model2_selectbox",
     )
+    if st.session_state.model2_selectbox == "I'm feeling lucky":
+        st.session_state.model2_selectbox = random.choice(all_models[:-1])
     st.session_state.index_model2 = all_models.index(st.session_state.model2_selectbox)
 
     if st.session_state.model2_selectbox == "other":
@@ -95,7 +100,8 @@ def select_model(api_key: str = "", authenticated: bool = False) -> None:
         on_change=lambda: (
             setattr(st.session_state, "chat_history1", []),
             setattr(st.session_state, "chat_history2", []),
-            setattr(st.session_state, "winner_selected", False),
+            setattr(st.session_state, "winner_selected", True),
+            setattr(st.session_state, "prompt_provided", True),
             setattr(st.session_state, "new_models_selected", True),
         ),
         key="model2_other",
@@ -435,11 +441,12 @@ async def main() -> None:
 
     c1, c2, c3, c4 = st.columns([3, 1, 3, 1])
     # Display the vote buttons
+
     vote_disabled = (
         True
         if all([
             st.session_state.winner_selected,
-            st.session_state.prompt_provided is not True,
+            st.session_state.prompt_provided,
         ])
         else False
     )
@@ -447,10 +454,7 @@ async def main() -> None:
         left_button_clicked = st.button(
             "👍 Vote 1st Model",
             disabled=vote_disabled,
-            on_click=lambda: (
-                setattr(st.session_state, "winner_selected", True),
-                setattr(st.session_state, "prompt_provided", False),
-            ),
+            on_click=lambda: (setattr(st.session_state, "winner_selected", True),),
         )
         if left_button_clicked:
             helpers.Buttons.left_button_clicked(cont1, cont2)
@@ -459,10 +463,7 @@ async def main() -> None:
         tie_button_clicked = st.button(
             "👔 Vote Tie (1:1)",
             disabled=vote_disabled,
-            on_click=lambda: (
-                setattr(st.session_state, "winner_selected", True),
-                setattr(st.session_state, "prompt_provided", False),
-            ),
+            on_click=lambda: (setattr(st.session_state, "winner_selected", True),),
         )
         if tie_button_clicked:
             helpers.Buttons.tie_button(cont1, cont2)
@@ -471,10 +472,7 @@ async def main() -> None:
         no_win_button_clicked = st.button(
             "❌ No Winners (0:0)",
             disabled=vote_disabled,
-            on_click=lambda: (
-                setattr(st.session_state, "winner_selected", True),
-                setattr(st.session_state, "prompt_provided", False),
-            ),
+            on_click=lambda: (setattr(st.session_state, "winner_selected", True),),
         )
         if no_win_button_clicked:
             helpers.Buttons.no_win_button(cont1, cont2)
@@ -483,10 +481,7 @@ async def main() -> None:
         right_button_clicked = st.button(
             "👍 Vote 2nd Model",
             disabled=vote_disabled,
-            on_click=lambda: (
-                setattr(st.session_state, "winner_selected", True),
-                setattr(st.session_state, "prompt_provided", False),
-            ),
+            on_click=lambda: (setattr(st.session_state, "winner_selected", True),),
         )
         if right_button_clicked:
             helpers.Buttons.right_button_clicked(cont1, cont2)
