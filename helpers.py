@@ -224,7 +224,9 @@ class database:
         ].add(
             st.session_state.offline_leaderboard[["Wins ⭐", "Losses ❌"]], fill_value=0
         )
-        sorted_counts_df = vote_counts_df[["Model Name", "Wins ⭐", "Losses ❌"]]
+        sorted_counts_df = vote_counts_df[["Wins ⭐", "Losses ❌"]]
+        sorted_counts_df["Model Name"] = sorted_counts_df.index
+
         sorted_counts_df.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
 
         detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
@@ -263,7 +265,9 @@ class database:
         vote_counts_df[["Wins ⭐", "Losses ❌"]] = vote_counts_df[
             ["Wins ⭐", "Losses ❌"]
         ].add(st.session_state.online_leaderboard[["Wins ⭐", "Losses ❌"]], fill_value=0)
-        sorted_counts_df = vote_counts_df[["Model Name", "Wins ⭐", "Losses ❌"]]
+        sorted_counts_df = vote_counts_df[["Wins ⭐", "Losses ❌"]]
+        sorted_counts_df["Model Name"] = sorted_counts_df.index
+
         sorted_counts_df.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
 
         detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
