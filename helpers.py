@@ -274,7 +274,7 @@ class database:
             st.session_state.online_detailed["scores"]
         )
 
-        models = pd.DataFrame(st.session_state.models)
+        models = pd.DataFrame({"Models": st.session_state.models})
 
         with st.echo():
             # Create GSheets connection
