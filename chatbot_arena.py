@@ -437,7 +437,7 @@ async def main() -> None:
     # Display the vote buttons
     vote_disabled = (
         True
-        if all([st.session_state.winner_selected, st.session_state.prompt_provided])
+        if all([st.session_state.winner_selected, not st.session_state.prompt_provided])
         else False
     )
     with c1:
