@@ -374,6 +374,30 @@ def init_session(mode: str = "keys") -> None:
         if "enable_detail" not in st.session_state.keys():
             st.session_state.enable_detail = False
 
+        if (
+            "themes" not in st.session_state
+        ):  # Source of the themes solution: https://discuss.streamlit.io/t/changing-the-streamlit-theme-with-a-toggle-button-solution/56842/2
+            st.session_state.themes = {
+                "current_theme": "light",
+                "refreshed": True,
+                "light": {
+                    "theme.base": "dark",
+                    "theme.backgroundColor": "black",
+                    "theme.primaryColor": "#c98bdb",
+                    "theme.secondaryBackgroundColor": "#5591f5",
+                    "theme.textColor": "white",
+                    "button_face": "🌜",
+                },
+                "dark": {
+                    "theme.base": "light",
+                    "theme.backgroundColor": "white",
+                    "theme.primaryColor": "#5591f5",
+                    "theme.secondaryBackgroundColor": "#82E1D7",
+                    "theme.textColor": "#0a1464",
+                    "button_face": "🌞",
+                },
+            }
+
     if mode == "offline":
         database.get_offline(st.session_state.new_source is True)
         # Load JSON data from file
@@ -395,3 +419,34 @@ def init_session(mode: str = "keys") -> None:
         json_data = st.session_state.leaderboard
         data = {model: 0 for model in json_data.index}
         st.session_state["vote_counts"] = json_data
+
+
+def ChangeTheme():
+    previous_theme = st.session_state.themes["current_theme"]
+    tdict = (
+        st.session_state.themes["light"]
+        if st.session_state.themes["current_theme"] == "light"
+        else st.session_state.themes["dark"]
+    )
+    for vkey, vval in tdict.items():
+        if vkey.startswith("theme"):
+            st._config.set_option(vkey, vval)
+
+    st.session_state.themes["refreshed"] = False
+    if previous_theme == "dark":
+        st.session_state.themes["current_theme"] = "light"
+    elif previous_theme == "light":
+        st.session_state.themes["current_theme"] = "dark"
+
+
+def change_theme_button():
+    btn_face = (
+        st.session_state.themes["light"]["button_face"]
+        if st.session_state.themes["current_theme"] == "light"
+        else st.session_state.themes["dark"]["button_face"]
+    )
+    st.button(btn_face, on_click=ChangeTheme)
+
+    if st.session_state.themes["refreshed"] is False:
+        st.session_state.themes["refreshed"] = True
+        st.rerun()

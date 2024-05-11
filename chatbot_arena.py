@@ -260,6 +260,10 @@ async def main() -> None:
         source = "offline"
     helpers.init_session(source)
 
+    _, theme_col = st.column([7, 1])
+    with theme_col:
+        helpers.change_theme_button()
+
     all_models = list(st.session_state.models)
     json_data = st.session_state.leaderboard
 

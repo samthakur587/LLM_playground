@@ -10,6 +10,10 @@ st.set_page_config(
 
 source = "online" if st.session_state.source is True else "offline"
 
+_, theme_col = st.column([7, 1])
+with theme_col:
+    helpers.change_theme_button()
+
 # Add custom CSS for the buttons
 st.markdown(
     """
@@ -141,7 +145,7 @@ if st.session_state.new_source in [True, None]:
         helpers.database.get_offline(True)
     st.session_state.new_source = False
 with st.sidebar:
-    st.button("Save leaderboards", key="save")
+    st.button("Save leaderboards", key="save2")
     if st.session_state.save:
 
         helpers.database.save_offline()
