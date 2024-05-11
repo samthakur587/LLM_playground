@@ -360,6 +360,7 @@ def init_session(mode: str = "keys") -> None:
             st.session_state.index_model1 = 0
         if "index_model2" not in st.session_state.keys():
             st.session_state.index_model2 = 0
+
         if "value_model1_other" not in st.session_state.keys():
             st.session_state.value_model1_other = ""
         if "value_model2_other" not in st.session_state.keys():

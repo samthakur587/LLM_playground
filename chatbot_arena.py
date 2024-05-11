@@ -53,6 +53,8 @@ def select_model(api_key: str = "", authenticated: bool = False) -> None:
         ),
         key="model1_selectbox",
     )
+    st.session_state.index_model1 = all_models.index(st.session_state.model1_selectbox)
+
     if st.session_state.model1_selectbox == "other":
         model1_other_disabled = False
     st.text_input(
@@ -81,6 +83,8 @@ def select_model(api_key: str = "", authenticated: bool = False) -> None:
         ),
         key="model2_selectbox",
     )
+    st.session_state.index_model2 = all_models.index(st.session_state.model2_selectbox)
+
     if st.session_state.model2_selectbox == "other":
         model2_other_disabled = False
     st.text_input(
@@ -107,8 +111,8 @@ def select_model(api_key: str = "", authenticated: bool = False) -> None:
         else st.session_state.model2_other
     )
 
-    st.session_state.index_model1 = all_models.index(st.session_state.model1_selectbox)
-    st.session_state.index_model2 = all_models.index(st.session_state.model2_selectbox)
+    # st.session_state.index_model1 = all_models.index(st.session_state.model1_selectbox)
+    # st.session_state.index_model2 = all_models.index(st.session_state.model2_selectbox)
     if st.session_state.model1_selectbox == "other":
         st.session_state.value_model1_other = selected_model1
     if st.session_state.model2_selectbox == "other":
@@ -121,6 +125,7 @@ def select_model(api_key: str = "", authenticated: bool = False) -> None:
         st.session_state["model1"] = selected_models.pop(0)
         st.session_state["model2"] = selected_models.pop(0)
         st.session_state.new_models_selected = False
+        st.rerun()
 
 
 def history(model: str = "model1", output: str = "") -> None:
