@@ -336,6 +336,7 @@ def init_session(mode: str = "keys") -> None:
             "detailed_leaderboards",
             "detail",
             "new_source",
+            "prompt_provided",
         ]
         for key in keys:
             if key not in st.session_state.keys():
