@@ -301,7 +301,7 @@ class database:
                 data=models,
             )
             st.cache_data.clear()
-            st.experimental_rerun()
+            st.rerun()
 
 
 def init_session(mode: str = "keys") -> None:
@@ -421,12 +421,12 @@ def init_session(mode: str = "keys") -> None:
         data = pd.read_csv(
             "leaderboard.csv"
         )  # This will raise an error if the file does not exist
+        st.session_state.leaderboards.set_index("Model Name", inplace=True)
         json_data = st.session_state.leaderboard
 
         st.session_state["vote_counts"] = pd.DataFrame(
             json_data, columns=["Model Name", "Wins ⭐", "Losses ❌"]
         )
-        st.session_state["vote_counts"].set_index("Model Name", inplace=True)
 
     if mode == "online":
         database.get_online(st.session_state.new_source is True)
