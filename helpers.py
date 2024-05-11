@@ -257,7 +257,6 @@ class database:
         for key in keys:
             if key not in st.session_state.keys():
                 st.session_state[key] = None
-
         database.get_online(True)
 
         vote_counts_df = pd.DataFrame(st.session_state.vote_counts)

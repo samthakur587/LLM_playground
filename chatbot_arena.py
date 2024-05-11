@@ -283,7 +283,7 @@ async def main() -> None:
     col11, col21 = st.columns(2)
     # Display chat UI
     with col11:
-        if st.session_state.winner_selected is True:
+        if all([st.session_state.winner_selected, st.session_state.prompt_provided]):
             st.markdown(
                 "<span style='font-size:20px; color:blue;'>Model 1: "
                 + st.session_state["model1"]
@@ -296,7 +296,7 @@ async def main() -> None:
                 unsafe_allow_html=True,
             )
     with col21:
-        if st.session_state.winner_selected is True:
+        if all([st.session_state.winner_selected, st.session_state.prompt_provided]):
             st.markdown(
                 "<span style='font-size:20px; color:blue;'>Model 2: "
                 + st.session_state["model2"]
