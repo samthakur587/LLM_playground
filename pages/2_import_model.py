@@ -9,7 +9,7 @@ st.set_page_config(
 
 _, theme_col = st.columns([7, 1])
 with theme_col:
-    helpers.change_theme_button()
+    helpers.Buttons.change_theme_button()
 
 code_input = st.session_state.code_input
 api1 = f"""

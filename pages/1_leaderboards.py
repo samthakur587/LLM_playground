@@ -12,7 +12,7 @@ source = "online" if st.session_state.source is True else "offline"
 
 _, theme_col = st.columns([7, 1])
 with theme_col:
-    helpers.change_theme_button()
+    helpers.Buttons.change_theme_button()
 
 # Add custom CSS for the buttons
 st.markdown(
@@ -145,23 +145,4 @@ if st.session_state.new_source in [True, None]:
         helpers.database.get_offline(True)
     st.session_state.new_source = False
 with st.sidebar:
-    st.button("Save leaderboards", key="save2")
-    if st.session_state.save2:
-
-        helpers.database.save_offline()
-        try:
-            helpers.database.save_online()
-        except Exception as e:
-            st.write("Could not upload the results.")
-            st.write(e)
-        st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
-            st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
-                st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
-            )
-        )
-
-        st.session_state.detailed_leaderboards["scores"] = (
-            st.session_state.detailed_leaderboards["scores"].where(
-                st.session_state.detailed_leaderboards["scores"] == 0, 0
-            )
-        )
+    helpers.Buttons.save_button()

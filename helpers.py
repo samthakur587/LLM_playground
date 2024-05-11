@@ -128,11 +128,12 @@ class database:
         corresponding session states.
 
         Parameters
+        ----------
             update
                 if True, the session states with the new votes will not get reset, only the full leaderboards
                 will be refreshed. Used to ensure that the online database will get correctly updated.
                 Default: False
-        ----------
+
         None
 
         Returns
@@ -439,14 +440,247 @@ def ChangeTheme():
         st.session_state.themes["current_theme"] = "dark"
 
 
-def change_theme_button():
-    btn_face = (
-        st.session_state.themes["light"]["button_face"]
-        if st.session_state.themes["current_theme"] == "light"
-        else st.session_state.themes["dark"]["button_face"]
-    )
-    st.button(btn_face, on_click=ChangeTheme)
+class Buttons:
+    def change_theme_button() -> None:
+        """The button to switch between the light and dark modes.
 
-    if st.session_state.themes["refreshed"] is False:
-        st.session_state.themes["refreshed"] = True
-        st.rerun()
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        btn_face = (
+            st.session_state.themes["light"]["button_face"]
+            if st.session_state.themes["current_theme"] == "light"
+            else st.session_state.themes["dark"]["button_face"]
+        )
+        st.button(btn_face, on_click=ChangeTheme)
+
+        if st.session_state.themes["refreshed"] is False:
+            st.session_state.themes["refreshed"] = True
+            st.rerun()
+
+    def left_button_clicked(
+        cont1: st.container = None, cont2: st.container = None
+    ) -> None:
+        """The button to select the model on the left side as the winning
+        model.
+
+        Parameters
+        ----------
+        cont1
+            The chat window containing the chat history with the left-side model.
+        cont2
+            The chat window containing the chat history with the right-side model.
+
+        Returns
+        -------
+        None
+        """
+        assert cont1 is not None
+        assert cont2 is not None
+        st.balloons()
+        # Increase the vote count for the selected model by 1 when the button is clicked
+        model1 = st.session_state["model1"].split("@")[0]
+        model2 = st.session_state["model2"].split("@")[0]
+
+        st.session_state["vote_counts"].at[model1, "Wins ⭐"] += 1
+        st.session_state["vote_counts"].at[
+            st.session_state["model2"].split("@")[0], "Losses ❌"
+        ] += 1
+        if (
+            model1 not in st.session_state.detailed_leaderboards["scores"].keys()
+            or model1 not in st.session_state.detailed_leaderboards["scores"].keys()
+        ):
+            st.session_state.detailed_leaderboards["scores"].at[model1, model2] = 0
+        st.session_state.detailed_leaderboards["scores"].at[model1, model2] += 1
+
+        print_history(contain=(cont1, cont2))
+        try:
+            st.session_state.code_input = st.session_state["chat_history1"][-2][
+                "content"
+            ]
+        except IndexError:
+            st.session_state.code_input = " "
+
+    def right_button_clicked(
+        cont1: st.container = None, cont2: st.container = None
+    ) -> None:
+        """The button to select the model on the right side as the winning
+        model.
+
+        Parameters
+        ----------
+        cont1
+            The chat window containing the chat history with the left-side model.
+        cont2
+            The chat window containing the chat history with the right-side model.
+
+        Returns
+        -------
+        None
+        """
+        assert cont1 is not None
+        assert cont2 is not None
+        st.balloons()
+        # Increase the vote count for the selected model by 1 when the button is clicked
+        model1 = st.session_state["model1"].split("@")[0]
+        model2 = st.session_state["model2"].split("@")[0]
+
+        st.session_state["vote_counts"].at[model2, "Wins ⭐"] += 1
+        st.session_state["vote_counts"].at[
+            st.session_state["model1"].split("@")[0], "Losses ❌"
+        ] += 1
+        if (
+            model2 not in st.session_state.detailed_leaderboards["scores"].keys()
+            or model1 not in st.session_state.detailed_leaderboards["scores"].keys()
+        ):
+            st.session_state.detailed_leaderboards["scores"].at[model2, model1] = 0
+        st.session_state.detailed_leaderboards["scores"].at[model2, model1] += 1
+
+        print_history(contain=(cont1, cont2))
+        try:
+            st.session_state.code_input = st.session_state["chat_history2"][-2][
+                "content"
+            ]
+        except IndexError:
+            st.session_state.code_input = " "
+
+    def tie_button(cont1: st.container = None, cont2: st.container = None) -> None:
+        """The button to declare a tie.
+
+        Parameters
+        ----------
+        cont1
+            The chat window containing the chat history with the left-side model.
+        cont2
+            The chat window containing the chat history with the right-side model.
+
+        Returns
+        -------
+        None
+        """
+        assert cont1 is not None
+        assert cont2 is not None
+        st.balloons()
+        # Increase the vote count for the selected model by 1 when the button is clicked
+        model1 = st.session_state["model1"].split("@")[0]
+        model2 = st.session_state["model2"].split("@")[0]
+
+        st.session_state["vote_counts"].at[model2, "Wins ⭐"] += 1
+        st.session_state["vote_counts"].at[model1, "Wins ⭐"] += 1
+        if (
+            model2 not in st.session_state.detailed_leaderboards["scores"].keys()
+            or model1 not in st.session_state.detailed_leaderboards["scores"].keys()
+        ):
+            st.session_state.detailed_leaderboards["scores"].at[model2, model1] = 0
+            st.session_state.detailed_leaderboards["scores"].at[model1, model2] = 0
+        st.session_state.detailed_leaderboards["scores"].at[model2, model1] += 1
+        st.session_state.detailed_leaderboards["scores"].at[model1, model2] += 1
+
+        print_history(contain=(cont1, cont2))
+        try:
+            st.session_state.code_input = st.session_state["chat_history2"][-2][
+                "content"
+            ]
+        except IndexError:
+            st.session_state.code_input = " "
+
+    def no_win_button(cont1: st.container = None, cont2: st.container = None) -> None:
+        """The button to declare that both models provided bad answers.
+
+        Parameters
+        ----------
+        cont1
+            The chat window containing the chat history with the left-side model.
+        cont2
+            The chat window containing the chat history with the right-side model.
+
+        Returns
+        -------
+        None
+        """
+        assert cont1 is not None
+        assert cont2 is not None
+        st.balloons()
+        # Increase the vote count for the selected model by 1 when the button is clicked
+        model1 = st.session_state["model1"].split("@")[0]
+        model2 = st.session_state["model2"].split("@")[0]
+
+        st.session_state["vote_counts"].at[model2, "Losses ❌"] += 1
+        st.session_state["vote_counts"].at[model1, "Losses ❌"] += 1
+        if (
+            model2 not in st.session_state.detailed_leaderboards["scores"].keys()
+            or model1 not in st.session_state.detailed_leaderboards["scores"].keys()
+        ):
+            st.session_state.detailed_leaderboards["scores"].at[model2, model1] = 0
+            st.session_state.detailed_leaderboards["scores"].at[model1, model2] = 0
+
+        print_history(contain=(cont1, cont2))
+        try:
+            st.session_state.code_input = st.session_state["chat_history2"][-2][
+                "content"
+            ]
+        except IndexError:
+            st.session_state.code_input = " "
+
+    def save_button() -> None:
+        """Update the leaderboards with the results from the session.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        save = st.button("Save leaderboards")
+        if save:
+
+            database.save_offline()
+            try:
+                database.save_online()
+            except Exception as e:
+                st.write("Could not upload the results.")
+                st.write(e)
+            st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
+                st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
+                    st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
+                )
+            )
+
+            st.session_state.detailed_leaderboards["scores"] = (
+                st.session_state.detailed_leaderboards["scores"].where(
+                    st.session_state.detailed_leaderboards["scores"] == 0, 0
+                )
+            )
+
+
+def print_history(contain: tuple[st.container]) -> None:
+    """Print the chat history in a streamlit split container.
+
+    Parameters
+    ----------
+    contain
+        streamlit container to print the chat history into.
+
+    Returns
+    -------
+    None
+    """
+
+    cont1, cont2 = contain
+    for i in st.session_state["chat_history1"]:
+        if i["role"] == "user":
+            cont1.write("🧑‍💻" + "  " + i["content"])
+        else:
+            cont1.write(i["content"])
+    for i in st.session_state["chat_history2"]:
+        if i["role"] == "user":
+            cont2.write("🧑‍💻" + "  " + i["content"])
+        else:
+            cont2.write(i["content"])

@@ -193,32 +193,6 @@ def input_api_key(api_key: str = " ") -> None:
         st.sidebar.write(f"{r['error']}")
 
 
-def print_history(contain: st.container) -> None:
-    """Print the chat history in a streamlit split container.
-
-    Parameters
-    ----------
-    contain
-        streamlit container to print the chat history into.
-
-    Returns
-    -------
-    None
-    """
-
-    cont1, cont2 = contain
-    for i in st.session_state["chat_history1"]:
-        if i["role"] == "user":
-            cont1.write("🧑‍💻" + "  " + i["content"])
-        else:
-            cont1.write(i["content"])
-    for i in st.session_state["chat_history2"]:
-        if i["role"] == "user":
-            cont2.write("🧑‍💻" + "  " + i["content"])
-        else:
-            cont2.write(i["content"])
-
-
 def call_model(Endpoint: str) -> AsyncUnify:
     """Prepare the Unify model to which the prompts will be sent.
 
@@ -262,7 +236,7 @@ async def main() -> None:
 
     _, theme_col = st.columns([7, 1])
     with theme_col:
-        helpers.change_theme_button()
+        helpers.Buttons.change_theme_button()
 
     all_models = list(st.session_state.models)
     json_data = st.session_state.leaderboard
@@ -347,7 +321,7 @@ async def main() -> None:
         )
         message1 = st.session_state["chat_history1"]
         message2 = st.session_state["chat_history2"]
-        print_history(contain=(cont1, cont2))
+        helpers.print_history(contain=(cont1, cont2))
         u1 = None
         u2 = None
         try:
@@ -451,69 +425,44 @@ async def main() -> None:
             call(u2, model="model2", contain=cont2, message=message2),
         )
 
-    c1, c2 = st.columns(2)
+    c1, c2, c3, c4 = st.columns([3, 1, 3, 1])
     # Display the vote buttons
     vote_disabled = True if st.session_state.winner_selected in [None, True] else False
     with c1:
         left_button_clicked = st.button(
-            "👍 Vote First Model",
+            "👍 Vote 1st Model",
             disabled=vote_disabled,
             on_click=lambda: setattr(st.session_state, "winner_selected", True),
         )
         if left_button_clicked:
-            st.balloons()
-            # Increase the vote count for the selected model by 1 when the button is clicked
-            model1 = st.session_state["model1"].split("@")[0]
-            model2 = st.session_state["model2"].split("@")[0]
+            helpers.Buttons.left_button_clicked(cont1, cont2)
 
-            st.session_state["vote_counts"].at[model1, "Wins ⭐"] += 1
-            st.session_state["vote_counts"].at[
-                st.session_state["model2"].split("@")[0], "Losses ❌"
-            ] += 1
-            if (
-                model1 not in st.session_state.detailed_leaderboards["scores"].keys()
-                or model1 not in st.session_state.detailed_leaderboards["scores"].keys()
-            ):
-                st.session_state.detailed_leaderboards["scores"].at[model1, model2] = 0
-            st.session_state.detailed_leaderboards["scores"].at[model1, model2] += 1
-
-            print_history(contain=(cont1, cont2))
-            try:
-                st.session_state.code_input = st.session_state["chat_history1"][-2][
-                    "content"
-                ]
-            except IndexError:
-                st.session_state.code_input = " "
     with c2:
+        tie_button_clicked = st.button(
+            "👔 Vote Tie (1:1)",
+            disabled=vote_disabled,
+            on_click=lambda: setattr(st.session_state, "winner_selected", True),
+        )
+        if tie_button_clicked:
+            helpers.Buttons.tie_button(cont1, cont2)
+
+    with c3:
+        no_win_button_clicked = st.button(
+            "❌ No Winners (0:0)",
+            disabled=vote_disabled,
+            on_click=lambda: setattr(st.session_state, "winner_selected", True),
+        )
+        if no_win_button_clicked:
+            helpers.Buttons.no_win_button(cont1, cont2)
+
+    with c4:
         right_button_clicked = st.button(
-            "👍 Vote Second Model",
+            "👍 Vote 2nd Model",
             disabled=vote_disabled,
             on_click=lambda: setattr(st.session_state, "winner_selected", True),
         )
         if right_button_clicked:
-            st.balloons()
-            # Increase the vote count for the selected model by 1 when the button is clicked
-            model1 = st.session_state["model1"].split("@")[0]
-            model2 = st.session_state["model2"].split("@")[0]
-
-            st.session_state["vote_counts"].at[model2, "Wins ⭐"] += 1
-            st.session_state["vote_counts"].at[
-                st.session_state["model1"].split("@")[0], "Losses ❌"
-            ] += 1
-            if (
-                model2 not in st.session_state.detailed_leaderboards["scores"].keys()
-                or model1 not in st.session_state.detailed_leaderboards["scores"].keys()
-            ):
-                st.session_state.detailed_leaderboards["scores"].at[model2, model1] = 0
-            st.session_state.detailed_leaderboards["scores"].at[model2, model1] += 1
-
-            print_history(contain=(cont1, cont2))
-            try:
-                st.session_state.code_input = st.session_state["chat_history2"][-2][
-                    "content"
-                ]
-            except IndexError:
-                st.session_state.code_input = " "
+            helpers.Buttons.right_button_clicked(cont1, cont2)
             # Add custom CSS for the buttons
     history_button_clicked = st.button("Clear Histroy")
     if history_button_clicked:
@@ -521,26 +470,7 @@ async def main() -> None:
         st.session_state["chat_history2"] = []
 
     with st.sidebar:
-        st.button("Save leaderboards", key="save")
-        if st.session_state.save:
-
-            helpers.database.save_offline()
-            try:
-                helpers.database.save_online()
-            except Exception as e:
-                st.write("Could not upload the results.")
-                st.write(e)
-            st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
-                st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
-                    st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
-                )
-            )
-
-            st.session_state.detailed_leaderboards["scores"] = (
-                st.session_state.detailed_leaderboards["scores"].where(
-                    st.session_state.detailed_leaderboards["scores"] == 0, 0
-                )
-            )
+        helpers.Buttons.save_button()
 
 
 if __name__ == "__main__":
