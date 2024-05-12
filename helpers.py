@@ -84,18 +84,11 @@ class database:
 
         if not update:
             st.session_state.leaderboard = pd.DataFrame(json_data)
-            st.session_state.detailed_leaderboards = st.session_state.offline_detailed
             st.session_state.models = st.session_state.offline_models
 
             st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
                 st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
                     st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
-                )
-            )
-
-            st.session_state.detailed_leaderboards = (
-                st.session_state.detailed_leaderboards.where(
-                    st.session_state.detailed_leaderboards == 0, 0
                 )
             )
 
@@ -158,7 +151,6 @@ class database:
 
         if not update:
             st.session_state.leaderboard = gsheets_leaderboard
-            st.session_state.detailed_leaderboards = gsheets_detail
             st.session_state.models = gsheets_models["Models"]
 
             st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
@@ -168,14 +160,6 @@ class database:
             )
 
             st.session_state.leaderboard = st.session_state.leaderboard.convert_dtypes()
-
-            st.session_state.detailed_leaderboards = (
-                st.session_state.detailed_leaderboards.where(gsheets_detail == 0, 0)
-            )
-
-            st.session_state.detailed_leaderboards = (
-                st.session_state.detailed_leaderboards.convert_dtypes()
-            )
 
     @staticmethod
     def save_offline():
@@ -206,7 +190,7 @@ class database:
         sorted_counts_df.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
 
         detail_leaderboards = st.session_state.detailed_leaderboards.add(
-            st.session_state.offline_detailed
+            st.session_state.offline_detailed, fill_value=0
         )
         detail_leaderboards.index = detail_leaderboards.columns
 
@@ -245,14 +229,8 @@ class database:
 
         sorted_counts_df.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
 
-        st.session_state.detailed_leaderboards.index = (
-            st.session_state.detailed_leaderboards.columns
-        )
-        st.session_state.online_detailed.index = (
-            st.session_state.online_detailed.columns
-        )
         detail_leaderboards = st.session_state.detailed_leaderboards.add(
-            st.session_state.online_detailed
+            st.session_state.offline_detailed, fill_value=0
         )
         detail_leaderboards.index = detail_leaderboards.columns
         try:
@@ -318,7 +296,6 @@ def init_session(mode: str = "keys") -> None:
             "scores",
             "authenticated",
             "new_models_selected",
-            "detailed_leaderboards",
             "detail",
             "new_source",
             "saved",
@@ -366,6 +343,15 @@ def init_session(mode: str = "keys") -> None:
             )
             st.session_state.vote_counts.set_index(
                 "Model Name", inplace=True, drop=False
+            )
+
+        if "detailed_leaderboards" not in st.session_state:
+            st.session_state.detailed_leaderboards = pd.DataFrame({"other": [0]})
+            st.session_state.detailed_leaderboards.insert(
+                0, "", st.session_state.detailed_leaderboards.columns
+            )
+            st.session_state.detailed_leaderboards.set_index(
+                "", inplace=True, drop=True
             )
 
         if "enable_detail" not in st.session_state.keys():
@@ -650,9 +636,9 @@ class Buttons:
             "Save leaderboards",
             on_click=lambda: setattr(st.session_state, "saved", True),
         )
-        # st.write(st.session_state.vote_counts)
-        if st.session_state.saved:
 
+        if st.session_state.saved:
+            st.write(st.session_state.detailed_leaderboards)
             st.session_state.saved = False
             database.save_offline()
             try:
