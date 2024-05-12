@@ -385,6 +385,9 @@ def init_session(mode: str = "keys") -> None:
             st.session_state.vote_counts = pd.DataFrame(
                 {"Model Name": ["other"], "Wins ⭐": [0], "Losses ❌": [0]}
             )
+            st.session_state.vote_counts.set_index(
+                "Model Name", inplace=True, drop=False
+            )
 
         if "enable_detail" not in st.session_state.keys():
             st.session_state.enable_detail = False
@@ -429,16 +432,16 @@ def init_session(mode: str = "keys") -> None:
         st.session_state.leaderboard.set_index("Model Name", inplace=True, drop=False)
         json_data = st.session_state.leaderboard
 
-        st.session_state["vote_counts"] = pd.DataFrame(
-            json_data, columns=["Model Name", "Wins ⭐", "Losses ❌"]
-        )
+        # st.session_state["vote_counts"] = pd.DataFrame(
+        #     json_data, columns=["Model Name", "Wins ⭐", "Losses ❌"]
+        # )
 
     if mode == "online":
         database.get_online(st.session_state.new_source is True)
         all_models = list(st.session_state.models)
         json_data = st.session_state.leaderboard
         data = {model: 0 for model in json_data.index}
-        st.session_state["vote_counts"] = json_data
+        # st.session_state["vote_counts"] = json_data
 
 
 def ChangeTheme():
