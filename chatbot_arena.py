@@ -49,7 +49,7 @@ def select_model(api_key: str = "", authenticated: bool = False) -> None:
             setattr(st.session_state, "chat_history1", []),
             setattr(st.session_state, "chat_history2", []),
             setattr(st.session_state, "winner_selected", True),
-            setattr(st.session_state, "prompt_provided", True),
+            setattr(st.session_state, "prompt_provided", False),
             setattr(st.session_state, "new_models_selected", True),
         ),
     )
@@ -68,7 +68,7 @@ def select_model(api_key: str = "", authenticated: bool = False) -> None:
             setattr(st.session_state, "chat_history1", []),
             setattr(st.session_state, "chat_history2", []),
             setattr(st.session_state, "winner_selected", True),
-            setattr(st.session_state, "prompt_provided", True),
+            setattr(st.session_state, "prompt_provided", False),
             setattr(st.session_state, "new_models_selected", True),
         ),
         key="model1_other",
@@ -82,7 +82,7 @@ def select_model(api_key: str = "", authenticated: bool = False) -> None:
             setattr(st.session_state, "chat_history1", []),
             setattr(st.session_state, "chat_history2", []),
             setattr(st.session_state, "winner_selected", True),
-            setattr(st.session_state, "prompt_provided", True),
+            setattr(st.session_state, "prompt_provided", False),
             setattr(st.session_state, "new_models_selected", True),
         ),
     )
@@ -101,7 +101,7 @@ def select_model(api_key: str = "", authenticated: bool = False) -> None:
             setattr(st.session_state, "chat_history1", []),
             setattr(st.session_state, "chat_history2", []),
             setattr(st.session_state, "winner_selected", True),
-            setattr(st.session_state, "prompt_provided", True),
+            setattr(st.session_state, "prompt_provided", False),
             setattr(st.session_state, "new_models_selected", True),
         ),
         key="model2_other",
@@ -446,7 +446,6 @@ async def main() -> None:
         True
         if all([
             st.session_state.winner_selected,
-            st.session_state.prompt_provided,
         ])
         else False
     )

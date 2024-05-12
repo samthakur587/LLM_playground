@@ -43,14 +43,14 @@ class database:
             models_df.to_csv("models.csv")
 
         all_models = tuple(data["models"])
-
+        model_names = list(set([model.split("@")[0] for model in all_models]))
         if not os.path.exists("./leaderboard.csv"):
-            leaderboard = pd.DataFrame(
-                ["other", 0, 0],
-                columns=["Model Name", "Wins ⭐", "Losses ❌"],
-                index=["other"],
-            )
-            leaderboard.to_csv("leaderboard.csv")
+            leaderboard = pd.DataFrame({
+                "Model Name": [model for model in model_names],
+                "Wins ⭐": [0 for model in model_names],
+                "Losses ❌": [0 for model in model_names],
+            })
+            leaderboard.to_csv("leaderboard.csv", index=False)
 
         data = pd.read_csv(
             "leaderboard.csv"
@@ -215,10 +215,8 @@ class database:
         for key in keys:
             if key not in st.session_state.keys():
                 st.session_state[key] = None
-
         database.get_offline(True)
-
-        vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
+        vote_counts_df = st.session_state.vote_counts
         vote_counts_df[["Wins ⭐", "Losses ❌"]] = vote_counts_df[
             ["Wins ⭐", "Losses ❌"]
         ].add(
@@ -268,6 +266,12 @@ class database:
 
         sorted_counts_df.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
 
+        st.session_state.detailed_leaderboards["scores"].index = (
+            st.session_state.detailed_leaderboards["scores"].columns
+        )
+        st.session_state.online_detailed["scores"].index = (
+            st.session_state.online_detailed["scores"].columns
+        )
         detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
             st.session_state.online_detailed["scores"]
         )
@@ -338,6 +342,7 @@ def init_session(mode: str = "keys") -> None:
             "detailed_leaderboards",
             "detail",
             "new_source",
+            "saved",
         ]
         for key in keys:
             if key not in st.session_state.keys():
@@ -377,9 +382,9 @@ def init_session(mode: str = "keys") -> None:
             st.session_state.source = False
 
         if "vote_counts" not in st.session_state:
-            st.session_state["vote_counts"] = {
-                model: {"Wins ⭐": 0, "Losses ❌": 0} for model in ["others"]
-            }
+            st.session_state.vote_counts = pd.DataFrame(
+                {"Model Name": ["other"], "Wins ⭐": [0], "Losses ❌": [0]}
+            )
 
         if "enable_detail" not in st.session_state.keys():
             st.session_state.enable_detail = False
@@ -387,7 +392,7 @@ def init_session(mode: str = "keys") -> None:
         if "winner_selected" not in st.session_state.keys():
             st.session_state.winner_selected = True
         if "prompt_provided" not in st.session_state.keys():
-            st.session_state.prompt_provided = True
+            st.session_state.prompt_provided = False
 
         if (
             "themes" not in st.session_state
@@ -659,15 +664,27 @@ class Buttons:
         -------
         None
         """
-        save = st.button("Save leaderboards")
-        if save:
+        st.button(
+            "Save leaderboards",
+            on_click=lambda: setattr(st.session_state, "saved", True),
+        )
+        st.write(st.session_state.vote_counts)
+        if st.session_state.saved:
 
+            st.session_state.saved = False
             database.save_offline()
             try:
                 database.save_online()
             except Exception as e:
                 st.write("Could not upload the results.")
                 st.write(e)
+
+            st.session_state.vote_counts[["Wins ⭐", "Losses ❌"]] = (
+                st.session_state.vote_counts[["Wins ⭐", "Losses ❌"]].where(
+                    st.session_state.vote_counts[["Wins ⭐", "Losses ❌"]] == 0, 0
+                )
+            )
+
             st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
                 st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
                     st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
