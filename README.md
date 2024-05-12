@@ -1,4 +1,4 @@
-<a href="https://unify-llmplayground.streamlit.app/" target="_blank">
+<a href="https://llm-playground-unify.streamlit.app/" target="_blank">
   <img src="app_screenshot_from_Kacper.png" alt="Screenshot">
 </a>
 
@@ -60,6 +60,10 @@ This Streamlit application provides a user interface for interacting with Unify 
 
 ---
 ## Usage
+
+
+https://github.com/Kacper-W-Kozdon/LLM_playground/assets/102428159/077d3a5a-6025-4c5f-bfa9-a72f82190763
+
 
 1. Input Unify API Key: Enter your Unify API key in the provided text input box on the sidebar.
 
