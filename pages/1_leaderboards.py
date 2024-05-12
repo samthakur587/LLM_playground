@@ -84,7 +84,6 @@ sorted_counts_detail = sorted_counts_detail[
     ["Compare", "Model Name", "Wins ⭐", "Losses ❌"]
 ]
 
-detail_leaderboards = st.session_state.detailed_leaderboards
 model_selection = list(detail_leaderboards.keys())[1:]
 
 if st.session_state.enable_detail:
@@ -132,7 +131,7 @@ else:
             unsafe_allow_html=True,
         )
         st.markdown(
-            f"<h4 style='text-align: center;'>{int(detail_leaderboards['scores'].at[model1_detail, model2_detail])}:{int(detail_leaderboards['scores'].at[model2_detail, model1_detail])}</h4>",
+            f"<h4 style='text-align: center;'>{int(detail_leaderboards.at[model1_detail, model2_detail])}:{int(detail_leaderboards.at[model2_detail, model1_detail])}</h4>",
             unsafe_allow_html=True,
         )
 enable_global = st.sidebar.checkbox(

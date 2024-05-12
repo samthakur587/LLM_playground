@@ -5,9 +5,6 @@ codellama-7b-instruct,0.0,0.0
 deepseek-coder-33b-instruct,0.0,0.0
 gemma-2b-it,0.0,0.0
 gemma-7b-it,0.0,0.0
-gpt-3.5-turbo,0.0,0.0
-gpt-4,0.0,0.0
-gpt-4-turbo,0.0,0.0
 llama-2-13b-chat,0.0,0.0
 llama-2-70b-chat,0.0,0.0
 llama-2-7b-chat,0.0,0.0
@@ -23,4 +20,7 @@ other,0.0,0.0
 pplx-70b-chat,0.0,0.0
 pplx-7b-chat,0.0,0.0
 yi-34b-chat,0.0,0.0
-mixtral-8x7b-instruct-v0.1,0.0,0.0
+gpt-4,0.0,1.0
+gpt-3.5-turbo,1.0,3.0
+mixtral-8x7b-instruct-v0.1,6.0,14.0
+gpt-4-turbo,16.0,5.0
