@@ -224,6 +224,7 @@ class database:
         )
         sorted_counts_df = vote_counts_df[["Wins ⭐", "Losses ❌"]]
         sorted_counts_df["Model Name"] = sorted_counts_df.index
+        sorted_counts_df = sorted_counts_df[["Model Name", "Wins ⭐", "Losses ❌"]]
 
         sorted_counts_df.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
 
