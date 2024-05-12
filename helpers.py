@@ -568,8 +568,8 @@ class Buttons:
             st.session_state["model1"].split("@")[0], "Losses ❌"
         ] += 1
         if (
-            model2 not in st.session_state.detailed_leaderboards["scores"].keys()
-            or model1 not in st.session_state.detailed_leaderboards["scores"].keys()
+            model2 not in st.session_state.detailed_leaderboards["scores"].index
+            or model1 not in st.session_state.detailed_leaderboards["scores"].index
         ):
             st.session_state.detailed_leaderboards["scores"].at[model2, model1] = 0
         st.session_state.detailed_leaderboards["scores"].at[model2, model1] += 1
@@ -607,8 +607,8 @@ class Buttons:
         st.session_state["vote_counts"].at[model2, "Wins ⭐"] += 1
         st.session_state["vote_counts"].at[model1, "Wins ⭐"] += 1
         if (
-            model2 not in st.session_state.detailed_leaderboards["scores"].keys()
-            or model1 not in st.session_state.detailed_leaderboards["scores"].keys()
+            model2 not in st.session_state.detailed_leaderboards["scores"].index
+            or model1 not in st.session_state.detailed_leaderboards["scores"].index
         ):
             st.session_state.detailed_leaderboards["scores"].at[model2, model1] = 0
             st.session_state.detailed_leaderboards["scores"].at[model1, model2] = 0
@@ -648,8 +648,8 @@ class Buttons:
         st.session_state["vote_counts"].at[model2, "Losses ❌"] += 1
         st.session_state["vote_counts"].at[model1, "Losses ❌"] += 1
         if (
-            model2 not in st.session_state.detailed_leaderboards["scores"].keys()
-            or model1 not in st.session_state.detailed_leaderboards["scores"].keys()
+            model2 not in st.session_state.detailed_leaderboards["scores"].index
+            or model1 not in st.session_state.detailed_leaderboards["scores"].index
         ):
             st.session_state.detailed_leaderboards["scores"].at[model2, model1] = 0
             st.session_state.detailed_leaderboards["scores"].at[model1, model2] = 0
