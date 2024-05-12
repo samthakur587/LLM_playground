@@ -638,7 +638,6 @@ class Buttons:
         )
 
         if st.session_state.saved:
-            st.write(st.session_state.detailed_leaderboards)
             st.session_state.saved = False
             database.save_offline()
             try:

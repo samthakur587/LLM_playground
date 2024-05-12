@@ -489,7 +489,6 @@ async def main() -> None:
     if history_button_clicked:
         st.session_state["chat_history1"] = []
         st.session_state["chat_history2"] = []
-    st.write(st.session_state.detailed_leaderboards)
     with st.sidebar:
         helpers.Buttons.save_button()
 
