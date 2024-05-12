@@ -689,22 +689,20 @@ class Buttons:
                 st.write("Could not upload the results.")
                 st.write(e)
 
-            st.session_state.vote_counts[["Wins ⭐", "Losses ❌"]] = (
-                st.session_state.vote_counts[["Wins ⭐", "Losses ❌"]].where(
-                    st.session_state.vote_counts[["Wins ⭐", "Losses ❌"]] == 0, 0
-                )
+            st.session_state.vote_counts.loc[["Wins ⭐", "Losses ❌"]].where(
+                st.session_state.vote_counts[["Wins ⭐", "Losses ❌"]] == 0,
+                0,
+                inplace=True,
             )
 
-            st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
-                st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]].where(
-                    st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] == 0, 0
-                )
+            st.session_state.leaderboard.loc[["Wins ⭐", "Losses ❌"]].where(
+                st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] == 0,
+                0,
+                inplace=True,
             )
 
-            st.session_state.detailed_leaderboards["scores"] = (
-                st.session_state.detailed_leaderboards["scores"].where(
-                    st.session_state.detailed_leaderboards["scores"] == 0, 0
-                )
+            st.session_state.detailed_leaderboards["scores"].where(
+                st.session_state.detailed_leaderboards["scores"] == 0, 0, inplace=True
             )
 
 
