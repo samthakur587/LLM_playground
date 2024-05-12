@@ -103,6 +103,9 @@ class database:
             }
 
         st.session_state.offline_leaderboard = pd.DataFrame(json_data)
+        st.session_state.offline_leaderboard.set_index(
+            "Model Name", inplace=True, drop=False
+        )
         st.session_state.offline_models = all_models
 
         if not update:
@@ -175,6 +178,10 @@ class database:
         st.session_state.online_detailed = {"scores": gsheets_detail.convert_dtypes()}
         st.session_state.online_models = gsheets_models["Models"]
 
+        st.session_state.online_leaderboard.set_index(
+            "Model Name", inplace=True, drop=False
+        )
+
         if not update:
             st.session_state.leaderboard = gsheets_leaderboard
             st.session_state.detailed_leaderboards = {"scores": gsheets_detail}
@@ -217,12 +224,10 @@ class database:
                 st.session_state[key] = None
         database.get_offline(True)
         vote_counts_df = st.session_state.vote_counts
-        vote_counts_df[["Wins ⭐", "Losses ❌"]] = vote_counts_df[
-            ["Wins ⭐", "Losses ❌"]
-        ].add(
+        vote_counts_df_added = vote_counts_df[["Wins ⭐", "Losses ❌"]].add(
             st.session_state.offline_leaderboard[["Wins ⭐", "Losses ❌"]], fill_value=0
         )
-        sorted_counts_df = vote_counts_df[["Wins ⭐", "Losses ❌"]]
+        sorted_counts_df = vote_counts_df_added[["Wins ⭐", "Losses ❌"]]
         sorted_counts_df["Model Name"] = sorted_counts_df.index
         sorted_counts_df = sorted_counts_df[["Model Name", "Wins ⭐", "Losses ❌"]]
 
@@ -259,10 +264,10 @@ class database:
         database.get_online(True)
 
         vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
-        vote_counts_df[["Wins ⭐", "Losses ❌"]] = vote_counts_df[
-            ["Wins ⭐", "Losses ❌"]
-        ].add(st.session_state.online_leaderboard[["Wins ⭐", "Losses ❌"]], fill_value=0)
-        sorted_counts_df = vote_counts_df[["Wins ⭐", "Losses ❌"]]
+        vote_counts_df_added = vote_counts_df[["Wins ⭐", "Losses ❌"]].add(
+            st.session_state.online_leaderboard[["Wins ⭐", "Losses ❌"]], fill_value=0
+        )
+        sorted_counts_df = vote_counts_df_added[["Wins ⭐", "Losses ❌"]]
         sorted_counts_df["Model Name"] = sorted_counts_df.index
 
         sorted_counts_df.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)

@@ -25,15 +25,16 @@ st.markdown(
 )
 # Create a DataFrame with the sorted vote counts
 if source == "offline":
+    st.write(st.session_state.offline_leaderboard)
+    st.write(st.session_state.vote_counts)
     vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
     vote_counts_df["Model Name"] = vote_counts_df.index
-    vote_counts_df[["Wins ⭐", "Losses ❌"]] = vote_counts_df[
-        ["Wins ⭐", "Losses ❌"]
-    ].add(
+    vote_counts_df_added = vote_counts_df[["Wins ⭐", "Losses ❌"]].add(
         st.session_state.offline_leaderboard[["Wins ⭐", "Losses ❌"]],
         fill_value=0,
     )
-    sorted_counts = vote_counts_df[["Model Name", "Wins ⭐", "Losses ❌"]]
+    sorted_counts = vote_counts_df_added[["Model Name", "Wins ⭐", "Losses ❌"]]
+    st.write(sorted_counts)
     sorted_counts.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
     sorted_counts.index = range(sorted_counts.shape[0])
 
@@ -54,14 +55,12 @@ if source == "online":
     detail_leaderboards = {"scores": detail_leaderboards}
 
     vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
-    vote_counts_df[["Wins ⭐", "Losses ❌"]] = vote_counts_df[
-        ["Wins ⭐", "Losses ❌"]
-    ].add(
+    vote_counts_df_added = vote_counts_df[["Wins ⭐", "Losses ❌"]].add(
         st.session_state.online_leaderboard[["Wins ⭐", "Losses ❌"]],
         fill_value=0,
     )
-    vote_counts_df["Model Name"] = vote_counts_df.index
-    sorted_counts = vote_counts_df[["Model Name", "Wins ⭐", "Losses ❌"]]
+    vote_counts_df_added["Model Name"] = vote_counts_df_added.index
+    sorted_counts = vote_counts_df_added[["Model Name", "Wins ⭐", "Losses ❌"]]
     sorted_counts.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
     sorted_counts.index = range(sorted_counts.shape[0])
 
