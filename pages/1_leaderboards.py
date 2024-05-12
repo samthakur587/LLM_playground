@@ -33,7 +33,7 @@ if source == "offline":
         st.session_state.offline_leaderboard[["Wins ⭐", "Losses ❌"]],
         fill_value=0,
     )
-    sorted_counts = vote_counts_df_added[["Model Name", "Wins ⭐", "Losses ❌"]]
+    sorted_counts = vote_counts_df_added[["Wins ⭐", "Losses ❌"]]
     st.write(sorted_counts)
     sorted_counts.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
     sorted_counts.index = range(sorted_counts.shape[0])
@@ -60,7 +60,7 @@ if source == "online":
         fill_value=0,
     )
     vote_counts_df_added["Model Name"] = vote_counts_df_added.index
-    sorted_counts = vote_counts_df_added[["Model Name", "Wins ⭐", "Losses ❌"]]
+    sorted_counts = vote_counts_df_added[["Wins ⭐", "Losses ❌"]]
     sorted_counts.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
     sorted_counts.index = range(sorted_counts.shape[0])
 
