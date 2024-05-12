@@ -426,7 +426,7 @@ def init_session(mode: str = "keys") -> None:
         data = pd.read_csv(
             "leaderboard.csv"
         )  # This will raise an error if the file does not exist
-        st.session_state.leaderboard.set_index("Model Name", inplace=True)
+        st.session_state.leaderboard.set_index("Model Name", inplace=True, drop=False)
         json_data = st.session_state.leaderboard
 
         st.session_state["vote_counts"] = pd.DataFrame(
@@ -668,7 +668,7 @@ class Buttons:
             "Save leaderboards",
             on_click=lambda: setattr(st.session_state, "saved", True),
         )
-        st.write(st.session_state.vote_counts)
+        # st.write(st.session_state.vote_counts)
         if st.session_state.saved:
 
             st.session_state.saved = False
