@@ -56,6 +56,7 @@ if source == "online":
     detail_leaderboards = {"scores": detail_leaderboards}
 
     vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
+    vote_counts_df["Model Name"] = vote_counts_df.index
     vote_counts_df_added = vote_counts_df[["Wins ⭐", "Losses ❌"]].add(
         st.session_state.online_leaderboard[["Wins ⭐", "Losses ❌"]],
         fill_value=0,
