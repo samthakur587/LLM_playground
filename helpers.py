@@ -688,37 +688,9 @@ class Buttons:
             except Exception as e:
                 st.write("Could not upload the results.")
                 st.write(e)
-
-            vote_counts_temp = st.session_state.vote_counts.loc[
-                ["Wins ⭐", "Losses ❌"]
-            ]
-            leaderboard_temp = st.session_state.leaderboard.loc[
-                ["Wins ⭐", "Losses ❌"]
-            ]
-
-            vote_counts_temp.where(
-                vote_counts_temp in [0, "0"],
-                0,
-                inplace=True,
-            )
-
-            st.session_state.vote_counts.loc[["Wins ⭐", "Losses ❌"]] = (
-                vote_counts_temp
-            )
-
-            leaderboard_temp.where(
-                leaderboard_temp in [0, "0"],
-                0,
-                inplace=True,
-            )
-
-            st.session_state.leaderboard.loc[["Wins ⭐", "Losses ❌"]] = (
-                leaderboard_temp
-            )
-
-            st.session_state.detailed_leaderboards["scores"].where(
-                st.session_state.detailed_leaderboards["scores"] == 0, 0, inplace=True
-            )
+            finally:
+                for key in st.session_state.keys():
+                    del st.session_state[key]
 
 
 def print_history(contain: tuple[st.container]) -> None:

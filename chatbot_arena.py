@@ -492,6 +492,7 @@ async def main() -> None:
 
     with st.sidebar:
         helpers.Buttons.save_button()
+        st.write(st.session_state.vote_counts)
 
 
 if __name__ == "__main__":
