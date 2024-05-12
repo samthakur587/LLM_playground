@@ -42,7 +42,7 @@ if source == "offline":
     )
 
     model_selection = list(detail_leaderboards.keys())
-    detail_leaderboards = {"scores": detail_leaderboards}
+    detail_leaderboards = detail_leaderboards
 
 if source == "online":
     helpers.database.get_online(True)
@@ -51,7 +51,7 @@ if source == "online":
     )
 
     model_selection = list(detail_leaderboards.keys())
-    detail_leaderboards = {"scores": detail_leaderboards}
+    detail_leaderboards = detail_leaderboards
 
     vote_counts_df = pd.DataFrame(st.session_state.vote_counts)
     vote_counts_df["Model Name"] = vote_counts_df.index

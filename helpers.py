@@ -98,9 +98,7 @@ class database:
                 json.dump(detail_leaderboards, out_file)
 
         with open("detail_leaderboards.csv", "r") as in_file:
-            st.session_state.offline_detailed = {
-                "scores": pd.read_csv(in_file, index_col=0)
-            }
+            st.session_state.offline_detailed = pd.read_csv(in_file, index_col=0)
 
         st.session_state.offline_leaderboard = pd.DataFrame(json_data)
         st.session_state.offline_leaderboard.set_index(
@@ -175,7 +173,7 @@ class database:
             gsheets_detail.drop("Unnamed: 0", axis=1, inplace=True)
 
         st.session_state.online_leaderboard = gsheets_leaderboard.convert_dtypes()
-        st.session_state.online_detailed = {"scores": gsheets_detail.convert_dtypes()}
+        st.session_state.online_detailed = gsheets_detail.convert_dtypes()
         st.session_state.online_models = gsheets_models["Models"]
 
         st.session_state.online_leaderboard.set_index(
@@ -184,7 +182,7 @@ class database:
 
         if not update:
             st.session_state.leaderboard = gsheets_leaderboard
-            st.session_state.detailed_leaderboards = {"scores": gsheets_detail}
+            st.session_state.detailed_leaderboards = gsheets_detail
             st.session_state.models = gsheets_models["Models"]
 
             st.session_state.leaderboard[["Wins ⭐", "Losses ❌"]] = (
