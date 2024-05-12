@@ -61,18 +61,6 @@ class database:
             "Losses ❌": [losses for losses in data["Losses ❌"]],
         }
 
-        if not os.path.exists("./detail_leaderboards.json"):
-            with open("detail_leaderboards.json", "w") as out_file:
-                detail_leaderboards = {
-                    "scores": {
-                        winning_model: {
-                            losing_model: 0 for losing_model in json_data.keys()
-                        }
-                        for winning_model in json_data.keys()
-                    }
-                }
-                json.dump(detail_leaderboards, out_file)
-
         if not os.path.exists("./detail_leaderboards.csv"):
             detail_dataframe = pd.DataFrame(
                 data={
@@ -84,18 +72,6 @@ class database:
             )
             detail_dataframe.index = list(json_data["Model Name"])
             detail_dataframe.to_csv("detail_leaderboards.csv")
-
-        if not os.path.exists("./detail_leaderboards.json"):
-            with open("detail_leaderboards.json", "w") as out_file:
-                detail_leaderboards = {
-                    "scores": {
-                        winning_model: {
-                            losing_model: 0 for losing_model in json_data.keys()
-                        }
-                        for winning_model in json_data.keys()
-                    }
-                }
-                json.dump(detail_leaderboards, out_file)
 
         with open("detail_leaderboards.csv", "r") as in_file:
             st.session_state.offline_detailed = pd.read_csv(in_file, index_col=0)
@@ -117,9 +93,9 @@ class database:
                 )
             )
 
-            st.session_state.detailed_leaderboards["scores"] = (
-                st.session_state.detailed_leaderboards["scores"].where(
-                    st.session_state.detailed_leaderboards["scores"] == 0, 0
+            st.session_state.detailed_leaderboards = (
+                st.session_state.detailed_leaderboards.where(
+                    st.session_state.detailed_leaderboards == 0, 0
                 )
             )
 
@@ -193,14 +169,12 @@ class database:
 
             st.session_state.leaderboard = st.session_state.leaderboard.convert_dtypes()
 
-            st.session_state.detailed_leaderboards["scores"] = (
-                st.session_state.detailed_leaderboards["scores"].where(
-                    gsheets_detail == 0, 0
-                )
+            st.session_state.detailed_leaderboards = (
+                st.session_state.detailed_leaderboards.where(gsheets_detail == 0, 0)
             )
 
-            st.session_state.detailed_leaderboards["scores"] = (
-                st.session_state.detailed_leaderboards["scores"].convert_dtypes()
+            st.session_state.detailed_leaderboards = (
+                st.session_state.detailed_leaderboards.convert_dtypes()
             )
 
     @staticmethod
@@ -231,8 +205,8 @@ class database:
 
         sorted_counts_df.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
 
-        detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
-            st.session_state.offline_detailed["scores"]
+        detail_leaderboards = st.session_state.detailed_leaderboards.add(
+            st.session_state.offline_detailed
         )
         detail_leaderboards.index = detail_leaderboards.columns
 
@@ -271,14 +245,14 @@ class database:
 
         sorted_counts_df.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
 
-        st.session_state.detailed_leaderboards["scores"].index = (
-            st.session_state.detailed_leaderboards["scores"].columns
+        st.session_state.detailed_leaderboards.index = (
+            st.session_state.detailed_leaderboards.columns
         )
-        st.session_state.online_detailed["scores"].index = (
-            st.session_state.online_detailed["scores"].columns
+        st.session_state.online_detailed.index = (
+            st.session_state.online_detailed.columns
         )
-        detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
-            st.session_state.online_detailed["scores"]
+        detail_leaderboards = st.session_state.detailed_leaderboards.add(
+            st.session_state.online_detailed
         )
         detail_leaderboards.index = detail_leaderboards.columns
         try:
@@ -522,11 +496,11 @@ class Buttons:
             st.session_state["model2"].split("@")[0], "Losses ❌"
         ] += 1
         if (
-            model1 not in st.session_state.detailed_leaderboards["scores"].keys()
-            or model1 not in st.session_state.detailed_leaderboards["scores"].keys()
+            model1 not in st.session_state.detailed_leaderboards.keys()
+            or model1 not in st.session_state.detailed_leaderboards.keys()
         ):
-            st.session_state.detailed_leaderboards["scores"].at[model1, model2] = 0
-        st.session_state.detailed_leaderboards["scores"].at[model1, model2] += 1
+            st.session_state.detailed_leaderboards.at[model1, model2] = 0
+        st.session_state.detailed_leaderboards.at[model1, model2] += 1
 
         print_history(contain=(cont1, cont2))
         try:
@@ -566,11 +540,11 @@ class Buttons:
             st.session_state["model1"].split("@")[0], "Losses ❌"
         ] += 1
         if (
-            model2 not in st.session_state.detailed_leaderboards["scores"].index
-            or model1 not in st.session_state.detailed_leaderboards["scores"].index
+            model2 not in st.session_state.detailed_leaderboards.index
+            or model1 not in st.session_state.detailed_leaderboards.index
         ):
-            st.session_state.detailed_leaderboards["scores"].at[model2, model1] = 0
-        st.session_state.detailed_leaderboards["scores"].at[model2, model1] += 1
+            st.session_state.detailed_leaderboards.at[model2, model1] = 0
+        st.session_state.detailed_leaderboards.at[model2, model1] += 1
 
         print_history(contain=(cont1, cont2))
         try:
@@ -605,13 +579,13 @@ class Buttons:
         st.session_state["vote_counts"].at[model2, "Wins ⭐"] += 1
         st.session_state["vote_counts"].at[model1, "Wins ⭐"] += 1
         if (
-            model2 not in st.session_state.detailed_leaderboards["scores"].index
-            or model1 not in st.session_state.detailed_leaderboards["scores"].index
+            model2 not in st.session_state.detailed_leaderboards.index
+            or model1 not in st.session_state.detailed_leaderboards.index
         ):
-            st.session_state.detailed_leaderboards["scores"].at[model2, model1] = 0
-            st.session_state.detailed_leaderboards["scores"].at[model1, model2] = 0
-        st.session_state.detailed_leaderboards["scores"].at[model2, model1] += 1
-        st.session_state.detailed_leaderboards["scores"].at[model1, model2] += 1
+            st.session_state.detailed_leaderboards.at[model2, model1] = 0
+            st.session_state.detailed_leaderboards.at[model1, model2] = 0
+        st.session_state.detailed_leaderboards.at[model2, model1] += 1
+        st.session_state.detailed_leaderboards.at[model1, model2] += 1
 
         print_history(contain=(cont1, cont2))
         try:
@@ -646,11 +620,11 @@ class Buttons:
         st.session_state["vote_counts"].at[model2, "Losses ❌"] += 1
         st.session_state["vote_counts"].at[model1, "Losses ❌"] += 1
         if (
-            model2 not in st.session_state.detailed_leaderboards["scores"].index
-            or model1 not in st.session_state.detailed_leaderboards["scores"].index
+            model2 not in st.session_state.detailed_leaderboards.index
+            or model1 not in st.session_state.detailed_leaderboards.index
         ):
-            st.session_state.detailed_leaderboards["scores"].at[model2, model1] = 0
-            st.session_state.detailed_leaderboards["scores"].at[model1, model2] = 0
+            st.session_state.detailed_leaderboards.at[model2, model1] = 0
+            st.session_state.detailed_leaderboards.at[model1, model2] = 0
 
         print_history(contain=(cont1, cont2))
         try:

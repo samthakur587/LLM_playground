@@ -37,8 +37,8 @@ if source == "offline":
     sorted_counts.sort_values(by=["Wins ⭐", "Losses ❌"], inplace=True)
     sorted_counts.index = range(sorted_counts.shape[0])
 
-    detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
-        st.session_state.offline_detailed["scores"], fill_value=0
+    detail_leaderboards = st.session_state.detailed_leaderboards.add(
+        st.session_state.offline_detailed, fill_value=0
     )
 
     model_selection = list(detail_leaderboards.keys())
@@ -46,8 +46,8 @@ if source == "offline":
 
 if source == "online":
     helpers.database.get_online(True)
-    detail_leaderboards = st.session_state.detailed_leaderboards["scores"].add(
-        st.session_state.online_detailed["scores"], fill_value=0
+    detail_leaderboards = st.session_state.detailed_leaderboards.add(
+        st.session_state.online_detailed, fill_value=0
     )
 
     model_selection = list(detail_leaderboards.keys())
@@ -85,7 +85,7 @@ sorted_counts_detail = sorted_counts_detail[
 ]
 
 detail_leaderboards = st.session_state.detailed_leaderboards
-model_selection = list(detail_leaderboards["scores"].keys())[1:]
+model_selection = list(detail_leaderboards.keys())[1:]
 
 if st.session_state.enable_detail:
     select_for_comparison = st.data_editor(
@@ -95,7 +95,7 @@ if st.session_state.enable_detail:
 
     model_names = models_to_compare["Model Name"]
 
-    view_detail = detail_leaderboards["scores"].loc[model_names, model_names]
+    view_detail = detail_leaderboards.loc[model_names, model_names]
 
     with st.container(border=True):
 
