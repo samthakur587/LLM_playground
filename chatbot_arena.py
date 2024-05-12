@@ -352,7 +352,7 @@ async def main() -> None:
                 model1_to_add := st.session_state["model1"][
                     : st.session_state["model1"].find("@")
                 ]
-            ) not in data.keys():
+            ) not in data["Model Name"]:
                 st.session_state["vote_counts"].at[f"{model1_to_add}", "Wins ⭐"] = 0
                 st.session_state["vote_counts"].at[f"{model1_to_add}", "Losses ❌"] = 0
                 st.session_state["vote_counts"].at[
@@ -384,7 +384,7 @@ async def main() -> None:
                 model2_to_add := st.session_state["model2"][
                     : st.session_state["model2"].find("@")
                 ]
-            ) not in data.keys():
+            ) not in data["Model Name"]:
                 st.session_state["vote_counts"].at[f"{model2_to_add}", "Wins ⭐"] = 0
                 st.session_state["vote_counts"].at[f"{model2_to_add}", "Losses ❌"] = 0
 
